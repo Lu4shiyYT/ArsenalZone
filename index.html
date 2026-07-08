@@ -35,13 +35,14 @@
         .view{display:none;flex:1;flex-direction:column}
         .view.active{display:flex}
         .inventory-grid{
-            display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));
-            gap:8px;margin-top:10px;
+            display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:10px;
         }
+        @media(max-width:600px){.inventory-grid{grid-template-columns:repeat(3,1fr)}}
         .item-card{
             background:var(--panel);border-radius:6px;padding:5px;
             border-left:4px solid var(--usual);cursor:pointer;position:relative;
             transition:0.2s;display:flex;flex-direction:column;align-items:center;
+            min-height:120px;justify-content:center;
         }
         .item-card:hover{background:#3a3a3a}
         .item-name{font-size:0.7rem;text-align:center;margin:4px 0}
@@ -65,7 +66,6 @@
             max-width:400px;width:90%;text-align:center;max-height:80vh;overflow-y:auto;
         }
         #case-canvas{background:#0d0d0d;border-radius:8px;width:100%;height:120px}
-        .wear-indicator{display:flex;justify-content:space-between;font-size:0.7rem;color:#888;margin-top:2px}
         button{
             background:var(--button);color:var(--text);border:none;padding:10px 15px;
             border-radius:4px;cursor:pointer;transition:0.2s;font-weight:bold;font-size:0.9rem;
@@ -102,17 +102,12 @@
             <h3 id="case-modal-title">Открытие кейса</h3>
             <canvas id="case-canvas" width="400" height="120"></canvas>
             <p id="case-result-text"></p>
-            <div class="wear-indicator"><span>0.00</span><span>Износ</span><span>1.00</span></div>
             <button onclick="Game.closeModal()">Продолжить</button>
         </div>
     </div>
 
     <div class="modal" id="item-detail-modal">
         <div class="modal-content" id="item-detail-content"></div>
-    </div>
-
-    <div class="modal" id="case-select-modal">
-        <div class="modal-content" id="case-select-content"></div>
     </div>
 
     <script>
@@ -124,33 +119,33 @@
             this.translations = {
                 ru: {
                     inventory: '🎒 Инвентарь', minigames: '🎮 Мини-игры', profile: '👤 Профиль',
-                    quests: '📋 Квесты', shop: '🛒 Магазин', openCase: '📦 Открыть кейс',
-                    backup: '💾 Бэкап', import: '📥 Импорт', upgrade: '⬆️ Апгрейдер (10$)',
-                    tictactoe: '❌⭕ Крестики-нолики (энергия 1)', profile_title: 'Профиль',
-                    cases_opened: 'Кейсов открыто', items_collected: 'Предметов собрано',
+                    quests: '📋 Квесты', shop: '🛒 Магазин', backup: '💾 Бэкап', import: '📥 Импорт',
+                    profile_title: 'Профиль', cases_opened: 'Кейсов открыто', items_collected: 'Предметов собрано',
                     gold_items: 'Золотых предметов', reset: 'Сбросить прогресс',
-                    quest_daily: 'Ежедневные квесты', shop_title: 'Магазин',
-                    buy: 'Купить', price: 'Цена', no_energy: 'Недостаточно энергии',
-                    no_money: 'Недостаточно $', wear: 'Износ', rarity: 'Редкость',
-                    collection: 'Коллекция', type: 'Тип', stickers: 'Стикеры',
-                    apply_sticker: 'Наклеить', trade_up: '🔃 Контракт (10 предметов)',
-                    filter_all: 'Все', filter_weapon: 'Оружие', filter_sticker: 'Стикеры',
-                    filter_agent: 'Агенты', filter_knife: 'Ножи'
+                    quest_daily: 'Ежедневные квесты', shop_title: 'Магазин', buy: 'Купить', price: 'Цена',
+                    trade_up: '🔃 Trade Up (10 предметов)', open: 'Открыть', odds: 'Шансы',
+                    wear: 'Износ', rarity: 'Редкость', collection: 'Коллекция', type: 'Тип',
+                    pattern: 'Паттерн', stickers: 'Стикеры', apply_sticker: 'Наклеить',
+                    sell: 'Продать', favorite: 'Избранное', close: 'Закрыть',
+                    filter_all: 'Все', filter_weapon: 'Оружие', filter_knife: 'Ножи',
+                    filter_gloves: 'Перчатки', filter_charm: 'Брелоки', filter_sticker: 'Стикеры',
+                    filter_agent: 'Агенты', filter_case: 'Кейсы/Капсулы',
+                    no_items: 'Нет предметов'
                 },
                 en: {
                     inventory: '🎒 Inventory', minigames: '🎮 Mini-games', profile: '👤 Profile',
-                    quests: '📋 Quests', shop: '🛒 Shop', openCase: '📦 Open Case',
-                    backup: '💾 Backup', import: '📥 Import', upgrade: '⬆️ Upgrader (10$)',
-                    tictactoe: '❌⭕ Tic-Tac-Toe (1 energy)', profile_title: 'Profile',
-                    cases_opened: 'Cases opened', items_collected: 'Items collected',
+                    quests: '📋 Quests', shop: '🛒 Shop', backup: '💾 Backup', import: '📥 Import',
+                    profile_title: 'Profile', cases_opened: 'Cases opened', items_collected: 'Items collected',
                     gold_items: 'Gold items', reset: 'Reset progress',
-                    quest_daily: 'Daily quests', shop_title: 'Shop',
-                    buy: 'Buy', price: 'Price', no_energy: 'Not enough energy',
-                    no_money: 'Not enough $', wear: 'Wear', rarity: 'Rarity',
-                    collection: 'Collection', type: 'Type', stickers: 'Stickers',
-                    apply_sticker: 'Apply', trade_up: '🔃 Trade Up (10 items)',
-                    filter_all: 'All', filter_weapon: 'Weapons', filter_sticker: 'Stickers',
-                    filter_agent: 'Agents', filter_knife: 'Knives'
+                    quest_daily: 'Daily quests', shop_title: 'Shop', buy: 'Buy', price: 'Price',
+                    trade_up: '🔃 Trade Up (10 items)', open: 'Open', odds: 'Odds',
+                    wear: 'Wear', rarity: 'Rarity', collection: 'Collection', type: 'Type',
+                    pattern: 'Pattern', stickers: 'Stickers', apply_sticker: 'Apply',
+                    sell: 'Sell', favorite: 'Favorite', close: 'Close',
+                    filter_all: 'All', filter_weapon: 'Weapons', filter_knife: 'Knives',
+                    filter_gloves: 'Gloves', filter_charm: 'Charms', filter_sticker: 'Stickers',
+                    filter_agent: 'Agents', filter_case: 'Cases/Capsules',
+                    no_items: 'No items'
                 }
             };
             this.initData();
@@ -170,9 +165,7 @@
                 balance: 100,
                 energy: 50, maxEnergy: 50,
                 lastEnergyTime: Date.now(),
-                inventory: [],
-                cases: [],
-                stickers: [], // отдельно храним стикеры для наклеек
+                inventory: [], // все предметы: оружие, ножи, перчатки, брелоки, стикеры, агенты, кейсы, капсулы
                 stats: { casesOpened: 0, itemsCollected: 0, goldItems: 0, upgrades: 0, tttWins: 0 },
                 quests: {
                     daily: [
@@ -205,9 +198,10 @@
                 'Usual':'#6b6b6b','Frequent':'#a0a0a0','Conveyor-type':'#8845ff',
                 'Rare':'#4b69ff','Unique':'#d32ce6','Relic':'#37d63c','Gold':'#ffd700'
             };
+            // Расширенные коллекции
             this.collections = {
-                'Arms Deal': { weapons: ['AK-47','M4A4','AWP','Desert Eagle'], knife: 'M9 Bayonet', type:'weapon' },
-                'Chroma': { weapons: ['M4A1-S','USP-S','Glock-18','P250'], knife: 'Butterfly Knife', type:'weapon' },
+                'Arms Deal': { weapons: ['AK-47','M4A4','AWP','Desert Eagle'], knife: 'M9 Bayonet', gloves: 'Titan Gloves', charm: 'Dog Tag', type:'weapon' },
+                'Chroma': { weapons: ['M4A1-S','USP-S','Glock-18','P250'], knife: 'Butterfly Knife', gloves: 'Polymer Gloves', charm: 'Lucky Cat', type:'weapon' },
                 'Sticker Capsule': { stickers: ['Furia','NaVi','G2','Spirit'], type:'sticker' },
                 'Agent Pack': { agents: ['SAS','FBI','SWAT','GIGN'], type:'agent' }
             };
@@ -215,34 +209,38 @@
             this.stickerEmojis = {'Furia':'🐆','NaVi':'🌊','G2':'🐺','Spirit':'🐉'};
             this.agentEmojis = {'SAS':'👮','FBI':'🕵️','SWAT':'👮‍♂️','GIGN':'👮‍♀️'};
             this.knifeEmojis = {'M9 Bayonet':'🔪','Butterfly Knife':'🦋'};
+            this.glovesEmojis = {'Titan Gloves':'🧤','Polymer Gloves':'🧤'};
+            this.charmEmojis = {'Dog Tag':'🏷️','Lucky Cat':'🐱'};
         }
 
         getItemEmoji(item) {
             if (item.type === 'weapon') return this.weaponEmojis[item.name] || '🔫';
+            if (item.type === 'knife') return this.knifeEmojis[item.name] || '🔪';
+            if (item.type === 'gloves') return this.glovesEmojis[item.name] || '🧤';
+            if (item.type === 'charm') return this.charmEmojis[item.name] || '🏷️';
             if (item.type === 'sticker') return this.stickerEmojis[item.name] || '🏷️';
             if (item.type === 'agent') return this.agentEmojis[item.name] || '👤';
-            if (item.type === 'knife') return this.knifeEmojis[item.name] || '🔪';
+            if (item.type === 'case') return '📦';
+            if (item.type === 'capsule') return '💊';
             return '❓';
         }
 
         generateItem(collectionName, typeOverride) {
             const col = this.collections[collectionName];
             if (!col) return null;
-            let itemName, itemType = col.type;
+            let itemType = col.type;
             if (typeOverride) itemType = typeOverride;
-            if (itemType === 'weapon') {
-                itemName = col.weapons[Math.floor(Math.random()*col.weapons.length)];
-                itemType = 'weapon';
-            } else if (itemType === 'sticker') {
-                itemName = col.stickers[Math.floor(Math.random()*col.stickers.length)];
-                itemType = 'sticker';
-            } else if (itemType === 'agent') {
-                itemName = col.agents[Math.floor(Math.random()*col.agents.length)];
-                itemType = 'agent';
-            } else if (itemType === 'knife' && col.knife) {
-                itemName = col.knife;
-                itemType = 'knife';
-            } else return null;
+            let itemName;
+            switch(itemType) {
+                case 'weapon': itemName = col.weapons[Math.floor(Math.random()*col.weapons.length)]; break;
+                case 'knife': itemName = col.knife; break;
+                case 'gloves': itemName = col.gloves; break;
+                case 'charm': itemName = col.charm; break;
+                case 'sticker': itemName = col.stickers[Math.floor(Math.random()*col.stickers.length)]; break;
+                case 'agent': itemName = col.agents[Math.floor(Math.random()*col.agents.length)]; break;
+                default: return null;
+            }
+            if (!itemName) return null;
 
             const rand = Math.random()*100;
             let rarity = 'Usual';
@@ -253,7 +251,7 @@
             else if (rand < 99.98) rarity = 'Unique';
             else if (rand < 99.999) rarity = 'Relic';
             else rarity = 'Gold';
-            if (itemType === 'knife') rarity = 'Gold';
+            if (itemType === 'knife' || itemType === 'gloves') rarity = 'Gold';
 
             const wear = Math.random()*0.9999999998+0.0000000001;
             let wearCat = '';
@@ -261,6 +259,8 @@
             else if (wear < 0.4500000001) wearCat = 'Well-Worn';
             else if (wear < 0.8000000001) wearCat = 'Field-Tested';
             else wearCat = 'Minimal Wear';
+
+            const pattern = Math.floor(Math.random()*10000);
 
             return {
                 id: Date.now()+Math.random().toString(36),
@@ -270,6 +270,7 @@
                 rarity,
                 wear,
                 wearCategory: wearCat,
+                pattern,
                 stickers: [],
                 isFavorite: false
             };
@@ -283,14 +284,15 @@
             this.saveState();
         }
 
-        openCase(collectionName, type) {
-            const caseIndex = this.state.cases.findIndex(c=>c.collection===collectionName && c.type===type);
-            if (caseIndex===-1) return alert('Нет такого кейса');
-            this.state.cases.splice(caseIndex,1);
+        openCase(caseItem) {
+            // caseItem - предмет типа 'case' или 'capsule'
+            const index = this.state.inventory.findIndex(i=>i.id===caseItem.id);
+            if (index===-1) return;
+            this.state.inventory.splice(index,1);
             this.state.stats.casesOpened++;
             this.state.quests.daily.find(q=>q.id==='open3').progress++;
             this.saveState();
-            this.animateCaseOpen(collectionName, type);
+            this.animateCaseOpen(caseItem.collection, caseItem.type);
         }
 
         animateCaseOpen(collectionName, type) {
@@ -299,14 +301,11 @@
             const canvas = document.getElementById('case-canvas');
             const ctx = canvas.getContext('2d');
             const items = [];
-            const col = this.collections[collectionName];
             for (let i=0;i<40;i++) items.push(this.generateItem(collectionName, type));
             let goldIndex = items.findIndex(it=>it.rarity==='Gold');
             if (goldIndex===-1 && Math.random()<0.1) {
                 const goldItem = this.generateItem(collectionName, type==='weapon'?'knife':type);
-                goldItem.rarity='Gold';
-                goldIndex = Math.floor(Math.random()*items.length);
-                items[goldIndex] = goldItem;
+                if (goldItem) { goldItem.rarity='Gold'; goldIndex = Math.floor(Math.random()*items.length); items[goldIndex]=goldItem; }
             }
             const stopIndex = goldIndex!==-1 ? goldIndex : 20+Math.floor(Math.random()*5);
             const won = items[stopIndex];
@@ -449,36 +448,48 @@
             const container = document.getElementById('view-inventory');
             if (!container) return;
             const t = (k)=>this.translations[this.locale][k]||k;
-            let html = `<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
-                <button onclick="Game.openCaseSelect()">${t('openCase')}</button>
-                <button onclick="Game.exportSave()">${t('backup')}</button>
-                <button onclick="Game.importSavePrompt()">${t('import')}</button>
-                <button onclick="Game.tradeUp()">${t('trade_up')}</button>
-            </div>`;
-            html += `<div class="filter-bar">
-                <select id="filter-type"><option>${t('filter_all')}</option><option>${t('filter_weapon')}</option><option>${t('filter_sticker')}</option><option>${t('filter_agent')}</option><option>${t('filter_knife')}</option></select>
-                <select id="filter-rarity"><option>${t('filter_all')}</option>${this.rarities.map(r=>`<option>${r}</option>`).join('')}</select>
-                <button onclick="Game.applyFilters()">Применить</button>
+            let html = `<div class="filter-bar">
+                <select id="filter-type">
+                    <option value="all">${t('filter_all')}</option>
+                    <option value="weapon">${t('filter_weapon')}</option>
+                    <option value="knife">${t('filter_knife')}</option>
+                    <option value="gloves">${t('filter_gloves')}</option>
+                    <option value="charm">${t('filter_charm')}</option>
+                    <option value="sticker">${t('filter_sticker')}</option>
+                    <option value="agent">${t('filter_agent')}</option>
+                    <option value="case">${t('filter_case')}</option>
+                </select>
+                <select id="filter-rarity">
+                    <option value="all">${t('filter_all')}</option>
+                    ${this.rarities.map(r=>`<option value="${r}">${r}</option>`).join('')}
+                </select>
             </div>`;
             html += `<div class="inventory-grid" id="inv-grid"></div>`;
             container.innerHTML = html;
+            document.getElementById('filter-type').addEventListener('change', ()=>this.applyFilters());
+            document.getElementById('filter-rarity').addEventListener('change', ()=>this.applyFilters());
             this.applyFilters();
         }
 
         applyFilters() {
-            const typeSel = document.getElementById('filter-type')?.value;
-            const raritySel = document.getElementById('filter-rarity')?.value;
             const grid = document.getElementById('inv-grid');
             if (!grid) return;
+            const typeFilter = document.getElementById('filter-type')?.value || 'all';
+            const rarityFilter = document.getElementById('filter-rarity')?.value || 'all';
             grid.innerHTML = '';
-            let items = this.state.inventory;
-            if (typeSel && typeSel!=='Все' && typeSel!=='All') {
-                const map = { 'Оружие':'weapon','Weapons':'weapon','Стикеры':'sticker','Stickers':'sticker','Агенты':'agent','Agents':'agent','Ножи':'knife','Knives':'knife' };
-                const filterType = map[typeSel] || typeSel.toLowerCase();
-                items = items.filter(i=>i.type===filterType);
+            let items = [...this.state.inventory];
+            if (typeFilter !== 'all') {
+                items = items.filter(i=>{
+                    if (typeFilter==='case') return i.type==='case'||i.type==='capsule';
+                    return i.type===typeFilter;
+                });
             }
-            if (raritySel && raritySel!=='Все' && raritySel!=='All') {
-                items = items.filter(i=>i.rarity===raritySel);
+            if (rarityFilter !== 'all') {
+                items = items.filter(i=>i.rarity===rarityFilter);
+            }
+            if (items.length===0) {
+                grid.innerHTML = `<p style="grid-column:1/-1;text-align:center">${this.t('no_items')}</p>`;
+                return;
             }
             items.forEach(item=>{
                 const card = document.createElement('div');
@@ -487,28 +498,77 @@
                 card.innerHTML = `
                     <span class="item-emoji">${this.getItemEmoji(item)}</span>
                     <span class="item-name">${item.name}</span>
-                    <span class="item-wear">${item.wearCategory} (${item.wear.toFixed(4)})</span>
+                    <span class="item-wear">${item.type==='case'||item.type==='capsule'?item.collection:item.wearCategory+' '+item.pattern}</span>
                 `;
-                card.addEventListener('click',()=>this.showItemDetail(item));
+                card.addEventListener('click',()=>this.onItemClick(item));
                 grid.appendChild(card);
             });
         }
 
+        t(key) { return this.translations[this.locale][key]||key; }
+
+        onItemClick(item) {
+            if (item.type==='case' || item.type==='capsule') {
+                this.showCaseDetail(item);
+            } else {
+                this.showItemDetail(item);
+            }
+        }
+
+        showCaseDetail(caseItem) {
+            const t = this.t.bind(this);
+            const modal = document.getElementById('item-detail-modal');
+            modal.classList.add('active');
+            const content = document.getElementById('item-detail-content');
+            const odds = this.getOdds(caseItem.collection);
+            content.innerHTML = `
+                <h3>${caseItem.name || caseItem.collection}</h3>
+                <p>${t('collection')}: ${caseItem.collection}</p>
+                <p>${t('type')}: ${caseItem.type}</p>
+                <h4>${t('odds')}:</h4>
+                <ul style="text-align:left">
+                    ${Object.entries(odds).map(([r,ch])=>`<li style="color:${this.rarityColors[r]}">${r}: ${ch.toFixed(2)}%</li>`).join('')}
+                </ul>
+                <button onclick="Game.openCaseById('${caseItem.id}')">${t('open')}</button>
+                <button onclick="ArsenalZone.closeModal()">${t('close')}</button>
+            `;
+        }
+
+        getOdds(collectionName) {
+            // Базовые шансы редкостей
+            return {
+                'Usual': 79.92,
+                'Frequent': 15.76,
+                'Conveyor-type': 3.52,
+                'Rare': 0.64,
+                'Unique': 0.14,
+                'Relic': 0.019,
+                'Gold': 0.001
+            };
+        }
+
+        openCaseById(id) {
+            const item = this.state.inventory.find(i=>i.id===id);
+            if (!item) return;
+            ArsenalZone.closeModal();
+            this.openCase(item);
+        }
+
         showItemDetail(item) {
-            const t = (k)=>this.translations[this.locale][k]||k;
+            const t = this.t.bind(this);
             const modal = document.getElementById('item-detail-modal');
             modal.classList.add('active');
             const content = document.getElementById('item-detail-content');
             content.innerHTML = `
-                <h3>${item.name}</h3>
+                <h3>${item.name} <span style="color:${this.rarityColors[item.rarity]}">${item.rarity}</span></h3>
                 <p>${t('type')}: ${item.type} | ${t('collection')}: ${item.collection}</p>
-                <p>${t('rarity')}: <span style="color:${this.rarityColors[item.rarity]}">${item.rarity}</span></p>
+                <p>${t('pattern')}: ${String(item.pattern).padStart(4,'0')}</p>
                 <p>${t('wear')}: ${item.wearCategory} (${item.wear.toFixed(9)})</p>
-                <div>${t('stickers')}: ${item.stickers.map(s=>`<span>${this.stickerEmojis[s]||'🏷️'}</span>`).join(' ')||'Нет'}</div>
-                <button onclick="Game.sellItem('${item.id}')">Продать за $${this.getItemPrice(item).toFixed(2)}</button>
-                ${item.type==='weapon'||item.type==='knife'?`<button onclick="Game.applyStickerModal('${item.id}')">${t('apply_sticker')}</button>`:''}
+                <p>${t('stickers')}: ${item.stickers.map(s=>`<span>${this.stickerEmojis[s]||'🏷️'}</span>`).join(' ')||'Нет'}</p>
+                <button onclick="Game.sellItem('${item.id}')">${t('sell')} ($${this.getItemPrice(item).toFixed(2)})</button>
+                ${(item.type==='weapon'||item.type==='knife'||item.type==='gloves')?`<button onclick="Game.applyStickerModal('${item.id}')">${t('apply_sticker')}</button>`:''}
                 <button onclick="Game.toggleFavorite('${item.id}')">${item.isFavorite?'💔':'❤️'}</button>
-                <button onclick="ArsenalZone.closeModal()">Закрыть</button>
+                <button onclick="ArsenalZone.closeModal()">${t('close')}</button>
             `;
         }
 
@@ -541,7 +601,7 @@
             if (!item || item.stickers.length>=5) return;
             const stickers = this.state.inventory.filter(i=>i.type==='sticker');
             if (stickers.length===0) { alert('Нет стикеров'); return; }
-            const t = (k)=>this.translations[this.locale][k]||k;
+            const t = this.t.bind(this);
             const modal = document.getElementById('item-detail-modal');
             modal.classList.add('active');
             const content = document.getElementById('item-detail-content');
@@ -560,73 +620,25 @@
             content.innerHTML += '<button onclick="ArsenalZone.closeModal()">Отмена</button>';
         }
 
-        tradeUp() {
-            const t = (k)=>this.translations[this.locale][k]||k;
-            const rarityOrder = this.rarities;
-            const itemsByRarity = {};
-            this.state.inventory.forEach(i=>{
-                if (!itemsByRarity[i.rarity]) itemsByRarity[i.rarity]=[];
-                itemsByRarity[i.rarity].push(i);
-            });
-            let selectedRarity = null;
-            for (let r of rarityOrder) {
-                if (itemsByRarity[r] && itemsByRarity[r].length>=10) {
-                    selectedRarity = r; break;
-                }
-            }
-            if (!selectedRarity) return alert('Нет 10 предметов одной редкости');
-            const nextRarity = rarityOrder[rarityOrder.indexOf(selectedRarity)+1];
-            if (!nextRarity) return alert('Нельзя улучшить Gold');
-            const sacrifice = itemsByRarity[selectedRarity].slice(0,10);
-            sacrifice.forEach(i=> this.state.inventory = this.state.inventory.filter(x=>x.id!==i.id));
-            const newItem = this.generateItem('Arms Deal', 'weapon');
-            newItem.rarity = nextRarity;
-            this.addItem(newItem);
-            this.saveState();
-            this.renderInventory();
-            alert(`Получен предмет редкости ${nextRarity}!`);
-        }
-
-        openCaseSelect() {
-            const t = (k)=>this.translations[this.locale][k]||k;
-            const modal = document.getElementById('case-select-modal');
-            modal.classList.add('active');
-            const content = document.getElementById('case-select-content');
-            content.innerHTML = '<h3>Выберите кейс</h3>';
-            if (this.state.cases.length===0) {
-                content.innerHTML += '<p>Нет кейсов. Купите в магазине.</p>';
-            } else {
-                this.state.cases.forEach((c,idx)=>{
-                    const btn = document.createElement('button');
-                    btn.textContent = `${c.collection} (${c.type})`;
-                    btn.onclick = ()=>{
-                        modal.classList.remove('active');
-                        this.openCase(c.collection, c.type);
-                    };
-                    content.appendChild(btn);
-                });
-            }
-            content.innerHTML += '<button onclick="ArsenalZone.closeModal()">Закрыть</button>';
-        }
-
         prepareMinigamesView() {
             const view = document.getElementById('view-minigames');
-            const t = (k)=>this.translations[this.locale][k]||k;
+            const t = this.t.bind(this);
             view.innerHTML = `
                 <h2>${t('minigames')}</h2>
                 <div style="display:flex;gap:10px;flex-direction:column;">
-                    <button onclick="Game.startUpgrader()">${t('upgrade')}</button>
-                    <button onclick="Game.startTicTacToe()">${t('tictactoe')}</button>
+                    <button onclick="Game.startUpgrader()">⬆️ Апгрейдер (10$)</button>
+                    <button onclick="Game.startTicTacToe()">❌⭕ Крестики-нолики (энергия 1)</button>
                 </div>
                 <div id="minigame-container"></div>
             `;
         }
 
         startUpgrader() {
-            if (this.state.inventory.length===0) return alert('Нет предметов');
+            if (this.state.inventory.filter(i=>i.type!=='case'&&i.type!=='capsule').length===0) return alert('Нет предметов для апгрейда');
             if (this.state.balance<10) return alert('Недостаточно $');
             this.state.balance-=10;
-            const item = this.state.inventory[Math.floor(Math.random()*this.state.inventory.length)];
+            const upgradable = this.state.inventory.filter(i=>i.type!=='case'&&i.type!=='capsule');
+            const item = upgradable[Math.floor(Math.random()*upgradable.length)];
             const roll = Math.random();
             if (roll<0.7) {
                 item.wear = Math.max(0.0000000001, item.wear-0.05);
@@ -721,7 +733,7 @@
             if (result==='win') {
                 this.state.balance+=5;
                 this.state.stats.tttWins = (this.state.stats.tttWins||0)+1;
-                q.progress++;
+                if (q) q.progress++;
                 alert('Победа! +5$');
             } else if (result==='draw') {
                 this.state.balance+=1; alert('Ничья! +1$');
@@ -733,7 +745,7 @@
 
         prepareProfileView() {
             const view = document.getElementById('view-profile');
-            const t = (k)=>this.translations[this.locale][k]||k;
+            const t = this.t.bind(this);
             view.innerHTML = `
                 <h2>${t('profile_title')}</h2>
                 <div class="profile-stat"><span>${t('cases_opened')}:</span><span id="stat-cases">${this.state.stats.casesOpened}</span></div>
@@ -742,6 +754,8 @@
                 <div class="profile-stat"><span>Побед в крестиках-ноликах:</span><span>${this.state.stats.tttWins||0}</span></div>
                 <h3>Достижения</h3>
                 <div id="achievements-list"></div>
+                <button onclick="Game.exportSave()">${t('backup')}</button>
+                <button onclick="Game.importSavePrompt()">${t('import')}</button>
                 <button class="danger" onclick="Game.resetProgress()">${t('reset')}</button>
             `;
             this.renderAchievements();
@@ -762,14 +776,14 @@
             if (this.state.stats.casesOpened>=1) a.find(x=>x.id==='first_case').unlocked=true;
             if (this.state.stats.goldItems>=1) a.find(x=>x.id==='gold_found').unlocked=true;
             if (this.state.stats.itemsCollected>=10) a.find(x=>x.id==='collector_10').unlocked=true;
-            if (this.state.inventory.some(i=>i.rarity==='Gold'&&i.type!=='knife')) a.find(x=>x.id==='upgrade_master').unlocked=true;
+            if (this.state.inventory.some(i=>i.rarity==='Gold'&&i.type!=='knife'&&i.type!=='gloves')) a.find(x=>x.id==='upgrade_master').unlocked=true;
             if ((this.state.stats.tttWins||0)>=10) a.find(x=>x.id==='ttt_master').unlocked=true;
             this.saveState();
         }
 
         prepareQuestsView() {
             const view = document.getElementById('view-quests');
-            const t = (k)=>this.translations[this.locale][k]||k;
+            const t = this.t.bind(this);
             view.innerHTML = `<h2>${t('quest_daily')}</h2><div id="quests-list"></div>`;
             this.renderQuests();
         }
@@ -799,7 +813,7 @@
 
         prepareShopView() {
             const view = document.getElementById('view-shop');
-            const t = (k)=>this.translations[this.locale][k]||k;
+            const t = this.t.bind(this);
             view.innerHTML = `<h2>${t('shop_title')}</h2><div id="shop-items"></div>`;
             this.renderShop();
         }
@@ -807,12 +821,12 @@
         renderShop() {
             const container = document.getElementById('shop-items');
             if (!container) return;
-            const t = (k)=>this.translations[this.locale][k]||k;
+            const t = this.t.bind(this);
             const offers = [
-                { name:'Arms Deal Case', collection:'Arms Deal', type:'weapon', price:20 },
-                { name:'Chroma Case', collection:'Chroma', type:'weapon', price:20 },
-                { name:'Sticker Capsule', collection:'Sticker Capsule', type:'sticker', price:10 },
-                { name:'Agent Pack', collection:'Agent Pack', type:'agent', price:15 }
+                { name:'Arms Deal Case', collection:'Arms Deal', type:'case', price:20 },
+                { name:'Chroma Case', collection:'Chroma', type:'case', price:20 },
+                { name:'Sticker Capsule', collection:'Sticker Capsule', type:'capsule', price:10 },
+                { name:'Agent Pack', collection:'Agent Pack', type:'capsule', price:15 }
             ];
             container.innerHTML = offers.map(o=>`
                 <div style="margin:5px 0;background:var(--panel);padding:10px;border-radius:5px;display:flex;justify-content:space-between;">
@@ -820,15 +834,56 @@
                     <button onclick="Game.buyCase('${o.collection}','${o.type}',${o.price})">${t('buy')}</button>
                 </div>
             `).join('');
+            // Добавляем кнопку Trade Up
+            container.innerHTML += `
+                <hr>
+                <button onclick="Game.tradeUp()">${t('trade_up')}</button>
+            `;
         }
 
         buyCase(collection, type, price) {
             if (this.state.balance<price) return alert('Недостаточно $');
             this.state.balance-=price;
-            this.state.cases.push({collection, type});
+            const newCase = {
+                id: Date.now()+Math.random().toString(36),
+                type: type, // 'case' или 'capsule'
+                collection: collection,
+                name: `${collection} ${type==='case'?'Case':'Capsule'}`,
+                rarity: 'Usual', // для кейсов редкость не важна, но пусть будет
+                wear: 0, wearCategory: '', pattern: 0, stickers: [], isFavorite: false
+            };
+            this.state.inventory.push(newCase);
             this.saveState();
             this.updateBalanceDisplay();
             this.renderInventory();
+        }
+
+        tradeUp() {
+            const t = this.t.bind(this);
+            const rarityOrder = this.rarities;
+            const itemsByRarity = {};
+            this.state.inventory.forEach(i=>{
+                if (i.type==='case'||i.type==='capsule') return;
+                if (!itemsByRarity[i.rarity]) itemsByRarity[i.rarity]=[];
+                itemsByRarity[i.rarity].push(i);
+            });
+            let selectedRarity = null;
+            for (let r of rarityOrder) {
+                if (itemsByRarity[r] && itemsByRarity[r].length>=10) {
+                    selectedRarity = r; break;
+                }
+            }
+            if (!selectedRarity) return alert('Нет 10 предметов одной редкости');
+            const nextRarity = rarityOrder[rarityOrder.indexOf(selectedRarity)+1];
+            if (!nextRarity) return alert('Нельзя улучшить Gold');
+            const sacrifice = itemsByRarity[selectedRarity].slice(0,10);
+            sacrifice.forEach(i=> this.state.inventory = this.state.inventory.filter(x=>x.id!==i.id));
+            const newItem = this.generateItem('Arms Deal', 'weapon');
+            newItem.rarity = nextRarity;
+            this.addItem(newItem);
+            this.saveState();
+            this.renderInventory();
+            alert(`Получен предмет редкости ${nextRarity}!`);
         }
 
         regenerateEnergy() {
@@ -907,12 +962,11 @@
         }
 
         updateUILanguage() {
-            const t = (k)=>this.translations[this.locale][k]||k;
+            const t = this.t.bind(this);
             document.querySelectorAll('nav button').forEach(b=>{
                 const view = b.dataset.view;
                 b.textContent = t(view);
             });
-            document.getElementById('case-modal-title').textContent = t('openCase')||'Открытие кейса';
             this.renderInventory();
             this.renderProfile();
             this.renderQuests();
