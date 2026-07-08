@@ -54,7 +54,7 @@
         .item-card[data-rarity="Unique"]{border-left-color:var(--unique)}
         .item-card[data-rarity="Relic"]{border-left-color:var(--relic)}
         .item-card[data-rarity="Gold"]{border-left-color:var(--gold)}
-        .item-emoji{font-size:2.5rem}
+        .item-img{width:80px;height:60px;object-fit:contain;margin-bottom:5px}
         .modal{
             position:fixed;top:0;left:0;width:100%;height:100%;
             background:rgba(0,0,0,0.8);display:none;justify-content:center;
@@ -69,6 +69,7 @@
         button{
             background:var(--button);color:var(--text);border:none;padding:10px 15px;
             border-radius:4px;cursor:pointer;transition:0.2s;font-weight:bold;font-size:0.9rem;
+            margin:4px;
         }
         button:hover{background:var(--button-hover)}
         button.accent{background:var(--accent);color:#000}
@@ -114,34 +115,36 @@
             this.locale = this.state.settings.language || 'ru';
             this.translations = {
                 ru: {
-                    inventory: '🎒 Инвентарь', minigames: '🎮 Мини-игры', profile: '👤 Профиль',
-                    quests: '📋 Квесты', shop: '🛒 Магазин', backup: '💾 Бэкап', import: '📥 Импорт',
-                    profile_title: 'Профиль', cases_opened: 'Кейсов открыто', items_collected: 'Предметов собрано',
-                    gold_items: 'Золотых предметов', reset: 'Сбросить прогресс',
-                    quest_daily: 'Ежедневные квесты', shop_title: 'Магазин', buy: 'Купить', price: 'Цена',
-                    trade_up: '🔃 Trade Up (10 предметов)', open: 'Открыть', odds: 'Шансы',
-                    wear: 'Износ', rarity: 'Редкость', collection: 'Коллекция', type: 'Тип',
-                    pattern: 'Паттерн', stickers: 'Стикеры', apply_sticker: 'Наклеить',
-                    sell: 'Продать', favorite: 'Избранное', close: 'Закрыть',
-                    filter_all: 'Все', filter_weapon: 'Оружие', filter_knife: 'Ножи',
-                    filter_gloves: 'Перчатки', filter_charm: 'Брелоки', filter_sticker: 'Стикеры',
-                    filter_agent: 'Агенты', filter_case: 'Кейсы/Капсулы',
-                    no_items: 'Нет предметов', continue: 'Продолжить'
+                    inventory:'🎒 Инвентарь',minigames:'🎮 Мини-игры',profile:'👤 Профиль',
+                    quests:'📋 Квесты',shop:'🛒 Магазин',backup:'💾 Бэкап',import:'📥 Импорт',
+                    profile_title:'Профиль',cases_opened:'Кейсов открыто',items_collected:'Предметов собрано',
+                    gold_items:'Золотых предметов',reset:'Сбросить прогресс',
+                    quest_daily:'Ежедневные квесты',shop_title:'Магазин',buy:'Купить',price:'Цена',
+                    trade_up:'🔃 Trade Up (10 предметов)',open:'Открыть',odds:'Шансы',
+                    wear:'Износ',rarity:'Редкость',collection:'Коллекция',type:'Тип',
+                    pattern:'Паттерн',stickers:'Стикеры',apply_sticker:'Наклеить',
+                    sell:'Продать',favorite:'Избранное',close:'Закрыть',
+                    filter_all:'Все',filter_weapon:'Оружие',filter_knife:'Ножи',
+                    filter_gloves:'Перчатки',filter_charm:'Брелоки',filter_sticker:'Стикеры',
+                    filter_agent:'Агенты',filter_case:'Кейсы/Капсулы',
+                    no_items:'Нет предметов',continue:'Продолжить',no_stickers:'У вас нет стикеров',
+                    back:'Назад'
                 },
                 en: {
-                    inventory: '🎒 Inventory', minigames: '🎮 Mini-games', profile: '👤 Profile',
-                    quests: '📋 Quests', shop: '🛒 Shop', backup: '💾 Backup', import: '📥 Import',
-                    profile_title: 'Profile', cases_opened: 'Cases opened', items_collected: 'Items collected',
-                    gold_items: 'Gold items', reset: 'Reset progress',
-                    quest_daily: 'Daily quests', shop_title: 'Shop', buy: 'Buy', price: 'Price',
-                    trade_up: '🔃 Trade Up (10 items)', open: 'Open', odds: 'Odds',
-                    wear: 'Wear', rarity: 'Rarity', collection: 'Collection', type: 'Type',
-                    pattern: 'Pattern', stickers: 'Stickers', apply_sticker: 'Apply',
-                    sell: 'Sell', favorite: 'Favorite', close: 'Close',
-                    filter_all: 'All', filter_weapon: 'Weapons', filter_knife: 'Knives',
-                    filter_gloves: 'Gloves', filter_charm: 'Charms', filter_sticker: 'Stickers',
-                    filter_agent: 'Agents', filter_case: 'Cases/Capsules',
-                    no_items: 'No items', continue: 'Continue'
+                    inventory:'🎒 Inventory',minigames:'🎮 Mini-games',profile:'👤 Profile',
+                    quests:'📋 Quests',shop:'🛒 Shop',backup:'💾 Backup',import:'📥 Import',
+                    profile_title:'Profile',cases_opened:'Cases opened',items_collected:'Items collected',
+                    gold_items:'Gold items',reset:'Reset progress',
+                    quest_daily:'Daily quests',shop_title:'Shop',buy:'Buy',price:'Price',
+                    trade_up:'🔃 Trade Up (10 items)',open:'Open',odds:'Odds',
+                    wear:'Wear',rarity:'Rarity',collection:'Collection',type:'Type',
+                    pattern:'Pattern',stickers:'Stickers',apply_sticker:'Apply',
+                    sell:'Sell',favorite:'Favorite',close:'Close',
+                    filter_all:'All',filter_weapon:'Weapons',filter_knife:'Knives',
+                    filter_gloves:'Gloves',filter_charm:'Charms',filter_sticker:'Stickers',
+                    filter_agent:'Agents',filter_case:'Cases/Capsules',
+                    no_items:'No items',continue:'Continue',no_stickers:'No stickers available',
+                    back:'Back'
                 }
             };
             this.initData();
@@ -158,65 +161,55 @@
 
         defaultState() {
             return {
-                balance: 100,
-                energy: 50, maxEnergy: 50,
-                lastEnergyTime: Date.now(),
-                inventory: [],
-                stats: { casesOpened: 0, itemsCollected: 0, goldItems: 0, upgrades: 0, tttWins: 0 },
-                quests: {
-                    daily: [
-                        { id: 'open3', desc: 'Открыть 3 кейса', progress: 0, goal: 3, reward: 30, completed: false },
-                        { id: 'ttt2', desc: 'Выиграть 2 раза в крестики-нолики', progress: 0, goal: 2, reward: 20, completed: false },
-                        { id: 'upgrade5', desc: 'Улучшить предметы 5 раз', progress: 0, goal: 5, reward: 25, completed: false }
-                    ],
-                    lastDailyReset: new Date().toDateString()
-                },
-                achievements: [
-                    { id: 'first_case', desc: 'Открыть первый кейс', unlocked: false },
-                    { id: 'gold_found', desc: 'Найти золотой предмет', unlocked: false },
-                    { id: 'collector_10', desc: 'Собрать 10 предметов', unlocked: false },
-                    { id: 'upgrade_master', desc: 'Улучшить предмет до Gold', unlocked: false },
-                    { id: 'ttt_master', desc: 'Выиграть 10 партий в крестики-нолики', unlocked: false }
+                balance:100,energy:50,maxEnergy:50,lastEnergyTime:Date.now(),
+                inventory:[],stats:{casesOpened:0,itemsCollected:0,goldItems:0,upgrades:0,tttWins:0},
+                quests:{daily:[
+                    {id:'open3',desc:'Открыть 3 кейса',progress:0,goal:3,reward:30,completed:false},
+                    {id:'ttt2',desc:'Выиграть 2 раза в крестики-нолики',progress:0,goal:2,reward:20,completed:false},
+                    {id:'upgrade5',desc:'Улучшить предметы 5 раз',progress:0,goal:5,reward:25,completed:false}
+                ],lastDailyReset:new Date().toDateString()},
+                achievements:[
+                    {id:'first_case',desc:'Открыть первый кейс',unlocked:false},
+                    {id:'gold_found',desc:'Найти золотой предмет',unlocked:false},
+                    {id:'collector_10',desc:'Собрать 10 предметов',unlocked:false},
+                    {id:'upgrade_master',desc:'Улучшить предмет до Gold',unlocked:false},
+                    {id:'ttt_master',desc:'Выиграть 10 партий в крестики-нолики',unlocked:false}
                 ],
-                settings: { language: 'ru' },
-                lastDailyBonus: null
+                settings:{language:'ru'},lastDailyBonus:null
             };
         }
 
-        saveState() {
-            this.state.lastEnergyTime = Date.now();
-            localStorage.setItem('arsenalzone_save', JSON.stringify(this.state));
-        }
+        saveState() { this.state.lastEnergyTime=Date.now(); localStorage.setItem('arsenalzone_save',JSON.stringify(this.state)); }
 
         initData() {
             this.rarities = ['Usual','Frequent','Conveyor-type','Rare','Unique','Relic','Gold'];
-            this.rarityColors = {
-                'Usual':'#6b6b6b','Frequent':'#a0a0a0','Conveyor-type':'#8845ff',
-                'Rare':'#4b69ff','Unique':'#d32ce6','Relic':'#37d63c','Gold':'#ffd700'
-            };
+            this.rarityColors = {'Usual':'#6b6b6b','Frequent':'#a0a0a0','Conveyor-type':'#8845ff','Rare':'#4b69ff','Unique':'#d32ce6','Relic':'#37d63c','Gold':'#ffd700'};
             this.collections = {
-                'Arms Deal': { weapons: ['AK-47','M4A4','AWP','Desert Eagle'], knife: 'M9 Bayonet', gloves: 'Titan Gloves', charm: 'Dog Tag' },
-                'Chroma': { weapons: ['M4A1-S','USP-S','Glock-18','P250'], knife: 'Butterfly Knife', gloves: 'Polymer Gloves', charm: 'Lucky Cat' },
-                'Sticker Capsule': { stickers: ['Furia','NaVi','G2','Spirit'] },
-                'Agent Pack': { agents: ['SAS','FBI','SWAT','GIGN'] }
+                'Arms Deal':{weapons:['AK-47','M4A4','AWP','Desert Eagle'],knife:'M9 Bayonet',gloves:'Titan Gloves',charm:'Dog Tag'},
+                'Chroma':{weapons:['M4A1-S','USP-S','Glock-18','P250'],knife:'Butterfly Knife',gloves:'Polymer Gloves',charm:'Lucky Cat'},
+                'Sticker Capsule':{stickers:['Furia','NaVi','G2','Spirit']},
+                'Agent Pack':{agents:['SAS','FBI','SWAT','GIGN']}
             };
-            this.weaponEmojis = {'AK-47':'🔫','M4A4':'🔫','AWP':'🎯','Desert Eagle':'🔫','M4A1-S':'🔫','USP-S':'🔫','Glock-18':'🔫','P250':'🔫'};
-            this.stickerEmojis = {'Furia':'🐆','NaVi':'🌊','G2':'🐺','Spirit':'🐉'};
-            this.agentEmojis = {'SAS':'👮','FBI':'🕵️','SWAT':'👮‍♂️','GIGN':'👮‍♀️'};
-            this.knifeEmojis = {'M9 Bayonet':'🔪','Butterfly Knife':'🦋'};
-            this.glovesEmojis = {'Titan Gloves':'🧤','Polymer Gloves':'🧤'};
-            this.charmEmojis = {'Dog Tag':'🏷️','Lucky Cat':'🐱'};
+            this.typeOrder = ['case','capsule','knife','gloves','weapon','sticker','charm','agent'];
         }
 
-        getItemEmoji(item) {
-            if (item.type === 'weapon') return this.weaponEmojis[item.name] || '🔫';
-            if (item.type === 'knife') return this.knifeEmojis[item.name] || '🔪';
-            if (item.type === 'gloves') return this.glovesEmojis[item.name] || '🧤';
-            if (item.type === 'charm') return this.charmEmojis[item.name] || '🏷️';
-            if (item.type === 'sticker') return this.stickerEmojis[item.name] || '🏷️';
-            if (item.type === 'agent') return this.agentEmojis[item.name] || '👤';
-            if (item.type === 'case' || item.type === 'capsule') return '📦';
-            return '❓';
+        generateItemImage(item) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 200; canvas.height = 150;
+            const ctx = canvas.getContext('2d');
+            const rarityColor = this.rarityColors[item.rarity] || '#888';
+            const grad = ctx.createLinearGradient(0,0,200,150);
+            grad.addColorStop(0, rarityColor);
+            grad.addColorStop(1, '#111');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0,0,200,150);
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 24px "Segoe UI"';
+            ctx.textAlign = 'center';
+            ctx.fillText(item.name,100,75);
+            ctx.font = '14px "Segoe UI"';
+            ctx.fillText(item.rarity,100,110);
+            return canvas.toDataURL();
         }
 
         generateItem(collectionName, dropType) {
@@ -225,59 +218,55 @@
             let itemType = dropType;
             let itemName;
             if (!itemType) {
-                if (col.weapons) itemType = 'weapon';
-                else if (col.stickers) itemType = 'sticker';
-                else if (col.agents) itemType = 'agent';
+                if (col.weapons) itemType='weapon';
+                else if (col.stickers) itemType='sticker';
+                else if (col.agents) itemType='agent';
             }
             switch(itemType) {
-                case 'weapon': itemName = col.weapons[Math.floor(Math.random()*col.weapons.length)]; break;
-                case 'knife': itemName = col.knife || 'M9 Bayonet'; break;
-                case 'gloves': itemName = col.gloves || 'Titan Gloves'; break;
-                case 'charm': itemName = col.charm || 'Dog Tag'; break;
-                case 'sticker': itemName = col.stickers[Math.floor(Math.random()*col.stickers.length)]; break;
-                case 'agent': itemName = col.agents[Math.floor(Math.random()*col.agents.length)]; break;
+                case 'weapon': itemName=col.weapons[Math.floor(Math.random()*col.weapons.length)]; break;
+                case 'knife': itemName=col.knife||'M9 Bayonet'; break;
+                case 'gloves': itemName=col.gloves||'Titan Gloves'; break;
+                case 'charm': itemName=col.charm||'Dog Tag'; break;
+                case 'sticker': itemName=col.stickers[Math.floor(Math.random()*col.stickers.length)]; break;
+                case 'agent': itemName=col.agents[Math.floor(Math.random()*col.agents.length)]; break;
                 default: return null;
             }
             if (!itemName) return null;
 
             const rand = Math.random()*100;
-            let rarity = 'Usual';
-            if (rand < 79.92) rarity = 'Usual';
-            else if (rand < 95.68) rarity = 'Frequent';
-            else if (rand < 99.2) rarity = 'Conveyor-type';
-            else if (rand < 99.84) rarity = 'Rare';
-            else if (rand < 99.98) rarity = 'Unique';
-            else if (rand < 99.999) rarity = 'Relic';
-            else rarity = 'Gold';
-            if (itemType === 'knife' || itemType === 'gloves') rarity = 'Gold';
+            let rarity='Usual';
+            if (rand<79.92) rarity='Usual';
+            else if (rand<95.68) rarity='Frequent';
+            else if (rand<99.2) rarity='Conveyor-type';
+            else if (rand<99.84) rarity='Rare';
+            else if (rand<99.98) rarity='Unique';
+            else if (rand<99.999) rarity='Relic';
+            else rarity='Gold';
+            if (itemType==='knife'||itemType==='gloves') rarity='Gold';
 
-            const wear = Math.random()*0.9999999998+0.0000000001;
-            let wearCat = '';
-            if (wear < 0.2000000001) wearCat = 'Battle-Scarred';
-            else if (wear < 0.4500000001) wearCat = 'Well-Worn';
-            else if (wear < 0.8000000001) wearCat = 'Field-Tested';
-            else wearCat = 'Minimal Wear';
+            let wear=0,wearCat='',pattern=0;
+            if (itemType!=='agent' && itemType!=='sticker' && itemType!=='charm') {
+                wear = Math.random()*0.9999999998+0.0000000001;
+                if (wear<0.2000000001) wearCat='Battle-Scarred';
+                else if (wear<0.4500000001) wearCat='Well-Worn';
+                else if (wear<0.8000000001) wearCat='Field-Tested';
+                else wearCat='Minimal Wear';
+                pattern = Math.floor(Math.random()*10000);
+            }
 
-            const pattern = Math.floor(Math.random()*10000);
-
-            return {
+            const item = {
                 id: Date.now()+Math.random().toString(36),
-                type: itemType,
-                collection: collectionName,
-                name: itemName,
-                rarity,
-                wear,
-                wearCategory: wearCat,
-                pattern,
-                stickers: [],
-                isFavorite: false
+                type: itemType, collection: collectionName, name: itemName, rarity,
+                wear, wearCategory: wearCat, pattern, stickers: [], isFavorite: false
             };
+            item.image = this.generateItemImage(item);
+            return item;
         }
 
         addItem(item) {
             this.state.inventory.push(item);
             this.state.stats.itemsCollected++;
-            if (item.rarity === 'Gold') this.state.stats.goldItems++;
+            if (item.rarity==='Gold') this.state.stats.goldItems++;
             this.checkAchievements();
             this.saveState();
         }
@@ -289,8 +278,7 @@
             this.state.stats.casesOpened++;
             this.state.quests.daily.find(q=>q.id==='open3').progress++;
             this.saveState();
-            const dropType = caseItem.dropType || 'weapon';
-            this.animateCaseOpen(caseItem.collection, dropType);
+            this.animateCaseOpen(caseItem.collection, caseItem.dropType);
             this.renderInventory();
         }
 
@@ -300,21 +288,31 @@
             const canvas = document.getElementById('case-canvas');
             const ctx = canvas.getContext('2d');
             const items = [];
-            for (let i=0;i<40;i++) items.push(this.generateItem(collectionName, dropType));
-
-            let goldIndex = -1;
-            if (Math.random() < 0.1) {
+            // Генерируем 40 предметов для ленты
+            for (let i=0;i<40;i++) {
+                const it = this.generateItem(collectionName, dropType);
+                it.imageObj = new Image();
+                it.imageObj.src = it.image;
+                items.push(it);
+            }
+            // Определяем индекс остановки
+            const goldRoll = Math.random()*100;
+            let stopIdx, wonItem;
+            if (goldRoll < 0.001) { // шанс золота
                 const goldType = (dropType==='weapon') ? (Math.random()<0.5?'knife':'gloves') : dropType;
                 const goldItem = this.generateItem(collectionName, goldType);
-                if (goldItem) {
-                    goldItem.rarity = 'Gold';
-                    goldIndex = Math.floor(Math.random()*items.length);
-                    items[goldIndex] = goldItem;
-                }
+                goldItem.rarity = 'Gold';
+                goldItem.image = this.generateItemImage(goldItem);
+                goldItem.imageObj = new Image();
+                goldItem.imageObj.src = goldItem.image;
+                // Помещаем золотой предмет на случайный индекс ленты
+                stopIdx = Math.floor(Math.random()*items.length);
+                items[stopIdx] = goldItem;
+                wonItem = goldItem;
+            } else {
+                stopIdx = 20 + Math.floor(Math.random()*5);
+                wonItem = items[stopIdx];
             }
-            const stopIndex = goldIndex !== -1 ? goldIndex : 20 + Math.floor(Math.random()*5);
-            const won = items[stopIndex];
-            if (!won) { modal.classList.remove('active'); return; }
 
             const itemWidth = 80;
             const totalWidth = items.length * itemWidth;
@@ -325,14 +323,16 @@
             const draw = (now) => {
                 const elapsed = now - startTime;
                 if (elapsed >= duration) {
+                    // Финальный кадр: плавно останавливаемся на stopIdx
+                    const finalOffset = stopIdx * itemWidth - centerX;
                     ctx.clearRect(0,0,canvas.width,canvas.height);
-                    this.drawItems(ctx, items, stopIndex * itemWidth - centerX, itemWidth);
+                    this.drawItems(ctx, items, finalOffset, itemWidth, true);
                     this.drawCenterLine(ctx, canvas);
                     setTimeout(() => {
                         modal.classList.remove('active');
-                        this.addItem(won);
+                        this.addItem(wonItem);
                         this.sound.play('case_open');
-                        this.showItemDetail(won);
+                        this.showItemDetail(wonItem);
                         this.checkQuests();
                         this.renderInventory();
                     }, 500);
@@ -340,28 +340,37 @@
                 }
                 const progress = elapsed / duration;
                 const easeOutCubic = 1 - Math.pow(1 - progress, 3);
-                const totalDistance = totalWidth * 3 + (stopIndex * itemWidth - centerX);
-                const offset = totalDistance * easeOutCubic;
+                // Проезжаем несколько полных циклов + до нужного индекса
+                const totalCycles = 3;
+                const targetDistance = totalCycles * totalWidth + (stopIdx * itemWidth - centerX);
+                const currentOffset = targetDistance * easeOutCubic;
+                const displayOffset = currentOffset % totalWidth;
                 ctx.clearRect(0,0,canvas.width,canvas.height);
-                this.drawItems(ctx, items, offset % totalWidth, itemWidth);
+                this.drawItems(ctx, items, displayOffset, itemWidth, false);
                 this.drawCenterLine(ctx, canvas);
                 requestAnimationFrame(draw);
             };
             requestAnimationFrame(draw);
         }
 
-        drawItems(ctx, items, offset, itemWidth) {
+        drawItems(ctx, items, offset, itemWidth, finalFrame) {
             const canvas = ctx.canvas;
             const startX = -offset;
             for (let i=0; i<items.length*2; i++) {
                 const idx = i % items.length;
                 const x = startX + i * itemWidth;
                 if (x > -itemWidth && x < canvas.width + itemWidth) {
-                    ctx.fillStyle = this.rarityColors[items[idx].rarity] || '#888';
-                    ctx.fillRect(x, 10, itemWidth-2, 100);
-                    ctx.fillStyle = '#fff';
-                    ctx.font = '10px sans-serif';
-                    ctx.fillText(items[idx].name, x+4, 50);
+                    const it = items[idx];
+                    if (it.imageObj && it.imageObj.complete) {
+                        ctx.drawImage(it.imageObj, x+2, 12, itemWidth-4, 96);
+                    } else {
+                        // fallback
+                        ctx.fillStyle = this.rarityColors[it.rarity] || '#888';
+                        ctx.fillRect(x, 10, itemWidth-2, 100);
+                        ctx.fillStyle = '#fff';
+                        ctx.font = '10px sans-serif';
+                        ctx.fillText(it.name, x+4, 50);
+                    }
                 }
             }
         }
@@ -376,9 +385,7 @@
             ctx.stroke();
         }
 
-        closeModal() {
-            document.querySelectorAll('.modal').forEach(m=>m.classList.remove('active'));
-        }
+        closeModal() { document.querySelectorAll('.modal').forEach(m=>m.classList.remove('active')); }
 
         initSound() {
             const AudioContext = window.AudioContext||window.webkitAudioContext;
@@ -386,8 +393,15 @@
             return { play: (type)=>{
                 if (type==='case_open') {
                     const osc = ctx.createOscillator();
-                    osc.frequency.value=800; osc.connect(ctx.destination);
-                    osc.start(); osc.stop(ctx.currentTime+0.1);
+                    const gain = ctx.createGain();
+                    osc.connect(gain); gain.connect(ctx.destination);
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.15);
+                    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                    osc.start(ctx.currentTime);
+                    osc.stop(ctx.currentTime + 0.3);
                 }
             }};
         }
@@ -439,6 +453,20 @@
             else if (name==='minigames') this.renderMinigames();
         }
 
+        sortInventory(items) {
+            return items.sort((a,b) => {
+                if (a.isFavorite !== b.isFavorite) return a.isFavorite ? -1 : 1;
+                const typeA = this.typeOrder.indexOf(a.type);
+                const typeB = this.typeOrder.indexOf(b.type);
+                if (typeA !== typeB) return typeA - typeB;
+                const rarityA = this.rarities.indexOf(a.rarity);
+                const rarityB = this.rarities.indexOf(b.rarity);
+                if (rarityA !== rarityB) return rarityB - rarityA;
+                if (a.name !== b.name) return a.name.localeCompare(b.name);
+                return (a.wear || 0) - (b.wear || 0);
+            });
+        }
+
         renderInventory() {
             const container = document.getElementById('view-inventory');
             if (!container) return;
@@ -471,7 +499,6 @@
             if (!grid) return;
             const typeFilter = document.getElementById('filter-type')?.value || 'all';
             const rarityFilter = document.getElementById('filter-rarity')?.value || 'all';
-            grid.innerHTML = '';
             let items = [...this.state.inventory];
             if (typeFilter !== 'all') {
                 items = items.filter(i=>{
@@ -480,6 +507,8 @@
                 });
             }
             if (rarityFilter !== 'all') items = items.filter(i=>i.rarity===rarityFilter);
+            items = this.sortInventory(items);
+            grid.innerHTML = '';
             if (items.length===0) {
                 grid.innerHTML = `<p style="grid-column:1/-1;text-align:center">${this.t('no_items')}</p>`;
                 return;
@@ -489,7 +518,7 @@
                 card.className='item-card';
                 card.dataset.rarity=item.rarity;
                 card.innerHTML = `
-                    <span class="item-emoji">${this.getItemEmoji(item)}</span>
+                    <img src="${item.image}" class="item-img" alt="${item.name}">
                     <span class="item-name">${item.name}</span>
                     <span class="item-wear">${item.type==='case'||item.type==='capsule'?item.collection:item.wearCategory+' '+item.pattern}</span>
                 `;
@@ -501,11 +530,8 @@
         t(key) { return this.translations[this.locale][key]||key; }
 
         onItemClick(item) {
-            if (item.type==='case' || item.type==='capsule') {
-                this.showCaseDetail(item);
-            } else {
-                this.showItemDetail(item);
-            }
+            if (item.type==='case' || item.type==='capsule') this.showCaseDetail(item);
+            else this.showItemDetail(item);
         }
 
         showCaseDetail(caseItem) {
@@ -528,15 +554,7 @@
         }
 
         getOdds() {
-            return {
-                'Usual': 79.92,
-                'Frequent': 15.76,
-                'Conveyor-type': 3.52,
-                'Rare': 0.64,
-                'Unique': 0.14,
-                'Relic': 0.019,
-                'Gold': 0.001
-            };
+            return {Usual:79.92,Frequent:15.76,'Conveyor-type':3.52,Rare:0.64,Unique:0.14,Relic:0.019,Gold:0.001};
         }
 
         openCaseById(id) {
@@ -551,12 +569,13 @@
             const modal = document.getElementById('item-detail-modal');
             modal.classList.add('active');
             const content = document.getElementById('item-detail-content');
+            const showWear = item.type!=='agent' && item.type!=='sticker' && item.type!=='charm';
             content.innerHTML = `
+                <div style="text-align:center"><img src="${item.image}" style="width:200px;height:150px;object-fit:contain;border-radius:8px;margin-bottom:10px"></div>
                 <h3>${item.name} <span style="color:${this.rarityColors[item.rarity]}">${item.rarity}</span></h3>
                 <p>${t('type')}: ${item.type} | ${t('collection')}: ${item.collection}</p>
-                <p>${t('pattern')}: ${String(item.pattern).padStart(4,'0')}</p>
-                <p>${t('wear')}: ${item.wearCategory} (${item.wear.toFixed(9)})</p>
-                <p>${t('stickers')}: ${item.stickers.map(s=>`<span>${this.stickerEmojis[s]||'🏷️'}</span>`).join(' ')||'Нет'}</p>
+                ${showWear ? `<p>${t('pattern')}: ${String(item.pattern).padStart(4,'0')}</p><p>${t('wear')}: ${item.wearCategory} (${item.wear.toFixed(9)})</p>` : ''}
+                <p>${t('stickers')}: ${item.stickers.map(s=>`<span>🏷️</span>`).join(' ')||'Нет'}</p>
                 <button onclick="Game.sellItem('${item.id}')">${t('sell')} ($${this.getItemPrice(item).toFixed(2)})</button>
                 ${(item.type==='weapon'||item.type==='knife'||item.type==='gloves')?`<button onclick="Game.applyStickerModal('${item.id}')">${t('apply_sticker')}</button>`:''}
                 <button onclick="Game.toggleFavorite('${item.id}')">${item.isFavorite?'💔':'❤️'}</button>
@@ -565,8 +584,8 @@
         }
 
         getItemPrice(item) {
-            const base = {Usual:0.5, Frequent:2, 'Conveyor-type':5, Rare:15, Unique:50, Relic:200, Gold:1000}[item.rarity]||0.5;
-            const wearFactor = 1 - item.wear*0.5;
+            const base = {Usual:0.5,Frequent:2,'Conveyor-type':5,Rare:15,Unique:50,Relic:200,Gold:1000}[item.rarity]||0.5;
+            const wearFactor = 1 - (item.wear||0)*0.5;
             return base * wearFactor;
         }
 
@@ -592,15 +611,18 @@
             const item = this.state.inventory.find(i=>i.id===itemId);
             if (!item || item.stickers.length>=5) return;
             const stickers = this.state.inventory.filter(i=>i.type==='sticker');
-            if (stickers.length===0) { alert('Нет стикеров'); return; }
             const t = this.t.bind(this);
             const modal = document.getElementById('item-detail-modal');
             modal.classList.add('active');
             const content = document.getElementById('item-detail-content');
+            if (stickers.length===0) {
+                content.innerHTML = `<p>${t('no_stickers')}</p><button onclick="Game.closeModal()">${t('back')}</button>`;
+                return;
+            }
             content.innerHTML = '<h3>Выберите стикер</h3>';
             stickers.forEach(s=>{
                 const btn = document.createElement('button');
-                btn.textContent = `${this.getItemEmoji(s)} ${s.name}`;
+                btn.textContent = `${s.name}`;
                 btn.onclick = ()=>{
                     item.stickers.push(s.name);
                     this.state.inventory = this.state.inventory.filter(i=>i.id!==s.id);
@@ -609,7 +631,7 @@
                 };
                 content.appendChild(btn);
             });
-            content.innerHTML += '<button onclick="Game.closeModal()">Отмена</button>';
+            content.innerHTML += `<br><button onclick="Game.closeModal()">${t('back')}</button>`;
         }
 
         prepareMinigamesView() {
@@ -641,6 +663,7 @@
                 const curIdx = this.rarities.indexOf(item.rarity);
                 if (curIdx<this.rarities.length-1) {
                     item.rarity = this.rarities[curIdx+1];
+                    item.image = this.generateItemImage(item);
                     alert('Редкость повышена!');
                 } else alert('Максимальная редкость.');
             } else {
@@ -841,6 +864,7 @@
                 rarity: 'Usual',
                 wear: 0, wearCategory: '', pattern: 0, stickers: [], isFavorite: false
             };
+            newCase.image = this.generateItemImage(newCase);
             this.state.inventory.push(newCase);
             this.saveState();
             this.updateBalanceDisplay();
@@ -978,9 +1002,7 @@
         return wins.some(w=>w.every(i=>board[i]===player));
     }
 
-    window.addEventListener('load', ()=>{
-        window.Game = new ArsenalZone();
-    });
+    window.addEventListener('load', ()=>{ window.Game = new ArsenalZone(); });
     </script>
 </body>
 </html>
