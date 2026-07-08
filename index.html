@@ -95,7 +95,6 @@
         <button data-view="shop">🛒 Магазин</button>
     </nav>
 
-    <!-- Модальное окно анимации кейса (без кнопки) -->
     <div class="modal" id="case-modal">
         <div class="modal-content">
             <h3 id="case-modal-title">Открытие кейса</h3>
@@ -103,7 +102,6 @@
         </div>
     </div>
 
-    <!-- Модальное окно информации о предмете -->
     <div class="modal" id="item-detail-modal">
         <div class="modal-content" id="item-detail-content"></div>
     </div>
@@ -226,31 +224,18 @@
             if (!col) return null;
             let itemType = dropType;
             let itemName;
-            // Если dropType не задан, определяем по коллекции
             if (!itemType) {
                 if (col.weapons) itemType = 'weapon';
                 else if (col.stickers) itemType = 'sticker';
                 else if (col.agents) itemType = 'agent';
             }
             switch(itemType) {
-                case 'weapon':
-                    itemName = col.weapons[Math.floor(Math.random()*col.weapons.length)];
-                    break;
-                case 'knife':
-                    itemName = col.knife || 'M9 Bayonet';
-                    break;
-                case 'gloves':
-                    itemName = col.gloves || 'Titan Gloves';
-                    break;
-                case 'charm':
-                    itemName = col.charm || 'Dog Tag';
-                    break;
-                case 'sticker':
-                    itemName = col.stickers[Math.floor(Math.random()*col.stickers.length)];
-                    break;
-                case 'agent':
-                    itemName = col.agents[Math.floor(Math.random()*col.agents.length)];
-                    break;
+                case 'weapon': itemName = col.weapons[Math.floor(Math.random()*col.weapons.length)]; break;
+                case 'knife': itemName = col.knife || 'M9 Bayonet'; break;
+                case 'gloves': itemName = col.gloves || 'Titan Gloves'; break;
+                case 'charm': itemName = col.charm || 'Dog Tag'; break;
+                case 'sticker': itemName = col.stickers[Math.floor(Math.random()*col.stickers.length)]; break;
+                case 'agent': itemName = col.agents[Math.floor(Math.random()*col.agents.length)]; break;
                 default: return null;
             }
             if (!itemName) return null;
@@ -304,9 +289,9 @@
             this.state.stats.casesOpened++;
             this.state.quests.daily.find(q=>q.id==='open3').progress++;
             this.saveState();
-            // Используем dropType, сохранённый в кейсе
             const dropType = caseItem.dropType || 'weapon';
             this.animateCaseOpen(caseItem.collection, dropType);
+            this.renderInventory();
         }
 
         animateCaseOpen(collectionName, dropType) {
@@ -315,13 +300,10 @@
             const canvas = document.getElementById('case-canvas');
             const ctx = canvas.getContext('2d');
             const items = [];
-            // Генерируем 40 предметов ленты
-            for (let i=0;i<40;i++) {
-                items.push(this.generateItem(collectionName, dropType));
-            }
-            // Иногда гарантированно вставляем золотой предмет (нож/перчатки)
-            let goldIndex = items.findIndex(it=>it && it.rarity==='Gold');
-            if (goldIndex===-1 && Math.random()<0.1) {
+            for (let i=0;i<40;i++) items.push(this.generateItem(collectionName, dropType));
+
+            let goldIndex = -1;
+            if (Math.random() < 0.1) {
                 const goldType = (dropType==='weapon') ? (Math.random()<0.5?'knife':'gloves') : dropType;
                 const goldItem = this.generateItem(collectionName, goldType);
                 if (goldItem) {
@@ -330,86 +312,70 @@
                     items[goldIndex] = goldItem;
                 }
             }
-            const stopIndex = goldIndex!==-1 ? goldIndex : 20+Math.floor(Math.random()*5);
+            const stopIndex = goldIndex !== -1 ? goldIndex : 20 + Math.floor(Math.random()*5);
             const won = items[stopIndex];
-            if (!won) {
-                modal.classList.remove('active');
-                alert('Ошибка генерации предмета');
-                return;
-            }
-            let offset = 0, speed = 12, stopping = false, animFrame;
+            if (!won) { modal.classList.remove('active'); return; }
+
             const itemWidth = 80;
             const totalWidth = items.length * itemWidth;
-            const step = () => {
-                ctx.clearRect(0,0,canvas.width,canvas.height);
-                const startX = -offset % totalWidth;
-                for (let i=0;i<items.length*2;i++) {
-                    const idx = i%items.length;
-                    const x = startX + i*itemWidth;
-                    if (x > -itemWidth && x < canvas.width+itemWidth && items[idx]) {
-                        ctx.fillStyle = this.rarityColors[items[idx].rarity]||'#888';
-                        ctx.fillRect(x,10,itemWidth-2,100);
-                        ctx.fillStyle='#fff'; ctx.font='10px sans-serif';
-                        ctx.fillText(items[idx].name, x+4, 50);
-                    }
-                }
-                offset += speed;
-                if (!stopping && goldIndex!==-1 && Math.floor(offset/totalWidth)%2===0 && offset%totalWidth > goldIndex*itemWidth-50) {
-                    stopping = true;
-                    const targetOffset = goldIndex*itemWidth + Math.floor(offset/totalWidth)*totalWidth;
-                    const slowdown = () => {
-                        offset += (targetOffset - offset)*0.1;
-                        ctx.clearRect(0,0,canvas.width,canvas.height);
-                        const sx = -offset % totalWidth;
-                        for (let i=0;i<items.length*2;i++) {
-                            const idx = i%items.length;
-                            const x = sx + i*itemWidth;
-                            if (x > -itemWidth && x < canvas.width+itemWidth && items[idx]) {
-                                ctx.fillStyle = this.rarityColors[items[idx].rarity]||'#888';
-                                ctx.fillRect(x,10,itemWidth-2,100);
-                            }
-                        }
-                        if (Math.abs(offset - targetOffset) < 0.5) {
-                            offset = targetOffset;
-                            ctx.clearRect(0,0,canvas.width,canvas.height);
-                            const sx2 = -offset % totalWidth;
-                            for (let i=0;i<items.length*2;i++) {
-                                const idx = i%items.length;
-                                const x = sx2 + i*itemWidth;
-                                if (x > -itemWidth && x < canvas.width+itemWidth && items[idx]) {
-                                    ctx.fillStyle = this.rarityColors[items[idx].rarity]||'#888';
-                                    ctx.fillRect(x,10,itemWidth-2,100);
-                                }
-                            }
-                            setTimeout(()=>{
-                                modal.classList.remove('active');
-                                this.addItem(won);
-                                this.sound.play('case_open');
-                                this.checkQuests();
-                                this.renderInventory();
-                            },1000);
-                            return;
-                        }
-                        requestAnimationFrame(slowdown);
-                    };
-                    requestAnimationFrame(slowdown);
-                    return;
-                }
-                if (!stopping) animFrame = requestAnimationFrame(step);
-                else {
-                    setTimeout(()=>{
+            const centerX = canvas.width/2 - itemWidth/2;
+            let startTime = performance.now();
+            const duration = 5000;
+
+            const draw = (now) => {
+                const elapsed = now - startTime;
+                if (elapsed >= duration) {
+                    ctx.clearRect(0,0,canvas.width,canvas.height);
+                    this.drawItems(ctx, items, stopIndex * itemWidth - centerX, itemWidth);
+                    this.drawCenterLine(ctx, canvas);
+                    setTimeout(() => {
                         modal.classList.remove('active');
                         this.addItem(won);
                         this.sound.play('case_open');
+                        this.showItemDetail(won);
                         this.checkQuests();
                         this.renderInventory();
-                    },2000);
+                    }, 500);
+                    return;
                 }
+                const progress = elapsed / duration;
+                const easeOutCubic = 1 - Math.pow(1 - progress, 3);
+                const totalDistance = totalWidth * 3 + (stopIndex * itemWidth - centerX);
+                const offset = totalDistance * easeOutCubic;
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                this.drawItems(ctx, items, offset % totalWidth, itemWidth);
+                this.drawCenterLine(ctx, canvas);
+                requestAnimationFrame(draw);
             };
-            animFrame = requestAnimationFrame(step);
+            requestAnimationFrame(draw);
         }
 
-        // Экземплярный метод закрытия модальных окон
+        drawItems(ctx, items, offset, itemWidth) {
+            const canvas = ctx.canvas;
+            const startX = -offset;
+            for (let i=0; i<items.length*2; i++) {
+                const idx = i % items.length;
+                const x = startX + i * itemWidth;
+                if (x > -itemWidth && x < canvas.width + itemWidth) {
+                    ctx.fillStyle = this.rarityColors[items[idx].rarity] || '#888';
+                    ctx.fillRect(x, 10, itemWidth-2, 100);
+                    ctx.fillStyle = '#fff';
+                    ctx.font = '10px sans-serif';
+                    ctx.fillText(items[idx].name, x+4, 50);
+                }
+            }
+        }
+
+        drawCenterLine(ctx, canvas) {
+            const centerX = canvas.width / 2;
+            ctx.strokeStyle = '#ffd700';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(centerX, 0);
+            ctx.lineTo(centerX, canvas.height);
+            ctx.stroke();
+        }
+
         closeModal() {
             document.querySelectorAll('.modal').forEach(m=>m.classList.remove('active'));
         }
@@ -513,9 +479,7 @@
                     return i.type===typeFilter;
                 });
             }
-            if (rarityFilter !== 'all') {
-                items = items.filter(i=>i.rarity===rarityFilter);
-            }
+            if (rarityFilter !== 'all') items = items.filter(i=>i.rarity===rarityFilter);
             if (items.length===0) {
                 grid.innerHTML = `<p style="grid-column:1/-1;text-align:center">${this.t('no_items')}</p>`;
                 return;
@@ -578,7 +542,7 @@
         openCaseById(id) {
             const item = this.state.inventory.find(i=>i.id===id);
             if (!item) return;
-            this.closeModal(); // закрываем модалку деталей
+            this.closeModal();
             this.openCase(item);
         }
 
@@ -870,9 +834,9 @@
             this.state.balance-=price;
             const newCase = {
                 id: Date.now()+Math.random().toString(36),
-                type: type, // 'case' или 'capsule'
+                type: type,
                 collection: collection,
-                dropType: dropType, // 'weapon', 'sticker', 'agent'
+                dropType: dropType,
                 name: `${collection} ${type==='case'?'Case':'Capsule'}`,
                 rarity: 'Usual',
                 wear: 0, wearCategory: '', pattern: 0, stickers: [], isFavorite: false
@@ -884,7 +848,6 @@
         }
 
         tradeUp() {
-            const t = this.t.bind(this);
             const rarityOrder = this.rarities;
             const itemsByRarity = {};
             this.state.inventory.forEach(i=>{
@@ -1015,7 +978,7 @@
         return wins.some(w=>w.every(i=>board[i]===player));
     }
 
-    window.addEventListener('load',()=>{
+    window.addEventListener('load', ()=>{
         window.Game = new ArsenalZone();
     });
     </script>
