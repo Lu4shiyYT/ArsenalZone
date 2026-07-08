@@ -156,7 +156,11 @@
         loadState() {
             const raw = localStorage.getItem('arsenalzone_save');
             if (raw) { try { return JSON.parse(raw); } catch(e) {} }
-            return this.defaultState();
+            const state = this.defaultState();
+            // Инициализируем фильтры по умолчанию, если их нет
+            if (!state.filterType) state.filterType = 'all';
+            if (!state.filterRarity) state.filterRarity = 'all';
+            return state;
         }
 
         defaultState() {
@@ -175,7 +179,8 @@
                     {id:'upgrade_master',desc:'Улучшить предмет до Gold',unlocked:false},
                     {id:'ttt_master',desc:'Выиграть 10 партий в крестики-нолики',unlocked:false}
                 ],
-                settings:{language:'ru'},lastDailyBonus:null
+                settings:{language:'ru'},lastDailyBonus:null,
+                filterType:'all', filterRarity:'all'
             };
         }
 
@@ -191,6 +196,26 @@
                 'Agent Pack':{agents:['SAS','FBI','SWAT','GIGN']}
             };
             this.typeOrder = ['case','capsule','knife','gloves','weapon','sticker','charm','agent'];
+            // Новые шансы редкостей (сумма 100%)
+            this.rarityChances = [
+                { rarity: 'Usual', chance: 35.4 },
+                { rarity: 'Frequent', chance: 32.5 },
+                { rarity: 'Conveyor-type', chance: 19.4 },
+                { rarity: 'Rare', chance: 8.6 },
+                { rarity: 'Unique', chance: 3.2 },
+                { rarity: 'Relic', chance: 0.64 },
+                { rarity: 'Gold', chance: 0.26 }
+            ];
+        }
+
+        getRandomRarity() {
+            const rand = Math.random() * 100;
+            let cumulative = 0;
+            for (const r of this.rarityChances) {
+                cumulative += r.chance;
+                if (rand < cumulative) return r.rarity;
+            }
+            return 'Usual';
         }
 
         generateItemImage(item) {
@@ -233,15 +258,7 @@
             }
             if (!itemName) return null;
 
-            const rand = Math.random()*100;
-            let rarity='Usual';
-            if (rand<79.92) rarity='Usual';
-            else if (rand<95.68) rarity='Frequent';
-            else if (rand<99.2) rarity='Conveyor-type';
-            else if (rand<99.84) rarity='Rare';
-            else if (rand<99.98) rarity='Unique';
-            else if (rand<99.999) rarity='Relic';
-            else rarity='Gold';
+            let rarity = this.getRandomRarity();
             if (itemType==='knife'||itemType==='gloves') rarity='Gold';
 
             let wear=0,wearCat='',pattern=0;
@@ -288,27 +305,19 @@
             const canvas = document.getElementById('case-canvas');
             const ctx = canvas.getContext('2d');
             const items = [];
-            // Генерируем 40 предметов для ленты
             for (let i=0;i<40;i++) {
                 const it = this.generateItem(collectionName, dropType);
                 it.imageObj = new Image();
                 it.imageObj.src = it.image;
                 items.push(it);
             }
-            // Определяем индекс остановки
-            const goldRoll = Math.random()*100;
+            // Золотой предмет появляется только если выпал по шансу (в generateItem уже учтено)
+            // Ищем, есть ли в сгенерированной ленте золотой предмет. Если есть, он должен выпасть гарантированно.
+            let goldIndex = items.findIndex(it => it.rarity === 'Gold');
             let stopIdx, wonItem;
-            if (goldRoll < 0.001) { // шанс золота
-                const goldType = (dropType==='weapon') ? (Math.random()<0.5?'knife':'gloves') : dropType;
-                const goldItem = this.generateItem(collectionName, goldType);
-                goldItem.rarity = 'Gold';
-                goldItem.image = this.generateItemImage(goldItem);
-                goldItem.imageObj = new Image();
-                goldItem.imageObj.src = goldItem.image;
-                // Помещаем золотой предмет на случайный индекс ленты
-                stopIdx = Math.floor(Math.random()*items.length);
-                items[stopIdx] = goldItem;
-                wonItem = goldItem;
+            if (goldIndex !== -1) {
+                stopIdx = goldIndex;
+                wonItem = items[stopIdx];
             } else {
                 stopIdx = 20 + Math.floor(Math.random()*5);
                 wonItem = items[stopIdx];
@@ -323,7 +332,6 @@
             const draw = (now) => {
                 const elapsed = now - startTime;
                 if (elapsed >= duration) {
-                    // Финальный кадр: плавно останавливаемся на stopIdx
                     const finalOffset = stopIdx * itemWidth - centerX;
                     ctx.clearRect(0,0,canvas.width,canvas.height);
                     this.drawItems(ctx, items, finalOffset, itemWidth, true);
@@ -340,7 +348,6 @@
                 }
                 const progress = elapsed / duration;
                 const easeOutCubic = 1 - Math.pow(1 - progress, 3);
-                // Проезжаем несколько полных циклов + до нужного индекса
                 const totalCycles = 3;
                 const targetDistance = totalCycles * totalWidth + (stopIdx * itemWidth - centerX);
                 const currentOffset = targetDistance * easeOutCubic;
@@ -364,7 +371,6 @@
                     if (it.imageObj && it.imageObj.complete) {
                         ctx.drawImage(it.imageObj, x+2, 12, itemWidth-4, 96);
                     } else {
-                        // fallback
                         ctx.fillStyle = this.rarityColors[it.rarity] || '#888';
                         ctx.fillRect(x, 10, itemWidth-2, 100);
                         ctx.fillStyle = '#fff';
@@ -455,14 +461,19 @@
 
         sortInventory(items) {
             return items.sort((a,b) => {
+                // 1. Избранные первыми
                 if (a.isFavorite !== b.isFavorite) return a.isFavorite ? -1 : 1;
+                // 2. Порядок типов
                 const typeA = this.typeOrder.indexOf(a.type);
                 const typeB = this.typeOrder.indexOf(b.type);
                 if (typeA !== typeB) return typeA - typeB;
+                // 3. По редкости от лучшей к худшей
                 const rarityA = this.rarities.indexOf(a.rarity);
                 const rarityB = this.rarities.indexOf(b.rarity);
                 if (rarityA !== rarityB) return rarityB - rarityA;
+                // 4. По имени (одинаковые идут рядом)
                 if (a.name !== b.name) return a.name.localeCompare(b.name);
+                // 5. По износу (если есть)
                 return (a.wear || 0) - (b.wear || 0);
             });
         }
@@ -471,34 +482,47 @@
             const container = document.getElementById('view-inventory');
             if (!container) return;
             const t = (k)=>this.translations[this.locale][k]||k;
+            // Сохраняем текущие фильтры из state
+            const currentType = this.state.filterType || 'all';
+            const currentRarity = this.state.filterRarity || 'all';
+
             let html = `<div class="filter-bar">
                 <select id="filter-type">
-                    <option value="all">${t('filter_all')}</option>
-                    <option value="weapon">${t('filter_weapon')}</option>
-                    <option value="knife">${t('filter_knife')}</option>
-                    <option value="gloves">${t('filter_gloves')}</option>
-                    <option value="charm">${t('filter_charm')}</option>
-                    <option value="sticker">${t('filter_sticker')}</option>
-                    <option value="agent">${t('filter_agent')}</option>
-                    <option value="case">${t('filter_case')}</option>
+                    <option value="all" ${currentType==='all'?'selected':''}>${t('filter_all')}</option>
+                    <option value="weapon" ${currentType==='weapon'?'selected':''}>${t('filter_weapon')}</option>
+                    <option value="knife" ${currentType==='knife'?'selected':''}>${t('filter_knife')}</option>
+                    <option value="gloves" ${currentType==='gloves'?'selected':''}>${t('filter_gloves')}</option>
+                    <option value="charm" ${currentType==='charm'?'selected':''}>${t('filter_charm')}</option>
+                    <option value="sticker" ${currentType==='sticker'?'selected':''}>${t('filter_sticker')}</option>
+                    <option value="agent" ${currentType==='agent'?'selected':''}>${t('filter_agent')}</option>
+                    <option value="case" ${currentType==='case'?'selected':''}>${t('filter_case')}</option>
                 </select>
                 <select id="filter-rarity">
-                    <option value="all">${t('filter_all')}</option>
-                    ${this.rarities.map(r=>`<option value="${r}">${r}</option>`).join('')}
+                    <option value="all" ${currentRarity==='all'?'selected':''}>${t('filter_all')}</option>
+                    ${this.rarities.map(r=>`<option value="${r}" ${currentRarity===r?'selected':''}>${r}</option>`).join('')}
                 </select>
             </div>`;
             html += `<div class="inventory-grid" id="inv-grid"></div>`;
             container.innerHTML = html;
-            document.getElementById('filter-type').addEventListener('change', ()=>this.applyFilters());
-            document.getElementById('filter-rarity').addEventListener('change', ()=>this.applyFilters());
+
+            document.getElementById('filter-type').addEventListener('change', (e)=>{
+                this.state.filterType = e.target.value;
+                this.saveState();
+                this.applyFilters();
+            });
+            document.getElementById('filter-rarity').addEventListener('change', (e)=>{
+                this.state.filterRarity = e.target.value;
+                this.saveState();
+                this.applyFilters();
+            });
             this.applyFilters();
         }
 
         applyFilters() {
             const grid = document.getElementById('inv-grid');
             if (!grid) return;
-            const typeFilter = document.getElementById('filter-type')?.value || 'all';
-            const rarityFilter = document.getElementById('filter-rarity')?.value || 'all';
+            const typeFilter = this.state.filterType || 'all';
+            const rarityFilter = this.state.filterRarity || 'all';
             let items = [...this.state.inventory];
             if (typeFilter !== 'all') {
                 items = items.filter(i=>{
@@ -554,7 +578,9 @@
         }
 
         getOdds() {
-            return {Usual:79.92,Frequent:15.76,'Conveyor-type':3.52,Rare:0.64,Unique:0.14,Relic:0.019,Gold:0.001};
+            const odds = {};
+            this.rarityChances.forEach(r => odds[r.rarity] = r.chance);
+            return odds;
         }
 
         openCaseById(id) {
@@ -857,12 +883,9 @@
             this.state.balance-=price;
             const newCase = {
                 id: Date.now()+Math.random().toString(36),
-                type: type,
-                collection: collection,
-                dropType: dropType,
+                type: type, collection: collection, dropType: dropType,
                 name: `${collection} ${type==='case'?'Case':'Capsule'}`,
-                rarity: 'Usual',
-                wear: 0, wearCategory: '', pattern: 0, stickers: [], isFavorite: false
+                rarity: 'Usual', wear: 0, wearCategory: '', pattern: 0, stickers: [], isFavorite: false
             };
             newCase.image = this.generateItemImage(newCase);
             this.state.inventory.push(newCase);
