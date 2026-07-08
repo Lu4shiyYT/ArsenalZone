@@ -78,8 +78,6 @@
         .filter-bar select,.filter-bar button{padding:5px 10px;background:var(--button);color:var(--text);border:none;border-radius:4px}
         .quest-item{background:var(--panel);padding:10px;margin:5px 0;border-radius:5px}
         .achievement{background:var(--panel);padding:8px;margin:4px 0;border-radius:5px;display:flex;justify-content:space-between}
-        .sticker-slot{display:inline-block;width:30px;height:30px;border:1px dashed #555;margin:2px;border-radius:4px;text-align:center;line-height:30px;cursor:pointer}
-        .sticker-slot.filled{background:#333;border:1px solid #888}
     </style>
 </head>
 <body>
@@ -165,7 +163,7 @@
                 balance: 100,
                 energy: 50, maxEnergy: 50,
                 lastEnergyTime: Date.now(),
-                inventory: [], // все предметы: оружие, ножи, перчатки, брелоки, стикеры, агенты, кейсы, капсулы
+                inventory: [],
                 stats: { casesOpened: 0, itemsCollected: 0, goldItems: 0, upgrades: 0, tttWins: 0 },
                 quests: {
                     daily: [
@@ -198,12 +196,11 @@
                 'Usual':'#6b6b6b','Frequent':'#a0a0a0','Conveyor-type':'#8845ff',
                 'Rare':'#4b69ff','Unique':'#d32ce6','Relic':'#37d63c','Gold':'#ffd700'
             };
-            // Расширенные коллекции
             this.collections = {
-                'Arms Deal': { weapons: ['AK-47','M4A4','AWP','Desert Eagle'], knife: 'M9 Bayonet', gloves: 'Titan Gloves', charm: 'Dog Tag', type:'weapon' },
-                'Chroma': { weapons: ['M4A1-S','USP-S','Glock-18','P250'], knife: 'Butterfly Knife', gloves: 'Polymer Gloves', charm: 'Lucky Cat', type:'weapon' },
-                'Sticker Capsule': { stickers: ['Furia','NaVi','G2','Spirit'], type:'sticker' },
-                'Agent Pack': { agents: ['SAS','FBI','SWAT','GIGN'], type:'agent' }
+                'Arms Deal': { weapons: ['AK-47','M4A4','AWP','Desert Eagle'], knife: 'M9 Bayonet', gloves: 'Titan Gloves', charm: 'Dog Tag' },
+                'Chroma': { weapons: ['M4A1-S','USP-S','Glock-18','P250'], knife: 'Butterfly Knife', gloves: 'Polymer Gloves', charm: 'Lucky Cat' },
+                'Sticker Capsule': { stickers: ['Furia','NaVi','G2','Spirit'] },
+                'Agent Pack': { agents: ['SAS','FBI','SWAT','GIGN'] }
             };
             this.weaponEmojis = {'AK-47':'🔫','M4A4':'🔫','AWP':'🎯','Desert Eagle':'🔫','M4A1-S':'🔫','USP-S':'🔫','Glock-18':'🔫','P250':'🔫'};
             this.stickerEmojis = {'Furia':'🐆','NaVi':'🌊','G2':'🐺','Spirit':'🐉'};
@@ -220,24 +217,40 @@
             if (item.type === 'charm') return this.charmEmojis[item.name] || '🏷️';
             if (item.type === 'sticker') return this.stickerEmojis[item.name] || '🏷️';
             if (item.type === 'agent') return this.agentEmojis[item.name] || '👤';
-            if (item.type === 'case') return '📦';
-            if (item.type === 'capsule') return '💊';
+            if (item.type === 'case' || item.type === 'capsule') return '📦';
             return '❓';
         }
 
-        generateItem(collectionName, typeOverride) {
+        generateItem(collectionName, dropType) {
             const col = this.collections[collectionName];
             if (!col) return null;
-            let itemType = col.type;
-            if (typeOverride) itemType = typeOverride;
+            let itemType = dropType;
             let itemName;
+            // Если dropType не задан, определяем по коллекции
+            if (!itemType) {
+                if (col.weapons) itemType = 'weapon';
+                else if (col.stickers) itemType = 'sticker';
+                else if (col.agents) itemType = 'agent';
+            }
             switch(itemType) {
-                case 'weapon': itemName = col.weapons[Math.floor(Math.random()*col.weapons.length)]; break;
-                case 'knife': itemName = col.knife; break;
-                case 'gloves': itemName = col.gloves; break;
-                case 'charm': itemName = col.charm; break;
-                case 'sticker': itemName = col.stickers[Math.floor(Math.random()*col.stickers.length)]; break;
-                case 'agent': itemName = col.agents[Math.floor(Math.random()*col.agents.length)]; break;
+                case 'weapon':
+                    itemName = col.weapons[Math.floor(Math.random()*col.weapons.length)];
+                    break;
+                case 'knife':
+                    itemName = col.knife || 'M9 Bayonet';
+                    break;
+                case 'gloves':
+                    itemName = col.gloves || 'Titan Gloves';
+                    break;
+                case 'charm':
+                    itemName = col.charm || 'Dog Tag';
+                    break;
+                case 'sticker':
+                    itemName = col.stickers[Math.floor(Math.random()*col.stickers.length)];
+                    break;
+                case 'agent':
+                    itemName = col.agents[Math.floor(Math.random()*col.agents.length)];
+                    break;
                 default: return null;
             }
             if (!itemName) return null;
@@ -285,30 +298,45 @@
         }
 
         openCase(caseItem) {
-            // caseItem - предмет типа 'case' или 'capsule'
             const index = this.state.inventory.findIndex(i=>i.id===caseItem.id);
             if (index===-1) return;
             this.state.inventory.splice(index,1);
             this.state.stats.casesOpened++;
             this.state.quests.daily.find(q=>q.id==='open3').progress++;
             this.saveState();
-            this.animateCaseOpen(caseItem.collection, caseItem.type);
+            // Используем dropType, сохранённый в кейсе
+            const dropType = caseItem.dropType || 'weapon';
+            this.animateCaseOpen(caseItem.collection, dropType);
         }
 
-        animateCaseOpen(collectionName, type) {
+        animateCaseOpen(collectionName, dropType) {
             const modal = document.getElementById('case-modal');
             modal.classList.add('active');
             const canvas = document.getElementById('case-canvas');
             const ctx = canvas.getContext('2d');
             const items = [];
-            for (let i=0;i<40;i++) items.push(this.generateItem(collectionName, type));
-            let goldIndex = items.findIndex(it=>it.rarity==='Gold');
+            // Генерируем 40 предметов ленты
+            for (let i=0;i<40;i++) {
+                items.push(this.generateItem(collectionName, dropType));
+            }
+            // Иногда гарантированно вставляем золотой предмет (нож/перчатки)
+            let goldIndex = items.findIndex(it=>it && it.rarity==='Gold');
             if (goldIndex===-1 && Math.random()<0.1) {
-                const goldItem = this.generateItem(collectionName, type==='weapon'?'knife':type);
-                if (goldItem) { goldItem.rarity='Gold'; goldIndex = Math.floor(Math.random()*items.length); items[goldIndex]=goldItem; }
+                const goldType = (dropType==='weapon') ? (Math.random()<0.5?'knife':'gloves') : dropType;
+                const goldItem = this.generateItem(collectionName, goldType);
+                if (goldItem) {
+                    goldItem.rarity = 'Gold';
+                    goldIndex = Math.floor(Math.random()*items.length);
+                    items[goldIndex] = goldItem;
+                }
             }
             const stopIndex = goldIndex!==-1 ? goldIndex : 20+Math.floor(Math.random()*5);
             const won = items[stopIndex];
+            if (!won) {
+                modal.classList.remove('active');
+                alert('Ошибка генерации предмета');
+                return;
+            }
             let offset = 0, speed = 12, stopping = false, animFrame;
             const itemWidth = 80;
             const totalWidth = items.length * itemWidth;
@@ -318,7 +346,7 @@
                 for (let i=0;i<items.length*2;i++) {
                     const idx = i%items.length;
                     const x = startX + i*itemWidth;
-                    if (x > -itemWidth && x < canvas.width+itemWidth) {
+                    if (x > -itemWidth && x < canvas.width+itemWidth && items[idx]) {
                         ctx.fillStyle = this.rarityColors[items[idx].rarity]||'#888';
                         ctx.fillRect(x,10,itemWidth-2,100);
                         ctx.fillStyle='#fff'; ctx.font='10px sans-serif';
@@ -336,7 +364,7 @@
                         for (let i=0;i<items.length*2;i++) {
                             const idx = i%items.length;
                             const x = sx + i*itemWidth;
-                            if (x > -itemWidth && x < canvas.width+itemWidth) {
+                            if (x > -itemWidth && x < canvas.width+itemWidth && items[idx]) {
                                 ctx.fillStyle = this.rarityColors[items[idx].rarity]||'#888';
                                 ctx.fillRect(x,10,itemWidth-2,100);
                             }
@@ -348,7 +376,7 @@
                             for (let i=0;i<items.length*2;i++) {
                                 const idx = i%items.length;
                                 const x = sx2 + i*itemWidth;
-                                if (x > -itemWidth && x < canvas.width+itemWidth) {
+                                if (x > -itemWidth && x < canvas.width+itemWidth && items[idx]) {
                                     ctx.fillStyle = this.rarityColors[items[idx].rarity]||'#888';
                                     ctx.fillRect(x,10,itemWidth-2,100);
                                 }
@@ -381,7 +409,8 @@
             animFrame = requestAnimationFrame(step);
         }
 
-        static closeModal() {
+        // Экземплярный метод закрытия модальных окон
+        closeModal() {
             document.querySelectorAll('.modal').forEach(m=>m.classList.remove('active'));
         }
 
@@ -520,7 +549,7 @@
             const modal = document.getElementById('item-detail-modal');
             modal.classList.add('active');
             const content = document.getElementById('item-detail-content');
-            const odds = this.getOdds(caseItem.collection);
+            const odds = this.getOdds();
             content.innerHTML = `
                 <h3>${caseItem.name || caseItem.collection}</h3>
                 <p>${t('collection')}: ${caseItem.collection}</p>
@@ -530,12 +559,11 @@
                     ${Object.entries(odds).map(([r,ch])=>`<li style="color:${this.rarityColors[r]}">${r}: ${ch.toFixed(2)}%</li>`).join('')}
                 </ul>
                 <button onclick="Game.openCaseById('${caseItem.id}')">${t('open')}</button>
-                <button onclick="ArsenalZone.closeModal()">${t('close')}</button>
+                <button onclick="Game.closeModal()">${t('close')}</button>
             `;
         }
 
-        getOdds(collectionName) {
-            // Базовые шансы редкостей
+        getOdds() {
             return {
                 'Usual': 79.92,
                 'Frequent': 15.76,
@@ -550,7 +578,7 @@
         openCaseById(id) {
             const item = this.state.inventory.find(i=>i.id===id);
             if (!item) return;
-            ArsenalZone.closeModal();
+            this.closeModal(); // закрываем модалку деталей
             this.openCase(item);
         }
 
@@ -568,7 +596,7 @@
                 <button onclick="Game.sellItem('${item.id}')">${t('sell')} ($${this.getItemPrice(item).toFixed(2)})</button>
                 ${(item.type==='weapon'||item.type==='knife'||item.type==='gloves')?`<button onclick="Game.applyStickerModal('${item.id}')">${t('apply_sticker')}</button>`:''}
                 <button onclick="Game.toggleFavorite('${item.id}')">${item.isFavorite?'💔':'❤️'}</button>
-                <button onclick="ArsenalZone.closeModal()">${t('close')}</button>
+                <button onclick="Game.closeModal()">${t('close')}</button>
             `;
         }
 
@@ -586,7 +614,7 @@
             this.saveState();
             this.updateBalanceDisplay();
             this.renderInventory();
-            ArsenalZone.closeModal();
+            this.closeModal();
         }
 
         toggleFavorite(id) {
@@ -617,7 +645,7 @@
                 };
                 content.appendChild(btn);
             });
-            content.innerHTML += '<button onclick="ArsenalZone.closeModal()">Отмена</button>';
+            content.innerHTML += '<button onclick="Game.closeModal()">Отмена</button>';
         }
 
         prepareMinigamesView() {
@@ -823,33 +851,30 @@
             if (!container) return;
             const t = this.t.bind(this);
             const offers = [
-                { name:'Arms Deal Case', collection:'Arms Deal', type:'case', price:20 },
-                { name:'Chroma Case', collection:'Chroma', type:'case', price:20 },
-                { name:'Sticker Capsule', collection:'Sticker Capsule', type:'capsule', price:10 },
-                { name:'Agent Pack', collection:'Agent Pack', type:'capsule', price:15 }
+                { name:'Arms Deal Case', collection:'Arms Deal', type:'case', dropType:'weapon', price:20 },
+                { name:'Chroma Case', collection:'Chroma', type:'case', dropType:'weapon', price:20 },
+                { name:'Sticker Capsule', collection:'Sticker Capsule', type:'capsule', dropType:'sticker', price:10 },
+                { name:'Agent Pack', collection:'Agent Pack', type:'capsule', dropType:'agent', price:15 }
             ];
             container.innerHTML = offers.map(o=>`
                 <div style="margin:5px 0;background:var(--panel);padding:10px;border-radius:5px;display:flex;justify-content:space-between;">
                     <span>${o.name} - ${t('price')}: $${o.price}</span>
-                    <button onclick="Game.buyCase('${o.collection}','${o.type}',${o.price})">${t('buy')}</button>
+                    <button onclick="Game.buyCase('${o.collection}','${o.type}','${o.dropType}',${o.price})">${t('buy')}</button>
                 </div>
             `).join('');
-            // Добавляем кнопку Trade Up
-            container.innerHTML += `
-                <hr>
-                <button onclick="Game.tradeUp()">${t('trade_up')}</button>
-            `;
+            container.innerHTML += `<hr><button onclick="Game.tradeUp()">${t('trade_up')}</button>`;
         }
 
-        buyCase(collection, type, price) {
+        buyCase(collection, type, dropType, price) {
             if (this.state.balance<price) return alert('Недостаточно $');
             this.state.balance-=price;
             const newCase = {
                 id: Date.now()+Math.random().toString(36),
                 type: type, // 'case' или 'capsule'
                 collection: collection,
+                dropType: dropType, // 'weapon', 'sticker', 'agent'
                 name: `${collection} ${type==='case'?'Case':'Capsule'}`,
-                rarity: 'Usual', // для кейсов редкость не важна, но пусть будет
+                rarity: 'Usual',
                 wear: 0, wearCategory: '', pattern: 0, stickers: [], isFavorite: false
             };
             this.state.inventory.push(newCase);
