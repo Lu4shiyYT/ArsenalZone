@@ -1,1 +1,944 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>ArsenalZone</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif}
+        :root{
+            --bg:#1b1b1b;--panel:#2a2a2a;--text:#ccc;--accent:#ffd700;
+            --usual:#6b6b6b;--frequent:#a0a0a0;--conveyor:#8845ff;--rare:#4b69ff;
+            --unique:#d32ce6;--relic:#37d63c;--gold:#ffd700;--button:#3a3a3a;
+            --button-hover:#4d4d4d;--danger:#e74c3c;--success:#2ecc71;
+        }
+        body{
+            background:var(--bg);color:var(--text);height:100vh;overflow:hidden;
+            display:flex;flex-direction:column;user-select:none;-webkit-tap-highlight-color:transparent;
+        }
+        header{
+            background:var(--panel);padding:10px 15px;display:flex;align-items:center;
+            justify-content:space-between;border-bottom:1px solid #444;flex-shrink:0;
+        }
+        .balance{font-weight:bold;color:var(--gold)}
+        .energy{font-size:0.9em;color:#4fc3f7}
+        nav{
+            display:flex;background:var(--panel);border-top:1px solid #444;flex-shrink:0;
+        }
+        nav button{
+            flex:1;padding:12px 5px;background:transparent;color:var(--text);
+            border:none;border-bottom:3px solid transparent;font-size:0.85rem;
+            cursor:pointer;transition:0.2s;
+        }
+        nav button.active{border-bottom-color:var(--accent);color:#fff}
+        main{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column}
+        .view{display:none;flex:1;flex-direction:column}
+        .view.active{display:flex}
+        .inventory-grid{
+            display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));
+            gap:8px;margin-top:10px;
+        }
+        .item-card{
+            background:var(--panel);border-radius:6px;padding:5px;
+            border-left:4px solid var(--usual);cursor:pointer;position:relative;
+            transition:0.2s;display:flex;flex-direction:column;align-items:center;
+        }
+        .item-card:hover{background:#3a3a3a}
+        .item-name{font-size:0.7rem;text-align:center;margin:4px 0}
+        .item-wear{font-size:0.6rem;color:#999}
+        .item-card[data-rarity="Usual"]{border-left-color:var(--usual)}
+        .item-card[data-rarity="Frequent"]{border-left-color:var(--frequent)}
+        .item-card[data-rarity="Conveyor-type"]{border-left-color:var(--conveyor)}
+        .item-card[data-rarity="Rare"]{border-left-color:var(--rare)}
+        .item-card[data-rarity="Unique"]{border-left-color:var(--unique)}
+        .item-card[data-rarity="Relic"]{border-left-color:var(--relic)}
+        .item-card[data-rarity="Gold"]{border-left-color:var(--gold)}
+        .item-emoji{font-size:2.5rem}
+        .modal{
+            position:fixed;top:0;left:0;width:100%;height:100%;
+            background:rgba(0,0,0,0.8);display:none;justify-content:center;
+            align-items:center;z-index:1000;flex-direction:column;
+        }
+        .modal.active{display:flex}
+        .modal-content{
+            background:var(--panel);border-radius:10px;padding:20px;
+            max-width:400px;width:90%;text-align:center;max-height:80vh;overflow-y:auto;
+        }
+        #case-canvas{background:#0d0d0d;border-radius:8px;width:100%;height:120px}
+        .wear-indicator{display:flex;justify-content:space-between;font-size:0.7rem;color:#888;margin-top:2px}
+        button{
+            background:var(--button);color:var(--text);border:none;padding:10px 15px;
+            border-radius:4px;cursor:pointer;transition:0.2s;font-weight:bold;font-size:0.9rem;
+        }
+        button:hover{background:var(--button-hover)}
+        button.accent{background:var(--accent);color:#000}
+        button.danger{background:var(--danger)}
+        .profile-stat{display:flex;justify-content:space-between;margin:10px 0}
+        .filter-bar{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
+        .filter-bar select,.filter-bar button{padding:5px 10px;background:var(--button);color:var(--text);border:none;border-radius:4px}
+        .quest-item{background:var(--panel);padding:10px;margin:5px 0;border-radius:5px}
+        .achievement{background:var(--panel);padding:8px;margin:4px 0;border-radius:5px;display:flex;justify-content:space-between}
+        .sticker-slot{display:inline-block;width:30px;height:30px;border:1px dashed #555;margin:2px;border-radius:4px;text-align:center;line-height:30px;cursor:pointer}
+        .sticker-slot.filled{background:#333;border:1px solid #888}
+    </style>
+</head>
+<body>
+    <header>
+        <span class="balance" id="balance">$0.00</span>
+        <span class="energy" id="energy">⚡ 50/50</span>
+        <select id="lang-select"><option value="ru">Русский</option><option value="en">English</option></select>
+    </header>
+    <main id="main-container"></main>
+    <nav>
+        <button data-view="inventory" class="active">🎒 Инвентарь</button>
+        <button data-view="minigames">🎮 Мини-игры</button>
+        <button data-view="profile">👤 Профиль</button>
+        <button data-view="quests">📋 Квесты</button>
+        <button data-view="shop">🛒 Магазин</button>
+    </nav>
 
+    <div class="modal" id="case-modal">
+        <div class="modal-content">
+            <h3 id="case-modal-title">Открытие кейса</h3>
+            <canvas id="case-canvas" width="400" height="120"></canvas>
+            <p id="case-result-text"></p>
+            <div class="wear-indicator"><span>0.00</span><span>Износ</span><span>1.00</span></div>
+            <button onclick="Game.closeModal()">Продолжить</button>
+        </div>
+    </div>
+
+    <div class="modal" id="item-detail-modal">
+        <div class="modal-content" id="item-detail-content"></div>
+    </div>
+
+    <div class="modal" id="case-select-modal">
+        <div class="modal-content" id="case-select-content"></div>
+    </div>
+
+    <script>
+    class ArsenalZone {
+        constructor() {
+            this.state = this.loadState();
+            this.sound = this.initSound();
+            this.locale = this.state.settings.language || 'ru';
+            this.translations = {
+                ru: {
+                    inventory: '🎒 Инвентарь', minigames: '🎮 Мини-игры', profile: '👤 Профиль',
+                    quests: '📋 Квесты', shop: '🛒 Магазин', openCase: '📦 Открыть кейс',
+                    backup: '💾 Бэкап', import: '📥 Импорт', upgrade: '⬆️ Апгрейдер (10$)',
+                    tictactoe: '❌⭕ Крестики-нолики (энергия 1)', profile_title: 'Профиль',
+                    cases_opened: 'Кейсов открыто', items_collected: 'Предметов собрано',
+                    gold_items: 'Золотых предметов', reset: 'Сбросить прогресс',
+                    quest_daily: 'Ежедневные квесты', shop_title: 'Магазин',
+                    buy: 'Купить', price: 'Цена', no_energy: 'Недостаточно энергии',
+                    no_money: 'Недостаточно $', wear: 'Износ', rarity: 'Редкость',
+                    collection: 'Коллекция', type: 'Тип', stickers: 'Стикеры',
+                    apply_sticker: 'Наклеить', trade_up: '🔃 Контракт (10 предметов)',
+                    filter_all: 'Все', filter_weapon: 'Оружие', filter_sticker: 'Стикеры',
+                    filter_agent: 'Агенты', filter_knife: 'Ножи'
+                },
+                en: {
+                    inventory: '🎒 Inventory', minigames: '🎮 Mini-games', profile: '👤 Profile',
+                    quests: '📋 Quests', shop: '🛒 Shop', openCase: '📦 Open Case',
+                    backup: '💾 Backup', import: '📥 Import', upgrade: '⬆️ Upgrader (10$)',
+                    tictactoe: '❌⭕ Tic-Tac-Toe (1 energy)', profile_title: 'Profile',
+                    cases_opened: 'Cases opened', items_collected: 'Items collected',
+                    gold_items: 'Gold items', reset: 'Reset progress',
+                    quest_daily: 'Daily quests', shop_title: 'Shop',
+                    buy: 'Buy', price: 'Price', no_energy: 'Not enough energy',
+                    no_money: 'Not enough $', wear: 'Wear', rarity: 'Rarity',
+                    collection: 'Collection', type: 'Type', stickers: 'Stickers',
+                    apply_sticker: 'Apply', trade_up: '🔃 Trade Up (10 items)',
+                    filter_all: 'All', filter_weapon: 'Weapons', filter_sticker: 'Stickers',
+                    filter_agent: 'Agents', filter_knife: 'Knives'
+                }
+            };
+            this.initData();
+            this.initUI();
+            this.energyTimer = setInterval(() => this.regenerateEnergy(), 60000);
+            this.dailyCheck();
+        }
+
+        loadState() {
+            const raw = localStorage.getItem('arsenalzone_save');
+            if (raw) { try { return JSON.parse(raw); } catch(e) {} }
+            return this.defaultState();
+        }
+
+        defaultState() {
+            return {
+                balance: 100,
+                energy: 50, maxEnergy: 50,
+                lastEnergyTime: Date.now(),
+                inventory: [],
+                cases: [],
+                stickers: [], // отдельно храним стикеры для наклеек
+                stats: { casesOpened: 0, itemsCollected: 0, goldItems: 0, upgrades: 0, tttWins: 0 },
+                quests: {
+                    daily: [
+                        { id: 'open3', desc: 'Открыть 3 кейса', progress: 0, goal: 3, reward: 30, completed: false },
+                        { id: 'ttt2', desc: 'Выиграть 2 раза в крестики-нолики', progress: 0, goal: 2, reward: 20, completed: false },
+                        { id: 'upgrade5', desc: 'Улучшить предметы 5 раз', progress: 0, goal: 5, reward: 25, completed: false }
+                    ],
+                    lastDailyReset: new Date().toDateString()
+                },
+                achievements: [
+                    { id: 'first_case', desc: 'Открыть первый кейс', unlocked: false },
+                    { id: 'gold_found', desc: 'Найти золотой предмет', unlocked: false },
+                    { id: 'collector_10', desc: 'Собрать 10 предметов', unlocked: false },
+                    { id: 'upgrade_master', desc: 'Улучшить предмет до Gold', unlocked: false },
+                    { id: 'ttt_master', desc: 'Выиграть 10 партий в крестики-нолики', unlocked: false }
+                ],
+                settings: { language: 'ru' },
+                lastDailyBonus: null
+            };
+        }
+
+        saveState() {
+            this.state.lastEnergyTime = Date.now();
+            localStorage.setItem('arsenalzone_save', JSON.stringify(this.state));
+        }
+
+        initData() {
+            this.rarities = ['Usual','Frequent','Conveyor-type','Rare','Unique','Relic','Gold'];
+            this.rarityColors = {
+                'Usual':'#6b6b6b','Frequent':'#a0a0a0','Conveyor-type':'#8845ff',
+                'Rare':'#4b69ff','Unique':'#d32ce6','Relic':'#37d63c','Gold':'#ffd700'
+            };
+            this.collections = {
+                'Arms Deal': { weapons: ['AK-47','M4A4','AWP','Desert Eagle'], knife: 'M9 Bayonet', type:'weapon' },
+                'Chroma': { weapons: ['M4A1-S','USP-S','Glock-18','P250'], knife: 'Butterfly Knife', type:'weapon' },
+                'Sticker Capsule': { stickers: ['Furia','NaVi','G2','Spirit'], type:'sticker' },
+                'Agent Pack': { agents: ['SAS','FBI','SWAT','GIGN'], type:'agent' }
+            };
+            this.weaponEmojis = {'AK-47':'🔫','M4A4':'🔫','AWP':'🎯','Desert Eagle':'🔫','M4A1-S':'🔫','USP-S':'🔫','Glock-18':'🔫','P250':'🔫'};
+            this.stickerEmojis = {'Furia':'🐆','NaVi':'🌊','G2':'🐺','Spirit':'🐉'};
+            this.agentEmojis = {'SAS':'👮','FBI':'🕵️','SWAT':'👮‍♂️','GIGN':'👮‍♀️'};
+            this.knifeEmojis = {'M9 Bayonet':'🔪','Butterfly Knife':'🦋'};
+        }
+
+        getItemEmoji(item) {
+            if (item.type === 'weapon') return this.weaponEmojis[item.name] || '🔫';
+            if (item.type === 'sticker') return this.stickerEmojis[item.name] || '🏷️';
+            if (item.type === 'agent') return this.agentEmojis[item.name] || '👤';
+            if (item.type === 'knife') return this.knifeEmojis[item.name] || '🔪';
+            return '❓';
+        }
+
+        generateItem(collectionName, typeOverride) {
+            const col = this.collections[collectionName];
+            if (!col) return null;
+            let itemName, itemType = col.type;
+            if (typeOverride) itemType = typeOverride;
+            if (itemType === 'weapon') {
+                itemName = col.weapons[Math.floor(Math.random()*col.weapons.length)];
+                itemType = 'weapon';
+            } else if (itemType === 'sticker') {
+                itemName = col.stickers[Math.floor(Math.random()*col.stickers.length)];
+                itemType = 'sticker';
+            } else if (itemType === 'agent') {
+                itemName = col.agents[Math.floor(Math.random()*col.agents.length)];
+                itemType = 'agent';
+            } else if (itemType === 'knife' && col.knife) {
+                itemName = col.knife;
+                itemType = 'knife';
+            } else return null;
+
+            const rand = Math.random()*100;
+            let rarity = 'Usual';
+            if (rand < 79.92) rarity = 'Usual';
+            else if (rand < 95.68) rarity = 'Frequent';
+            else if (rand < 99.2) rarity = 'Conveyor-type';
+            else if (rand < 99.84) rarity = 'Rare';
+            else if (rand < 99.98) rarity = 'Unique';
+            else if (rand < 99.999) rarity = 'Relic';
+            else rarity = 'Gold';
+            if (itemType === 'knife') rarity = 'Gold';
+
+            const wear = Math.random()*0.9999999998+0.0000000001;
+            let wearCat = '';
+            if (wear < 0.2000000001) wearCat = 'Battle-Scarred';
+            else if (wear < 0.4500000001) wearCat = 'Well-Worn';
+            else if (wear < 0.8000000001) wearCat = 'Field-Tested';
+            else wearCat = 'Minimal Wear';
+
+            return {
+                id: Date.now()+Math.random().toString(36),
+                type: itemType,
+                collection: collectionName,
+                name: itemName,
+                rarity,
+                wear,
+                wearCategory: wearCat,
+                stickers: [],
+                isFavorite: false
+            };
+        }
+
+        addItem(item) {
+            this.state.inventory.push(item);
+            this.state.stats.itemsCollected++;
+            if (item.rarity === 'Gold') this.state.stats.goldItems++;
+            this.checkAchievements();
+            this.saveState();
+        }
+
+        openCase(collectionName, type) {
+            const caseIndex = this.state.cases.findIndex(c=>c.collection===collectionName && c.type===type);
+            if (caseIndex===-1) return alert('Нет такого кейса');
+            this.state.cases.splice(caseIndex,1);
+            this.state.stats.casesOpened++;
+            this.state.quests.daily.find(q=>q.id==='open3').progress++;
+            this.saveState();
+            this.animateCaseOpen(collectionName, type);
+        }
+
+        animateCaseOpen(collectionName, type) {
+            const modal = document.getElementById('case-modal');
+            modal.classList.add('active');
+            const canvas = document.getElementById('case-canvas');
+            const ctx = canvas.getContext('2d');
+            const items = [];
+            const col = this.collections[collectionName];
+            for (let i=0;i<40;i++) items.push(this.generateItem(collectionName, type));
+            let goldIndex = items.findIndex(it=>it.rarity==='Gold');
+            if (goldIndex===-1 && Math.random()<0.1) {
+                const goldItem = this.generateItem(collectionName, type==='weapon'?'knife':type);
+                goldItem.rarity='Gold';
+                goldIndex = Math.floor(Math.random()*items.length);
+                items[goldIndex] = goldItem;
+            }
+            const stopIndex = goldIndex!==-1 ? goldIndex : 20+Math.floor(Math.random()*5);
+            const won = items[stopIndex];
+            let offset = 0, speed = 12, stopping = false, animFrame;
+            const itemWidth = 80;
+            const totalWidth = items.length * itemWidth;
+            const step = () => {
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                const startX = -offset % totalWidth;
+                for (let i=0;i<items.length*2;i++) {
+                    const idx = i%items.length;
+                    const x = startX + i*itemWidth;
+                    if (x > -itemWidth && x < canvas.width+itemWidth) {
+                        ctx.fillStyle = this.rarityColors[items[idx].rarity]||'#888';
+                        ctx.fillRect(x,10,itemWidth-2,100);
+                        ctx.fillStyle='#fff'; ctx.font='10px sans-serif';
+                        ctx.fillText(items[idx].name, x+4, 50);
+                    }
+                }
+                offset += speed;
+                if (!stopping && goldIndex!==-1 && Math.floor(offset/totalWidth)%2===0 && offset%totalWidth > goldIndex*itemWidth-50) {
+                    stopping = true;
+                    const targetOffset = goldIndex*itemWidth + Math.floor(offset/totalWidth)*totalWidth;
+                    const slowdown = () => {
+                        offset += (targetOffset - offset)*0.1;
+                        ctx.clearRect(0,0,canvas.width,canvas.height);
+                        const sx = -offset % totalWidth;
+                        for (let i=0;i<items.length*2;i++) {
+                            const idx = i%items.length;
+                            const x = sx + i*itemWidth;
+                            if (x > -itemWidth && x < canvas.width+itemWidth) {
+                                ctx.fillStyle = this.rarityColors[items[idx].rarity]||'#888';
+                                ctx.fillRect(x,10,itemWidth-2,100);
+                            }
+                        }
+                        if (Math.abs(offset - targetOffset) < 0.5) {
+                            offset = targetOffset;
+                            ctx.clearRect(0,0,canvas.width,canvas.height);
+                            const sx2 = -offset % totalWidth;
+                            for (let i=0;i<items.length*2;i++) {
+                                const idx = i%items.length;
+                                const x = sx2 + i*itemWidth;
+                                if (x > -itemWidth && x < canvas.width+itemWidth) {
+                                    ctx.fillStyle = this.rarityColors[items[idx].rarity]||'#888';
+                                    ctx.fillRect(x,10,itemWidth-2,100);
+                                }
+                            }
+                            setTimeout(()=>{
+                                modal.classList.remove('active');
+                                this.addItem(won);
+                                this.sound.play('case_open');
+                                this.checkQuests();
+                                this.renderInventory();
+                            },1000);
+                            return;
+                        }
+                        requestAnimationFrame(slowdown);
+                    };
+                    requestAnimationFrame(slowdown);
+                    return;
+                }
+                if (!stopping) animFrame = requestAnimationFrame(step);
+                else {
+                    setTimeout(()=>{
+                        modal.classList.remove('active');
+                        this.addItem(won);
+                        this.sound.play('case_open');
+                        this.checkQuests();
+                        this.renderInventory();
+                    },2000);
+                }
+            };
+            animFrame = requestAnimationFrame(step);
+        }
+
+        static closeModal() {
+            document.querySelectorAll('.modal').forEach(m=>m.classList.remove('active'));
+        }
+
+        initSound() {
+            const AudioContext = window.AudioContext||window.webkitAudioContext;
+            const ctx = new AudioContext();
+            return { play: (type)=>{
+                if (type==='case_open') {
+                    const osc = ctx.createOscillator();
+                    osc.frequency.value=800; osc.connect(ctx.destination);
+                    osc.start(); osc.stop(ctx.currentTime+0.1);
+                }
+            }};
+        }
+
+        initUI() {
+            document.querySelectorAll('nav button').forEach(btn=>{
+                btn.addEventListener('click',(e)=>{
+                    document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+                    btn.classList.add('active');
+                    this.showView(btn.dataset.view);
+                });
+            });
+            document.getElementById('lang-select').addEventListener('change',(e)=>{
+                this.locale=e.target.value; this.state.settings.language=this.locale;
+                this.saveState(); this.updateUILanguage();
+            });
+            this.generateMainViews();
+            this.showView('inventory');
+            this.renderInventory();
+            this.updateEnergyDisplay();
+            this.updateBalanceDisplay();
+            this.updateUILanguage();
+            this.checkDailyReset();
+        }
+
+        generateMainViews() {
+            const main = document.getElementById('main-container');
+            main.innerHTML = `
+                <div id="view-inventory" class="view active"></div>
+                <div id="view-minigames" class="view"></div>
+                <div id="view-profile" class="view"></div>
+                <div id="view-quests" class="view"></div>
+                <div id="view-shop" class="view"></div>
+            `;
+            this.prepareMinigamesView();
+            this.prepareProfileView();
+            this.prepareQuestsView();
+            this.prepareShopView();
+        }
+
+        showView(name) {
+            document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+            const el = document.getElementById(`view-${name}`);
+            if (el) el.classList.add('active');
+            if (name==='inventory') this.renderInventory();
+            else if (name==='profile') this.renderProfile();
+            else if (name==='quests') this.renderQuests();
+            else if (name==='shop') this.renderShop();
+            else if (name==='minigames') this.renderMinigames();
+        }
+
+        renderInventory() {
+            const container = document.getElementById('view-inventory');
+            if (!container) return;
+            const t = (k)=>this.translations[this.locale][k]||k;
+            let html = `<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
+                <button onclick="Game.openCaseSelect()">${t('openCase')}</button>
+                <button onclick="Game.exportSave()">${t('backup')}</button>
+                <button onclick="Game.importSavePrompt()">${t('import')}</button>
+                <button onclick="Game.tradeUp()">${t('trade_up')}</button>
+            </div>`;
+            html += `<div class="filter-bar">
+                <select id="filter-type"><option>${t('filter_all')}</option><option>${t('filter_weapon')}</option><option>${t('filter_sticker')}</option><option>${t('filter_agent')}</option><option>${t('filter_knife')}</option></select>
+                <select id="filter-rarity"><option>${t('filter_all')}</option>${this.rarities.map(r=>`<option>${r}</option>`).join('')}</select>
+                <button onclick="Game.applyFilters()">Применить</button>
+            </div>`;
+            html += `<div class="inventory-grid" id="inv-grid"></div>`;
+            container.innerHTML = html;
+            this.applyFilters();
+        }
+
+        applyFilters() {
+            const typeSel = document.getElementById('filter-type')?.value;
+            const raritySel = document.getElementById('filter-rarity')?.value;
+            const grid = document.getElementById('inv-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            let items = this.state.inventory;
+            if (typeSel && typeSel!=='Все' && typeSel!=='All') {
+                const map = { 'Оружие':'weapon','Weapons':'weapon','Стикеры':'sticker','Stickers':'sticker','Агенты':'agent','Agents':'agent','Ножи':'knife','Knives':'knife' };
+                const filterType = map[typeSel] || typeSel.toLowerCase();
+                items = items.filter(i=>i.type===filterType);
+            }
+            if (raritySel && raritySel!=='Все' && raritySel!=='All') {
+                items = items.filter(i=>i.rarity===raritySel);
+            }
+            items.forEach(item=>{
+                const card = document.createElement('div');
+                card.className='item-card';
+                card.dataset.rarity=item.rarity;
+                card.innerHTML = `
+                    <span class="item-emoji">${this.getItemEmoji(item)}</span>
+                    <span class="item-name">${item.name}</span>
+                    <span class="item-wear">${item.wearCategory} (${item.wear.toFixed(4)})</span>
+                `;
+                card.addEventListener('click',()=>this.showItemDetail(item));
+                grid.appendChild(card);
+            });
+        }
+
+        showItemDetail(item) {
+            const t = (k)=>this.translations[this.locale][k]||k;
+            const modal = document.getElementById('item-detail-modal');
+            modal.classList.add('active');
+            const content = document.getElementById('item-detail-content');
+            content.innerHTML = `
+                <h3>${item.name}</h3>
+                <p>${t('type')}: ${item.type} | ${t('collection')}: ${item.collection}</p>
+                <p>${t('rarity')}: <span style="color:${this.rarityColors[item.rarity]}">${item.rarity}</span></p>
+                <p>${t('wear')}: ${item.wearCategory} (${item.wear.toFixed(9)})</p>
+                <div>${t('stickers')}: ${item.stickers.map(s=>`<span>${this.stickerEmojis[s]||'🏷️'}</span>`).join(' ')||'Нет'}</div>
+                <button onclick="Game.sellItem('${item.id}')">Продать за $${this.getItemPrice(item).toFixed(2)}</button>
+                ${item.type==='weapon'||item.type==='knife'?`<button onclick="Game.applyStickerModal('${item.id}')">${t('apply_sticker')}</button>`:''}
+                <button onclick="Game.toggleFavorite('${item.id}')">${item.isFavorite?'💔':'❤️'}</button>
+                <button onclick="ArsenalZone.closeModal()">Закрыть</button>
+            `;
+        }
+
+        getItemPrice(item) {
+            const base = {Usual:0.5, Frequent:2, 'Conveyor-type':5, Rare:15, Unique:50, Relic:200, Gold:1000}[item.rarity]||0.5;
+            const wearFactor = 1 - item.wear*0.5;
+            return base * wearFactor;
+        }
+
+        sellItem(id) {
+            const item = this.state.inventory.find(i=>i.id===id);
+            if (!item) return;
+            this.state.balance += this.getItemPrice(item);
+            this.state.inventory = this.state.inventory.filter(i=>i.id!==id);
+            this.saveState();
+            this.updateBalanceDisplay();
+            this.renderInventory();
+            ArsenalZone.closeModal();
+        }
+
+        toggleFavorite(id) {
+            const item = this.state.inventory.find(i=>i.id===id);
+            if (item) item.isFavorite = !item.isFavorite;
+            this.saveState();
+            this.showItemDetail(item);
+        }
+
+        applyStickerModal(itemId) {
+            const item = this.state.inventory.find(i=>i.id===itemId);
+            if (!item || item.stickers.length>=5) return;
+            const stickers = this.state.inventory.filter(i=>i.type==='sticker');
+            if (stickers.length===0) { alert('Нет стикеров'); return; }
+            const t = (k)=>this.translations[this.locale][k]||k;
+            const modal = document.getElementById('item-detail-modal');
+            modal.classList.add('active');
+            const content = document.getElementById('item-detail-content');
+            content.innerHTML = '<h3>Выберите стикер</h3>';
+            stickers.forEach(s=>{
+                const btn = document.createElement('button');
+                btn.textContent = `${this.getItemEmoji(s)} ${s.name}`;
+                btn.onclick = ()=>{
+                    item.stickers.push(s.name);
+                    this.state.inventory = this.state.inventory.filter(i=>i.id!==s.id);
+                    this.saveState();
+                    this.showItemDetail(item);
+                };
+                content.appendChild(btn);
+            });
+            content.innerHTML += '<button onclick="ArsenalZone.closeModal()">Отмена</button>';
+        }
+
+        tradeUp() {
+            const t = (k)=>this.translations[this.locale][k]||k;
+            const rarityOrder = this.rarities;
+            const itemsByRarity = {};
+            this.state.inventory.forEach(i=>{
+                if (!itemsByRarity[i.rarity]) itemsByRarity[i.rarity]=[];
+                itemsByRarity[i.rarity].push(i);
+            });
+            let selectedRarity = null;
+            for (let r of rarityOrder) {
+                if (itemsByRarity[r] && itemsByRarity[r].length>=10) {
+                    selectedRarity = r; break;
+                }
+            }
+            if (!selectedRarity) return alert('Нет 10 предметов одной редкости');
+            const nextRarity = rarityOrder[rarityOrder.indexOf(selectedRarity)+1];
+            if (!nextRarity) return alert('Нельзя улучшить Gold');
+            const sacrifice = itemsByRarity[selectedRarity].slice(0,10);
+            sacrifice.forEach(i=> this.state.inventory = this.state.inventory.filter(x=>x.id!==i.id));
+            const newItem = this.generateItem('Arms Deal', 'weapon');
+            newItem.rarity = nextRarity;
+            this.addItem(newItem);
+            this.saveState();
+            this.renderInventory();
+            alert(`Получен предмет редкости ${nextRarity}!`);
+        }
+
+        openCaseSelect() {
+            const t = (k)=>this.translations[this.locale][k]||k;
+            const modal = document.getElementById('case-select-modal');
+            modal.classList.add('active');
+            const content = document.getElementById('case-select-content');
+            content.innerHTML = '<h3>Выберите кейс</h3>';
+            if (this.state.cases.length===0) {
+                content.innerHTML += '<p>Нет кейсов. Купите в магазине.</p>';
+            } else {
+                this.state.cases.forEach((c,idx)=>{
+                    const btn = document.createElement('button');
+                    btn.textContent = `${c.collection} (${c.type})`;
+                    btn.onclick = ()=>{
+                        modal.classList.remove('active');
+                        this.openCase(c.collection, c.type);
+                    };
+                    content.appendChild(btn);
+                });
+            }
+            content.innerHTML += '<button onclick="ArsenalZone.closeModal()">Закрыть</button>';
+        }
+
+        prepareMinigamesView() {
+            const view = document.getElementById('view-minigames');
+            const t = (k)=>this.translations[this.locale][k]||k;
+            view.innerHTML = `
+                <h2>${t('minigames')}</h2>
+                <div style="display:flex;gap:10px;flex-direction:column;">
+                    <button onclick="Game.startUpgrader()">${t('upgrade')}</button>
+                    <button onclick="Game.startTicTacToe()">${t('tictactoe')}</button>
+                </div>
+                <div id="minigame-container"></div>
+            `;
+        }
+
+        startUpgrader() {
+            if (this.state.inventory.length===0) return alert('Нет предметов');
+            if (this.state.balance<10) return alert('Недостаточно $');
+            this.state.balance-=10;
+            const item = this.state.inventory[Math.floor(Math.random()*this.state.inventory.length)];
+            const roll = Math.random();
+            if (roll<0.7) {
+                item.wear = Math.max(0.0000000001, item.wear-0.05);
+                alert('Износ улучшен!');
+            } else if (roll<0.95) {
+                alert('Ничего не изменилось.');
+            } else if (roll<0.99) {
+                const curIdx = this.rarities.indexOf(item.rarity);
+                if (curIdx<this.rarities.length-1) {
+                    item.rarity = this.rarities[curIdx+1];
+                    alert('Редкость повышена!');
+                } else alert('Максимальная редкость.');
+            } else {
+                this.state.inventory = this.state.inventory.filter(i=>i.id!==item.id);
+                alert('Предмет сломан!');
+            }
+            this.state.stats.upgrades = (this.state.stats.upgrades||0)+1;
+            this.state.quests.daily.find(q=>q.id==='upgrade5').progress++;
+            this.saveState(); this.renderInventory(); this.updateBalanceDisplay();
+            this.checkQuests();
+        }
+
+        startTicTacToe() {
+            if (this.state.energy<1) return alert('Нет энергии');
+            this.state.energy--;
+            this.updateEnergyDisplay();
+            const container = document.getElementById('minigame-container');
+            container.innerHTML = '';
+            const board = Array(9).fill(null);
+            let gameOver = false;
+            const renderBoard = ()=>{
+                container.innerHTML = '';
+                for (let i=0;i<9;i++) {
+                    const cell = document.createElement('div');
+                    cell.style='width:60px;height:60px;border:1px solid #555;display:inline-flex;align-items:center;justify-content:center;font-size:2rem;cursor:pointer;';
+                    cell.textContent = board[i]||'';
+                    cell.onclick = ()=>{
+                        if (gameOver || board[i]) return;
+                        board[i]='X'; renderBoard();
+                        if (checkWin(board,'X')) { gameOver=true; this.handleTTTResult('win'); return; }
+                        if (board.every(c=>c)) { gameOver=true; this.handleTTTResult('draw'); return; }
+                        this.tttAI(board);
+                        renderBoard();
+                        if (checkWin(board,'O')) { gameOver=true; this.handleTTTResult('lose'); return; }
+                        if (board.every(c=>c)) { gameOver=true; this.handleTTTResult('draw'); }
+                    };
+                    container.appendChild(cell);
+                }
+            };
+            renderBoard();
+        }
+
+        tttAI(board) {
+            const empty = board.map((v,i)=>v===null?i:null).filter(v=>v!==null);
+            if (empty.length===0) return;
+            let best = -Infinity, move = empty[0];
+            for (let i of empty) {
+                board[i]='O';
+                const score = this.minimax(board,0,false);
+                board[i]=null;
+                if (score>best) { best=score; move=i; }
+            }
+            board[move]='O';
+        }
+
+        minimax(board,depth,isMax) {
+            if (checkWin(board,'O')) return 10-depth;
+            if (checkWin(board,'X')) return depth-10;
+            if (board.every(c=>c)) return 0;
+            const empty = board.map((v,i)=>v===null?i:null).filter(v=>v!==null);
+            if (isMax) {
+                let best = -Infinity;
+                for (let i of empty) {
+                    board[i]='O';
+                    best = Math.max(best, this.minimax(board,depth+1,false));
+                    board[i]=null;
+                }
+                return best;
+            } else {
+                let best = Infinity;
+                for (let i of empty) {
+                    board[i]='X';
+                    best = Math.min(best, this.minimax(board,depth+1,true));
+                    board[i]=null;
+                }
+                return best;
+            }
+        }
+
+        handleTTTResult(result) {
+            const q = this.state.quests.daily.find(q=>q.id==='ttt2');
+            if (result==='win') {
+                this.state.balance+=5;
+                this.state.stats.tttWins = (this.state.stats.tttWins||0)+1;
+                q.progress++;
+                alert('Победа! +5$');
+            } else if (result==='draw') {
+                this.state.balance+=1; alert('Ничья! +1$');
+            } else alert('Поражение.');
+            this.saveState(); this.updateBalanceDisplay();
+            this.checkQuests();
+            this.renderMinigames();
+        }
+
+        prepareProfileView() {
+            const view = document.getElementById('view-profile');
+            const t = (k)=>this.translations[this.locale][k]||k;
+            view.innerHTML = `
+                <h2>${t('profile_title')}</h2>
+                <div class="profile-stat"><span>${t('cases_opened')}:</span><span id="stat-cases">${this.state.stats.casesOpened}</span></div>
+                <div class="profile-stat"><span>${t('items_collected')}:</span><span id="stat-items">${this.state.stats.itemsCollected}</span></div>
+                <div class="profile-stat"><span>${t('gold_items')}:</span><span id="stat-gold">${this.state.stats.goldItems}</span></div>
+                <div class="profile-stat"><span>Побед в крестиках-ноликах:</span><span>${this.state.stats.tttWins||0}</span></div>
+                <h3>Достижения</h3>
+                <div id="achievements-list"></div>
+                <button class="danger" onclick="Game.resetProgress()">${t('reset')}</button>
+            `;
+            this.renderAchievements();
+        }
+
+        renderAchievements() {
+            const list = document.getElementById('achievements-list');
+            if (!list) return;
+            list.innerHTML = this.state.achievements.map(a=>`
+                <div class="achievement">
+                    <span>${a.desc}</span><span>${a.unlocked?'✅':'🔒'}</span>
+                </div>
+            `).join('');
+        }
+
+        checkAchievements() {
+            const a = this.state.achievements;
+            if (this.state.stats.casesOpened>=1) a.find(x=>x.id==='first_case').unlocked=true;
+            if (this.state.stats.goldItems>=1) a.find(x=>x.id==='gold_found').unlocked=true;
+            if (this.state.stats.itemsCollected>=10) a.find(x=>x.id==='collector_10').unlocked=true;
+            if (this.state.inventory.some(i=>i.rarity==='Gold'&&i.type!=='knife')) a.find(x=>x.id==='upgrade_master').unlocked=true;
+            if ((this.state.stats.tttWins||0)>=10) a.find(x=>x.id==='ttt_master').unlocked=true;
+            this.saveState();
+        }
+
+        prepareQuestsView() {
+            const view = document.getElementById('view-quests');
+            const t = (k)=>this.translations[this.locale][k]||k;
+            view.innerHTML = `<h2>${t('quest_daily')}</h2><div id="quests-list"></div>`;
+            this.renderQuests();
+        }
+
+        renderQuests() {
+            const list = document.getElementById('quests-list');
+            if (!list) return;
+            list.innerHTML = this.state.quests.daily.map(q=>`
+                <div class="quest-item">
+                    <span>${q.desc} (${q.progress}/${q.goal})</span>
+                    ${q.completed?`<span>✅ +${q.reward}$</span>`:''}
+                </div>
+            `).join('');
+        }
+
+        checkQuests() {
+            this.state.quests.daily.forEach(q=>{
+                if (!q.completed && q.progress>=q.goal) {
+                    q.completed=true;
+                    this.state.balance+=q.reward;
+                    alert(`Квест выполнен! +${q.reward}$`);
+                }
+            });
+            this.saveState();
+            this.updateBalanceDisplay();
+        }
+
+        prepareShopView() {
+            const view = document.getElementById('view-shop');
+            const t = (k)=>this.translations[this.locale][k]||k;
+            view.innerHTML = `<h2>${t('shop_title')}</h2><div id="shop-items"></div>`;
+            this.renderShop();
+        }
+
+        renderShop() {
+            const container = document.getElementById('shop-items');
+            if (!container) return;
+            const t = (k)=>this.translations[this.locale][k]||k;
+            const offers = [
+                { name:'Arms Deal Case', collection:'Arms Deal', type:'weapon', price:20 },
+                { name:'Chroma Case', collection:'Chroma', type:'weapon', price:20 },
+                { name:'Sticker Capsule', collection:'Sticker Capsule', type:'sticker', price:10 },
+                { name:'Agent Pack', collection:'Agent Pack', type:'agent', price:15 }
+            ];
+            container.innerHTML = offers.map(o=>`
+                <div style="margin:5px 0;background:var(--panel);padding:10px;border-radius:5px;display:flex;justify-content:space-between;">
+                    <span>${o.name} - ${t('price')}: $${o.price}</span>
+                    <button onclick="Game.buyCase('${o.collection}','${o.type}',${o.price})">${t('buy')}</button>
+                </div>
+            `).join('');
+        }
+
+        buyCase(collection, type, price) {
+            if (this.state.balance<price) return alert('Недостаточно $');
+            this.state.balance-=price;
+            this.state.cases.push({collection, type});
+            this.saveState();
+            this.updateBalanceDisplay();
+            this.renderInventory();
+        }
+
+        regenerateEnergy() {
+            const now = Date.now();
+            const elapsed = now - this.state.lastEnergyTime;
+            const minutes = Math.floor(elapsed/60000);
+            if (minutes>0) {
+                this.state.energy = Math.min(this.state.maxEnergy, this.state.energy + minutes);
+                this.state.lastEnergyTime += minutes*60000;
+                this.saveState();
+            }
+            this.updateEnergyDisplay();
+        }
+
+        updateEnergyDisplay() {
+            document.getElementById('energy').textContent = `⚡ ${this.state.energy}/${this.state.maxEnergy}`;
+        }
+
+        updateBalanceDisplay() {
+            document.getElementById('balance').textContent = `$${this.state.balance.toFixed(2)}`;
+        }
+
+        dailyCheck() {
+            const today = new Date().toDateString();
+            if (this.state.lastDailyBonus !== today) {
+                const bonus = Math.floor(Math.random()*40)+10;
+                this.state.balance += bonus;
+                this.state.lastDailyBonus = today;
+                alert(`Ежедневный бонус: +${bonus}$`);
+                this.saveState();
+                this.updateBalanceDisplay();
+            }
+        }
+
+        checkDailyReset() {
+            const today = new Date().toDateString();
+            if (this.state.quests.lastDailyReset !== today) {
+                this.state.quests.daily.forEach(q=>{ q.progress=0; q.completed=false; });
+                this.state.quests.lastDailyReset = today;
+                this.saveState();
+            }
+        }
+
+        exportSave() {
+            const data = JSON.stringify(this.state);
+            const blob = new Blob([data],{type:'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href=url; a.download='arsenalzone_backup.json'; a.click();
+        }
+
+        importSavePrompt() {
+            const input = document.createElement('input');
+            input.type='file'; input.accept='.json';
+            input.onchange=(e)=>{
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload=(ev)=>{
+                    try {
+                        const data = JSON.parse(ev.target.result);
+                        this.state = data;
+                        this.saveState();
+                        location.reload();
+                    } catch { alert('Неверный файл'); }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        resetProgress() {
+            if (confirm('Удалить весь прогресс?')) {
+                localStorage.removeItem('arsenalzone_save');
+                location.reload();
+            }
+        }
+
+        updateUILanguage() {
+            const t = (k)=>this.translations[this.locale][k]||k;
+            document.querySelectorAll('nav button').forEach(b=>{
+                const view = b.dataset.view;
+                b.textContent = t(view);
+            });
+            document.getElementById('case-modal-title').textContent = t('openCase')||'Открытие кейса';
+            this.renderInventory();
+            this.renderProfile();
+            this.renderQuests();
+            this.renderShop();
+            this.renderMinigames();
+        }
+
+        renderMinigames() {
+            const view = document.getElementById('view-minigames');
+            if (view) this.prepareMinigamesView();
+        }
+
+        renderProfile() {
+            const view = document.getElementById('view-profile');
+            if (view) this.prepareProfileView();
+        }
+    }
+
+    function checkWin(board, player) {
+        const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+        return wins.some(w=>w.every(i=>board[i]===player));
+    }
+
+    window.addEventListener('load',()=>{
+        window.Game = new ArsenalZone();
+    });
+    </script>
+</body>
+</html>
