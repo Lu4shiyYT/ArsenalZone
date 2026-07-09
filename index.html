@@ -55,6 +55,7 @@
         .item-card[data-rarity="Relic"]{border-left-color:var(--relic)}
         .item-card[data-rarity="Gold"]{border-left-color:var(--gold)}
         .item-img{width:80px;height:60px;object-fit:contain;margin-bottom:5px}
+        .favorite-badge{position:absolute;top:5px;right:5px;font-size:1rem;color:var(--accent)}
         .modal{
             position:fixed;top:0;left:0;width:100%;height:100%;
             background:rgba(0,0,0,0.8);display:none;justify-content:center;
@@ -79,6 +80,10 @@
         .filter-bar select,.filter-bar button{padding:5px 10px;background:var(--button);color:var(--text);border:none;border-radius:4px}
         .quest-item{background:var(--panel);padding:10px;margin:5px 0;border-radius:5px}
         .achievement{background:var(--panel);padding:8px;margin:4px 0;border-radius:5px;display:flex;justify-content:space-between}
+        .sticker-select-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+        .sticker-select-item{background:var(--button);border-radius:6px;padding:5px;cursor:pointer;text-align:center}
+        .sticker-select-item:hover{background:var(--button-hover)}
+        .sticker-select-item img{width:50px;height:40px;object-fit:contain}
     </style>
 </head>
 <body>
@@ -157,7 +162,6 @@
             const raw = localStorage.getItem('arsenalzone_save');
             if (raw) { try { return JSON.parse(raw); } catch(e) {} }
             const state = this.defaultState();
-            // Инициализируем фильтры по умолчанию, если их нет
             if (!state.filterType) state.filterType = 'all';
             if (!state.filterRarity) state.filterRarity = 'all';
             return state;
@@ -180,7 +184,7 @@
                     {id:'ttt_master',desc:'Выиграть 10 партий в крестики-нолики',unlocked:false}
                 ],
                 settings:{language:'ru'},lastDailyBonus:null,
-                filterType:'all', filterRarity:'all'
+                filterType:'all',filterRarity:'all'
             };
         }
 
@@ -189,14 +193,34 @@
         initData() {
             this.rarities = ['Usual','Frequent','Conveyor-type','Rare','Unique','Relic','Gold'];
             this.rarityColors = {'Usual':'#6b6b6b','Frequent':'#a0a0a0','Conveyor-type':'#8845ff','Rare':'#4b69ff','Unique':'#d32ce6','Relic':'#37d63c','Gold':'#ffd700'};
+            // ===== ТУТ ДОБАВЛЯТЬ НОВЫЕ КОЛЛЕКЦИИ / СКИНЫ =====
             this.collections = {
-                'Arms Deal':{weapons:['AK-47','M4A4','AWP','Desert Eagle'],knife:'M9 Bayonet',gloves:'Titan Gloves',charm:'Dog Tag'},
-                'Chroma':{weapons:['M4A1-S','USP-S','Glock-18','P250'],knife:'Butterfly Knife',gloves:'Polymer Gloves',charm:'Lucky Cat'},
-                'Sticker Capsule':{stickers:['Furia','NaVi','G2','Spirit']},
-                'Agent Pack':{agents:['SAS','FBI','SWAT','GIGN']}
+                'Arms Deal': {
+                    weapons: [
+                        { name: 'MP9 | Солнечный Разлом', rarity: 'Usual' },
+                        { name: 'MAC-10 | Теневая Нить', rarity: 'Usual' },
+                        { name: 'P250 | Рубиновый Каскад', rarity: 'Frequent' },
+                        { name: 'Glock-18 | Кобальтовый Клык', rarity: 'Frequent' },
+                        { name: 'USP-S | Призрак Бездны', rarity: 'Conveyor-type' },
+                        { name: 'M4A1-S | Тлеющий Страж', rarity: 'Conveyor-type' },
+                        { name: 'Desert Eagle | Арктический Пульс', rarity: 'Rare' },
+                        { name: 'PP-17 | Обсидиановый Поток', rarity: 'Rare' },
+                        { name: 'AK-47 | Фантомный Хекс', rarity: 'Unique' },
+                        { name: 'M4A4 | Неоновый Осколок', rarity: 'Relic' }
+                    ],
+                    knife: [
+                        { name: 'M9 Bayonet | Просвет', rarity: 'Gold' },
+                        { name: 'M9 Bayonet | Золотой фрукт', rarity: 'Gold' },
+                        { name: 'M9 Bayonet | Слива', rarity: 'Gold' },
+                        { name: 'M9 Bayonet | Змеиный клык', rarity: 'Gold' },
+                        { name: 'M9 Bayonet | Сицилийский', rarity: 'Gold' }
+                    ]
+                },
+                'Chroma':{weapons:['M4A1-S','USP-S','Glock-18','P250'],knife:'Butterfly Knife'},
+                'Sticker Capsule':{stickers:['Banana','NaVi','G2','Spirit']},
+                'Agent Pack':{agents:['SASiska','Force','SWAG','GIGachad']}
             };
-            this.typeOrder = ['case','capsule','knife','gloves','weapon','sticker','charm','agent'];
-            // Новые шансы редкостей (сумма 100%)
+            this.typeOrder = ['knife','gloves','weapon','case','capsule','sticker','charm','agent'];
             this.rarityChances = [
                 { rarity: 'Usual', chance: 35.4 },
                 { rarity: 'Frequent', chance: 32.5 },
@@ -208,14 +232,17 @@
             ];
         }
 
-        getRandomRarity() {
+        // Модифицируем случайную редкость: если allowGold=false, исключаем Gold из таблицы
+        getRandomRarity(allowGold = true) {
             const rand = Math.random() * 100;
             let cumulative = 0;
             for (const r of this.rarityChances) {
+                if (!allowGold && r.rarity === 'Gold') continue;
                 cumulative += r.chance;
                 if (rand < cumulative) return r.rarity;
             }
-            return 'Usual';
+            // на случай, если сумма меньше 100% (без Gold), вернуть Relic
+            return allowGold ? 'Usual' : 'Relic';
         }
 
         generateItemImage(item) {
@@ -237,46 +264,78 @@
             return canvas.toDataURL();
         }
 
-        generateItem(collectionName, dropType) {
+        pickRandom(data) {
+            if (!data) return null;
+            if (Array.isArray(data)) return data[Math.floor(Math.random() * data.length)];
+            return data;
+        }
+
+        // Добавлен параметр allowGold (по умолчанию true)
+        generateItem(collectionName, dropType, allowGold = true) {
             const col = this.collections[collectionName];
             if (!col) return null;
             let itemType = dropType;
-            let itemName;
             if (!itemType) {
-                if (col.weapons) itemType='weapon';
-                else if (col.stickers) itemType='sticker';
-                else if (col.agents) itemType='agent';
+                if (col.weapons) itemType = 'weapon';
+                else if (col.stickers) itemType = 'sticker';
+                else if (col.agents) itemType = 'agent';
+                else if (col.knife) itemType = 'knife';
+                else if (col.gloves) itemType = 'gloves';
+                else if (col.charm) itemType = 'charm';
             }
-            switch(itemType) {
-                case 'weapon': itemName=col.weapons[Math.floor(Math.random()*col.weapons.length)]; break;
-                case 'knife': itemName=col.knife||'M9 Bayonet'; break;
-                case 'gloves': itemName=col.gloves||'Titan Gloves'; break;
-                case 'charm': itemName=col.charm||'Dog Tag'; break;
-                case 'sticker': itemName=col.stickers[Math.floor(Math.random()*col.stickers.length)]; break;
-                case 'agent': itemName=col.agents[Math.floor(Math.random()*col.agents.length)]; break;
+
+            let data;
+            switch (itemType) {
+                case 'weapon': data = this.pickRandom(col.weapons); break;
+                case 'knife': data = this.pickRandom(col.knife); break;
+                case 'gloves': data = this.pickRandom(col.gloves); break;
+                case 'charm': data = this.pickRandom(col.charm); break;
+                case 'sticker': data = this.pickRandom(col.stickers); break;
+                case 'agent': data = this.pickRandom(col.agents); break;
                 default: return null;
             }
-            if (!itemName) return null;
+            if (!data) return null;
 
-            let rarity = this.getRandomRarity();
-            if (itemType==='knife'||itemType==='gloves') rarity='Gold';
+            const name = typeof data === 'string' ? data : data.name;
+            let rarity;
+            if (itemType === 'knife' || itemType === 'gloves') {
+                rarity = 'Gold';
+            } else {
+                // Если allowGold=false, игнорируем даже фиксированную редкость Gold, заменяем на Relic
+                const fixedRarity = (typeof data === 'object' && data.rarity) ? data.rarity : null;
+                if (!allowGold && fixedRarity === 'Gold') {
+                    rarity = 'Relic';
+                } else if (fixedRarity) {
+                    rarity = fixedRarity;
+                } else {
+                    rarity = this.getRandomRarity(allowGold);
+                }
+            }
+            const image = (typeof data === 'object' && data.image) ? data.image : null;
 
-            let wear=0,wearCat='',pattern=0;
-            if (itemType!=='agent' && itemType!=='sticker' && itemType!=='charm') {
-                wear = Math.random()*0.9999999998+0.0000000001;
-                if (wear<0.2000000001) wearCat='Battle-Scarred';
-                else if (wear<0.4500000001) wearCat='Well-Worn';
-                else if (wear<0.8000000001) wearCat='Field-Tested';
-                else wearCat='Minimal Wear';
-                pattern = Math.floor(Math.random()*10000);
+            let wear = 0, wearCat = '', pattern = 0;
+            if (itemType !== 'agent' && itemType !== 'sticker' && itemType !== 'charm') {
+                wear = Math.random() * 0.9999999998 + 0.0000000001;
+                if (wear < 0.1000000000) wearCat = 'Practically New';
+                else if (wear < 0.2500000000) wearCat = 'Lightly-Used';
+                else if (wear < 0.4000000000) wearCat = 'Worn';
+                else wearCat = 'Heavily-Worn';
+                pattern = Math.floor(Math.random() * 10000);
             }
 
             const item = {
-                id: Date.now()+Math.random().toString(36),
-                type: itemType, collection: collectionName, name: itemName, rarity,
-                wear, wearCategory: wearCat, pattern, stickers: [], isFavorite: false
+                id: Date.now() + Math.random().toString(36),
+                type: itemType,
+                collection: collectionName,
+                name: name,
+                rarity,
+                wear,
+                wearCategory: wearCat,
+                pattern,
+                stickers: [],
+                isFavorite: false
             };
-            item.image = this.generateItemImage(item);
+            item.image = image || this.generateItemImage(item);
             return item;
         }
 
@@ -305,36 +364,51 @@
             const canvas = document.getElementById('case-canvas');
             const ctx = canvas.getContext('2d');
             const items = [];
+
+            // Генерируем ленту БЕЗ золотых предметов (allowGold = false)
             for (let i=0;i<40;i++) {
-                const it = this.generateItem(collectionName, dropType);
+                const it = this.generateItem(collectionName, dropType, false);
                 it.imageObj = new Image();
                 it.imageObj.src = it.image;
                 items.push(it);
             }
-            // Золотой предмет появляется только если выпал по шансу (в generateItem уже учтено)
-            // Ищем, есть ли в сгенерированной ленте золотой предмет. Если есть, он должен выпасть гарантированно.
-            let goldIndex = items.findIndex(it => it.rarity === 'Gold');
+
+            // Проверяем, выпал ли золотой предмет по глобальному шансу
+            const goldChance = this.rarityChances.find(r => r.rarity === 'Gold').chance;
+            const isGold = Math.random() * 100 < goldChance;
             let stopIdx, wonItem;
-            if (goldIndex !== -1) {
-                stopIdx = goldIndex;
-                wonItem = items[stopIdx];
+            if (isGold) {
+                // Генерируем нож или перчатки (золотой предмет)
+                const goldType = (dropType === 'weapon' || dropType === 'knife' || dropType === 'gloves') 
+                    ? (Math.random() < 0.5 ? 'knife' : 'gloves') 
+                    : dropType;
+                const goldItem = this.generateItem(collectionName, goldType, true);
+                goldItem.imageObj = new Image();
+                goldItem.imageObj.src = goldItem.image;
+                // Помещаем золотой предмет ТОЛЬКО в самый конец ленты (индексы 38-39)
+                stopIdx = 38 + Math.floor(Math.random() * 2);
+                items[stopIdx] = goldItem;
+                wonItem = goldItem;
             } else {
-                stopIdx = 20 + Math.floor(Math.random()*5);
+                stopIdx = 20 + Math.floor(Math.random() * 5);
                 wonItem = items[stopIdx];
             }
 
             const itemWidth = 80;
             const totalWidth = items.length * itemWidth;
             const centerX = canvas.width/2 - itemWidth/2;
-            let startTime = performance.now();
+            const totalCycles = 3;
+            const targetDistance = totalCycles * totalWidth + (stopIdx * itemWidth - centerX);
             const duration = 5000;
+            let startTime = performance.now();
 
             const draw = (now) => {
                 const elapsed = now - startTime;
                 if (elapsed >= duration) {
-                    const finalOffset = stopIdx * itemWidth - centerX;
+                    const finalOffset = targetDistance;
+                    const displayOffset = finalOffset % totalWidth;
                     ctx.clearRect(0,0,canvas.width,canvas.height);
-                    this.drawItems(ctx, items, finalOffset, itemWidth, true);
+                    this.drawItems(ctx, items, displayOffset, itemWidth);
                     this.drawCenterLine(ctx, canvas);
                     setTimeout(() => {
                         modal.classList.remove('active');
@@ -348,19 +422,17 @@
                 }
                 const progress = elapsed / duration;
                 const easeOutCubic = 1 - Math.pow(1 - progress, 3);
-                const totalCycles = 3;
-                const targetDistance = totalCycles * totalWidth + (stopIdx * itemWidth - centerX);
                 const currentOffset = targetDistance * easeOutCubic;
                 const displayOffset = currentOffset % totalWidth;
                 ctx.clearRect(0,0,canvas.width,canvas.height);
-                this.drawItems(ctx, items, displayOffset, itemWidth, false);
+                this.drawItems(ctx, items, displayOffset, itemWidth);
                 this.drawCenterLine(ctx, canvas);
                 requestAnimationFrame(draw);
             };
             requestAnimationFrame(draw);
         }
 
-        drawItems(ctx, items, offset, itemWidth, finalFrame) {
+        drawItems(ctx, items, offset, itemWidth) {
             const canvas = ctx.canvas;
             const startX = -offset;
             for (let i=0; i<items.length*2; i++) {
@@ -461,19 +533,14 @@
 
         sortInventory(items) {
             return items.sort((a,b) => {
-                // 1. Избранные первыми
                 if (a.isFavorite !== b.isFavorite) return a.isFavorite ? -1 : 1;
-                // 2. Порядок типов
                 const typeA = this.typeOrder.indexOf(a.type);
                 const typeB = this.typeOrder.indexOf(b.type);
                 if (typeA !== typeB) return typeA - typeB;
-                // 3. По редкости от лучшей к худшей
                 const rarityA = this.rarities.indexOf(a.rarity);
                 const rarityB = this.rarities.indexOf(b.rarity);
                 if (rarityA !== rarityB) return rarityB - rarityA;
-                // 4. По имени (одинаковые идут рядом)
                 if (a.name !== b.name) return a.name.localeCompare(b.name);
-                // 5. По износу (если есть)
                 return (a.wear || 0) - (b.wear || 0);
             });
         }
@@ -482,7 +549,6 @@
             const container = document.getElementById('view-inventory');
             if (!container) return;
             const t = (k)=>this.translations[this.locale][k]||k;
-            // Сохраняем текущие фильтры из state
             const currentType = this.state.filterType || 'all';
             const currentRarity = this.state.filterRarity || 'all';
 
@@ -542,6 +608,7 @@
                 card.className='item-card';
                 card.dataset.rarity=item.rarity;
                 card.innerHTML = `
+                    ${item.isFavorite ? '<span class="favorite-badge">⭐</span>' : ''}
                     <img src="${item.image}" class="item-img" alt="${item.name}">
                     <span class="item-name">${item.name}</span>
                     <span class="item-wear">${item.type==='case'||item.type==='capsule'?item.collection:item.wearCategory+' '+item.pattern}</span>
@@ -596,12 +663,15 @@
             modal.classList.add('active');
             const content = document.getElementById('item-detail-content');
             const showWear = item.type!=='agent' && item.type!=='sticker' && item.type!=='charm';
+            const stickersHtml = item.stickers.length > 0 
+                ? item.stickers.map(s => `🏷️ ${s}`).join(', ')
+                : 'Нет';
             content.innerHTML = `
                 <div style="text-align:center"><img src="${item.image}" style="width:200px;height:150px;object-fit:contain;border-radius:8px;margin-bottom:10px"></div>
                 <h3>${item.name} <span style="color:${this.rarityColors[item.rarity]}">${item.rarity}</span></h3>
                 <p>${t('type')}: ${item.type} | ${t('collection')}: ${item.collection}</p>
                 ${showWear ? `<p>${t('pattern')}: ${String(item.pattern).padStart(4,'0')}</p><p>${t('wear')}: ${item.wearCategory} (${item.wear.toFixed(9)})</p>` : ''}
-                <p>${t('stickers')}: ${item.stickers.map(s=>`<span>🏷️</span>`).join(' ')||'Нет'}</p>
+                <p>${t('stickers')}: ${stickersHtml}</p>
                 <button onclick="Game.sellItem('${item.id}')">${t('sell')} ($${this.getItemPrice(item).toFixed(2)})</button>
                 ${(item.type==='weapon'||item.type==='knife'||item.type==='gloves')?`<button onclick="Game.applyStickerModal('${item.id}')">${t('apply_sticker')}</button>`:''}
                 <button onclick="Game.toggleFavorite('${item.id}')">${item.isFavorite?'💔':'❤️'}</button>
@@ -641,23 +711,34 @@
             const modal = document.getElementById('item-detail-modal');
             modal.classList.add('active');
             const content = document.getElementById('item-detail-content');
+
             if (stickers.length===0) {
-                content.innerHTML = `<p>${t('no_stickers')}</p><button onclick="Game.closeModal()">${t('back')}</button>`;
+                content.innerHTML = `<p>${t('no_stickers')}</p>`;
+                const backBtn = document.createElement('button');
+                backBtn.textContent = t('back');
+                backBtn.onclick = ()=> this.closeModal();
+                content.appendChild(backBtn);
                 return;
             }
-            content.innerHTML = '<h3>Выберите стикер</h3>';
+
+            content.innerHTML = '<h3>Выберите стикер</h3><div class="sticker-select-grid" id="sticker-grid"></div>';
+            const grid = document.getElementById('sticker-grid');
             stickers.forEach(s=>{
-                const btn = document.createElement('button');
-                btn.textContent = `${s.name}`;
-                btn.onclick = ()=>{
+                const div = document.createElement('div');
+                div.className = 'sticker-select-item';
+                div.innerHTML = `<img src="${s.image}" alt="${s.name}"><br><small>${s.name}</small>`;
+                div.onclick = ()=>{
                     item.stickers.push(s.name);
                     this.state.inventory = this.state.inventory.filter(i=>i.id!==s.id);
                     this.saveState();
                     this.showItemDetail(item);
                 };
-                content.appendChild(btn);
+                grid.appendChild(div);
             });
-            content.innerHTML += `<br><button onclick="Game.closeModal()">${t('back')}</button>`;
+            const backBtn = document.createElement('button');
+            backBtn.textContent = t('back');
+            backBtn.onclick = ()=> this.closeModal();
+            content.appendChild(backBtn);
         }
 
         prepareMinigamesView() {
