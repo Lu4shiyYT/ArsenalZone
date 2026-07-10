@@ -6,84 +6,42 @@
     <title>ArsenalZone</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif}
-        :root{
-            --bg:#1b1b1b;--panel:#2a2a2a;--text:#ccc;--accent:#ffd700;
-            --usual:#6b6b6b;--frequent:#a0a0a0;--conveyor:#8845ff;--rare:#4b69ff;
-            --unique:#d32ce6;--relic:#37d63c;--gold:#ffd700;--button:#3a3a3a;
-            --button-hover:#4d4d4d;--danger:#e74c3c;--success:#2ecc71;
-        }
-        body{
-            background:var(--bg);color:var(--text);height:100vh;overflow:hidden;
-            display:flex;flex-direction:column;user-select:none;-webkit-tap-highlight-color:transparent;
-        }
-        header{
-            background:var(--panel);padding:10px 15px;display:flex;align-items:center;
-            justify-content:space-between;border-bottom:1px solid #444;flex-shrink:0;
-        }
-        .balance{font-weight:bold;color:var(--gold)}
-        .energy{font-size:0.9em;color:#4fc3f7}
-        nav{
-            display:flex;background:var(--panel);border-top:1px solid #444;flex-shrink:0;
-        }
-        nav button{
-            flex:1;padding:12px 5px;background:transparent;color:var(--text);
-            border:none;border-bottom:3px solid transparent;font-size:0.85rem;
-            cursor:pointer;transition:0.2s;
-        }
+        :root{--bg:#1b1b1b;--panel:#2a2a2a;--text:#ccc;--accent:#ffd700;--usual:#6b6b6b;--frequent:#a0a0a0;--conveyor:#8845ff;--rare:#4b69ff;--unique:#d32ce6;--relic:#37d63c;--gold:#ffd700;--button:#3a3a3a;--button-hover:#4d4d4d;--danger:#e74c3c;--success:#2ecc71}
+        body{background:var(--bg);color:var(--text);height:100vh;overflow:hidden;display:flex;flex-direction:column;user-select:none;-webkit-tap-highlight-color:transparent}
+        header{background:var(--panel);padding:10px 15px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #444;flex-shrink:0}
+        .balance{font-weight:bold;color:var(--gold)}.energy{font-size:0.9em;color:#4fc3f7}
+        nav{display:flex;background:var(--panel);border-top:1px solid #444;flex-shrink:0}
+        nav button{flex:1;padding:12px 5px;background:transparent;color:var(--text);border:none;border-bottom:3px solid transparent;font-size:0.85rem;cursor:pointer;transition:0.2s}
         nav button.active{border-bottom-color:var(--accent);color:#fff}
-        main{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column}
-        .view{display:none;flex:1;flex-direction:column}
-        .view.active{display:flex}
-        .inventory-grid{
-            display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:10px;
-        }
+        main{flex:1;overflow-y:auto;padding:10px 10px 60px 10px;display:flex;flex-direction:column}
+        .view{display:none;flex:1;flex-direction:column}.view.active{display:flex}
+        .inventory-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:10px}
         @media(max-width:600px){.inventory-grid{grid-template-columns:repeat(3,1fr)}}
-        .item-card{
-            background:var(--panel);border-radius:6px;padding:5px;
-            border-left:4px solid var(--usual);cursor:pointer;position:relative;
-            transition:0.2s;display:flex;flex-direction:column;align-items:center;
-            min-height:120px;justify-content:center;
-        }
-        .item-card:hover{background:#3a3a3a}
-        .item-name{font-size:0.7rem;text-align:center;margin:4px 0}
-        .item-wear{font-size:0.6rem;color:#999}
-        .item-card[data-rarity="Usual"]{border-left-color:var(--usual)}
-        .item-card[data-rarity="Frequent"]{border-left-color:var(--frequent)}
-        .item-card[data-rarity="Conveyor-type"]{border-left-color:var(--conveyor)}
-        .item-card[data-rarity="Rare"]{border-left-color:var(--rare)}
-        .item-card[data-rarity="Unique"]{border-left-color:var(--unique)}
-        .item-card[data-rarity="Relic"]{border-left-color:var(--relic)}
-        .item-card[data-rarity="Gold"]{border-left-color:var(--gold)}
-        .item-img{width:80px;height:60px;object-fit:contain;margin-bottom:5px}
-        .favorite-badge{position:absolute;top:5px;right:5px;font-size:1rem;color:var(--accent)}
-        .modal{
-            position:fixed;top:0;left:0;width:100%;height:100%;
-            background:rgba(0,0,0,0.8);display:none;justify-content:center;
-            align-items:center;z-index:1000;flex-direction:column;
-        }
-        .modal.active{display:flex}
-        .modal-content{
-            background:var(--panel);border-radius:10px;padding:20px;
-            max-width:400px;width:90%;text-align:center;max-height:80vh;overflow-y:auto;
-        }
+        .item-card{background:var(--panel);border-radius:6px;padding:5px;border-left:4px solid var(--usual);cursor:pointer;position:relative;transition:0.2s;display:flex;flex-direction:column;align-items:center;min-height:120px;justify-content:center}
+        .item-card:hover{background:#3a3a3a}.item-name{font-size:0.7rem;text-align:center;margin:4px 0}.item-wear{font-size:0.6rem;color:#999}
+        .item-card[data-rarity="Usual"]{border-left-color:var(--usual)}.item-card[data-rarity="Frequent"]{border-left-color:var(--frequent)}.item-card[data-rarity="Conveyor-type"]{border-left-color:var(--conveyor)}.item-card[data-rarity="Rare"]{border-left-color:var(--rare)}.item-card[data-rarity="Unique"]{border-left-color:var(--unique)}.item-card[data-rarity="Relic"]{border-left-color:var(--relic)}.item-card[data-rarity="Gold"]{border-left-color:var(--gold)}
+        .item-img{width:80px;height:60px;object-fit:contain;margin-bottom:5px}.favorite-badge{position:absolute;top:5px;right:5px;font-size:1rem;color:var(--accent)}.stattrack-label{position:absolute;top:5px;left:5px;font-size:0.65rem;color:#ff8c00;font-weight:bold}.item-stickers{display:flex;gap:2px;margin-top:2px;flex-wrap:wrap;justify-content:center}.item-stickers span{font-size:0.7rem}
+        .modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:none;justify-content:center;align-items:center;z-index:1000;flex-direction:column}.modal.active{display:flex}
+        .modal-content{background:var(--panel);border-radius:10px;padding:20px;max-width:400px;width:90%;text-align:center;max-height:80vh;overflow-y:auto}
         #case-canvas{background:#0d0d0d;border-radius:8px;width:100%;height:120px}
-        button{
-            background:var(--button);color:var(--text);border:none;padding:10px 15px;
-            border-radius:4px;cursor:pointer;transition:0.2s;font-weight:bold;font-size:0.9rem;
-            margin:4px;
-        }
-        button:hover{background:var(--button-hover)}
-        button.accent{background:var(--accent);color:#000}
-        button.danger{background:var(--danger)}
+        button{background:var(--button);color:var(--text);border:none;padding:10px 15px;border-radius:4px;cursor:pointer;transition:0.2s;font-weight:bold;font-size:0.9rem;margin:4px}button:hover{background:var(--button-hover)}button.accent{background:var(--accent);color:#000}button.danger{background:var(--danger)}
         .profile-stat{display:flex;justify-content:space-between;margin:10px 0}
-        .filter-bar{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
-        .filter-bar select,.filter-bar button{padding:5px 10px;background:var(--button);color:var(--text);border:none;border-radius:4px}
-        .quest-item{background:var(--panel);padding:10px;margin:5px 0;border-radius:5px}
-        .achievement{background:var(--panel);padding:8px;margin:4px 0;border-radius:5px;display:flex;justify-content:space-between}
-        .sticker-select-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
-        .sticker-select-item{background:var(--button);border-radius:6px;padding:5px;cursor:pointer;text-align:center}
-        .sticker-select-item:hover{background:var(--button-hover)}
-        .sticker-select-item img{width:50px;height:40px;object-fit:contain}
+        .filter-bar{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}.filter-bar select,.filter-bar input,.filter-bar button{padding:5px 10px;background:var(--button);color:var(--text);border:none;border-radius:4px}
+        .quest-item{background:var(--panel);padding:10px;margin:5px 0;border-radius:5px}.achievement{background:var(--panel);padding:8px;margin:4px 0;border-radius:5px;display:flex;justify-content:space-between}
+        .sticker-select-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}.sticker-select-item{background:var(--button);border-radius:6px;padding:5px;cursor:pointer;text-align:center}.sticker-select-item:hover{background:var(--button-hover)}.sticker-select-item img{width:50px;height:40px;object-fit:contain}
+        #console-toggle{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:2000;font-size:0.8rem}
+        #console-modal .modal-content{width:500px;max-width:90vw;height:300px;min-width:200px;min-height:100px;background:#000;color:#0f0;font-family:monospace;padding:0;box-shadow:0 0 10px #000;position:relative;overflow:hidden;display:flex;flex-direction:column}
+        #console-modal .drag-handle{cursor:move;background:#111;padding:5px 10px;color:#0f0;font-weight:bold;flex-shrink:0}
+        #console-log{flex:1;overflow-y:auto;padding:5px;white-space:pre-wrap;font-size:13px}
+        .resize-handle{position:absolute;z-index:10;background:transparent}
+        .resize-n{top:0;left:0;right:0;height:6px;cursor:n-resize}.resize-s{bottom:0;left:0;right:0;height:6px;cursor:s-resize}
+        .resize-e{top:0;bottom:0;right:0;width:6px;cursor:e-resize}.resize-w{top:0;bottom:0;left:0;width:6px;cursor:w-resize}
+        .resize-ne{top:0;right:0;width:12px;height:12px;cursor:ne-resize}.resize-nw{top:0;left:0;width:12px;height:12px;cursor:nw-resize}
+        .resize-se{bottom:0;right:0;width:12px;height:12px;cursor:se-resize}.resize-sw{bottom:0;left:0;width:12px;height:12px;cursor:sw-resize}
+        .trade-item{position:relative}.trade-item.selected::after{content:'✅';position:absolute;top:2px;right:2px;font-size:1.2rem}
+        #trade-modal .modal-content{width:100%;height:100%;max-width:none;max-height:none;border-radius:0;padding:10px;display:flex;flex-direction:column}
+        #trade-content{flex:1;overflow-y:auto}
+        .seller-name{font-size:0.6rem;color:#aaa;margin-top:2px}
     </style>
 </head>
 <body>
@@ -95,1017 +53,196 @@
     <main id="main-container"></main>
     <nav>
         <button data-view="inventory" class="active">🎒 Инвентарь</button>
+        <button data-view="market">🏪 Рынок</button>
         <button data-view="minigames">🎮 Мини-игры</button>
         <button data-view="profile">👤 Профиль</button>
-        <button data-view="quests">📋 Квесты</button>
         <button data-view="shop">🛒 Магазин</button>
     </nav>
 
-    <div class="modal" id="case-modal">
-        <div class="modal-content">
-            <h3 id="case-modal-title">Открытие кейса</h3>
-            <canvas id="case-canvas" width="400" height="120"></canvas>
+    <div class="modal" id="case-modal"><div class="modal-content"><h3>Открытие кейса</h3><canvas id="case-canvas" width="400" height="120"></canvas></div></div>
+    <div class="modal" id="item-detail-modal"><div class="modal-content" id="item-detail-content"></div></div>
+    <div class="modal" id="console-modal">
+        <div class="modal-content" id="console-modal-content">
+            <div class="drag-handle" id="console-drag-handle">Консоль</div>
+            <div id="console-log"></div>
+            <div class="resize-handle resize-n" data-resize="n"></div><div class="resize-handle resize-s" data-resize="s"></div>
+            <div class="resize-handle resize-e" data-resize="e"></div><div class="resize-handle resize-w" data-resize="w"></div>
+            <div class="resize-handle resize-ne" data-resize="ne"></div><div class="resize-handle resize-nw" data-resize="nw"></div>
+            <div class="resize-handle resize-se" data-resize="se"></div><div class="resize-handle resize-sw" data-resize="sw"></div>
         </div>
     </div>
-
-    <div class="modal" id="item-detail-modal">
-        <div class="modal-content" id="item-detail-content"></div>
-    </div>
+    <div class="modal" id="trade-modal"><div class="modal-content" id="trade-content"></div></div>
+    <div class="modal" id="market-item-modal"><div class="modal-content" id="market-item-content"></div></div>
+    <button id="console-toggle">📟 Консоль</button>
 
     <script>
     class ArsenalZone {
         constructor() {
+            this._memory = {};
+            this.initData();
             this.state = this.loadState();
             this.sound = this.initSound();
             this.locale = this.state.settings.language || 'ru';
             this.translations = {
-                ru: {
-                    inventory:'🎒 Инвентарь',minigames:'🎮 Мини-игры',profile:'👤 Профиль',
-                    quests:'📋 Квесты',shop:'🛒 Магазин',backup:'💾 Бэкап',import:'📥 Импорт',
-                    profile_title:'Профиль',cases_opened:'Кейсов открыто',items_collected:'Предметов собрано',
-                    gold_items:'Золотых предметов',reset:'Сбросить прогресс',
-                    quest_daily:'Ежедневные квесты',shop_title:'Магазин',buy:'Купить',price:'Цена',
-                    trade_up:'🔃 Trade Up (10 предметов)',open:'Открыть',odds:'Шансы',
-                    wear:'Износ',rarity:'Редкость',collection:'Коллекция',type:'Тип',
-                    pattern:'Паттерн',stickers:'Стикеры',apply_sticker:'Наклеить',
-                    sell:'Продать',favorite:'Избранное',close:'Закрыть',
-                    filter_all:'Все',filter_weapon:'Оружие',filter_knife:'Ножи',
-                    filter_gloves:'Перчатки',filter_charm:'Брелоки',filter_sticker:'Стикеры',
-                    filter_agent:'Агенты',filter_case:'Кейсы/Капсулы',
-                    no_items:'Нет предметов',continue:'Продолжить',no_stickers:'У вас нет стикеров',
-                    back:'Назад'
-                },
-                en: {
-                    inventory:'🎒 Inventory',minigames:'🎮 Mini-games',profile:'👤 Profile',
-                    quests:'📋 Quests',shop:'🛒 Shop',backup:'💾 Backup',import:'📥 Import',
-                    profile_title:'Profile',cases_opened:'Cases opened',items_collected:'Items collected',
-                    gold_items:'Gold items',reset:'Reset progress',
-                    quest_daily:'Daily quests',shop_title:'Shop',buy:'Buy',price:'Price',
-                    trade_up:'🔃 Trade Up (10 items)',open:'Open',odds:'Odds',
-                    wear:'Wear',rarity:'Rarity',collection:'Collection',type:'Type',
-                    pattern:'Pattern',stickers:'Stickers',apply_sticker:'Apply',
-                    sell:'Sell',favorite:'Favorite',close:'Close',
-                    filter_all:'All',filter_weapon:'Weapons',filter_knife:'Knives',
-                    filter_gloves:'Gloves',filter_charm:'Charms',filter_sticker:'Stickers',
-                    filter_agent:'Agents',filter_case:'Cases/Capsules',
-                    no_items:'No items',continue:'Continue',no_stickers:'No stickers available',
-                    back:'Back'
-                }
+                ru: { inventory:'🎒 Инвентарь',market:'🏪 Рынок',minigames:'🎮 Мини-игры',profile:'👤 Профиль',shop:'🛒 Магазин',backup:'💾 Бэкап',import:'📥 Импорт',profile_title:'Профиль',cases_opened:'Кейсов открыто',items_collected:'Предметов собрано',gold_items:'Золотых предметов',reset:'Сбросить прогресс',quest_daily:'Ежедневные квесты',shop_title:'Магазин',buy:'Купить',price:'Цена',trade_up:'🔃 Trade Up',open:'Открыть',odds:'Шансы',open_fast:'Быстрое открытие',wear:'Износ',rarity:'Редкость',collection:'Коллекция',type:'Тип',pattern:'Паттерн',stickers:'Стикеры',apply_sticker:'Наклеить',sell:'Продать',favorite:'Избранное',close:'Закрыть',filter_all:'Все',filter_weapon:'Оружие',filter_knife:'Ножи',filter_gloves:'Перчатки',filter_charm:'Брелоки',filter_sticker:'Стикеры',filter_agent:'Агенты',filter_case:'Кейсы/Капсулы',no_items:'Нет предметов',no_stickers:'У вас нет стикеров',back:'Назад',stattrack_filter:'StatTrack',wear_filter:'Износ',pattern_filter:'Паттерн',select_rarity:'Выберите редкость',select_items:'Выберите 10 предметов',submit_trade:'Сдать на трейд',need_more:'Выберите ещё',market_buy:'Купить на рынке',market_no_items:'Ничего не найдено',market_title:'Рынок' },
+                en: { inventory:'🎒 Inventory',market:'🏪 Market',minigames:'🎮 Mini-games',profile:'👤 Profile',shop:'🛒 Shop',backup:'💾 Backup',import:'📥 Import',profile_title:'Profile',cases_opened:'Cases opened',items_collected:'Items collected',gold_items:'Gold items',reset:'Reset progress',quest_daily:'Daily quests',shop_title:'Shop',buy:'Buy',price:'Price',trade_up:'🔃 Trade Up',open:'Open',odds:'Odds',open_fast:'Fast Open',wear:'Wear',rarity:'Rarity',collection:'Collection',type:'Type',pattern:'Pattern',stickers:'Stickers',apply_sticker:'Apply',sell:'Sell',favorite:'Favorite',close:'Close',filter_all:'All',filter_weapon:'Weapons',filter_knife:'Knives',filter_gloves:'Gloves',filter_charm:'Charms',filter_sticker:'Stickers',filter_agent:'Agents',filter_case:'Cases/Capsules',no_items:'No items',no_stickers:'No stickers available',back:'Back',stattrack_filter:'StatTrack',wear_filter:'Wear',pattern_filter:'Pattern',select_rarity:'Select rarity',select_items:'Select 10 items',submit_trade:'Submit Trade',need_more:'Need more',market_buy:'Buy on market',market_no_items:'Nothing found',market_title:'Market' }
             };
-            this.initData();
             this.initUI();
             this.energyTimer = setInterval(() => this.regenerateEnergy(), 60000);
             this.dailyCheck();
+            this.initMarket();
+            this.initConsoleDrag();
+            this.initConsoleResize();
+        }
+
+        // Безопасное чтение/запись
+        safeGet(key, def) {
+            try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : def; } catch(e) { return this._memory[key] || def; }
+        }
+        safeSet(key, value) {
+            try { localStorage.setItem(key, JSON.stringify(value)); } catch(e) { this._memory[key] = value; }
         }
 
         loadState() {
-            const raw = localStorage.getItem('arsenalzone_save');
-            if (raw) { try { return JSON.parse(raw); } catch(e) {} }
-            const state = this.defaultState();
-            if (!state.filterType) state.filterType = 'all';
-            if (!state.filterRarity) state.filterRarity = 'all';
-            return state;
+            let s = this.safeGet('arsenalzone_save', null);
+            if (!s) s = this.defaultState();
+            s.consoleLog = Array.isArray(s.consoleLog) ? s.consoleLog : [];
+            s.marketListings = s.marketListings || [];
+            if (s.inventory) s.inventory.forEach(i => {
+                i.rarity = i.rarity || 'Usual'; i.weaponType = i.weaponType || i.name || 'Unknown';
+                i.skinName = i.skinName || ''; i.wearCategory = i.wearCategory || 'Worn';
+                i.pattern = i.pattern || 0; i.stickers = i.stickers || [];
+                i.isFavorite = i.isFavorite || false; i.statTrack = i.statTrack || false;
+                i.type = i.type || 'weapon'; if (!i.image) i.image = this.generateItemImage(i);
+            });
+            return s;
         }
-
-        defaultState() {
-            return {
-                balance:100,energy:50,maxEnergy:50,lastEnergyTime:Date.now(),
-                inventory:[],stats:{casesOpened:0,itemsCollected:0,goldItems:0,upgrades:0,tttWins:0},
-                quests:{daily:[
-                    {id:'open3',desc:'Открыть 3 кейса',progress:0,goal:3,reward:30,completed:false},
-                    {id:'ttt2',desc:'Выиграть 2 раза в крестики-нолики',progress:0,goal:2,reward:20,completed:false},
-                    {id:'upgrade5',desc:'Улучшить предметы 5 раз',progress:0,goal:5,reward:25,completed:false}
-                ],lastDailyReset:new Date().toDateString()},
-                achievements:[
-                    {id:'first_case',desc:'Открыть первый кейс',unlocked:false},
-                    {id:'gold_found',desc:'Найти золотой предмет',unlocked:false},
-                    {id:'collector_10',desc:'Собрать 10 предметов',unlocked:false},
-                    {id:'upgrade_master',desc:'Улучшить предмет до Gold',unlocked:false},
-                    {id:'ttt_master',desc:'Выиграть 10 партий в крестики-нолики',unlocked:false}
-                ],
-                settings:{language:'ru'},lastDailyBonus:null,
-                filterType:'all',filterRarity:'all'
-            };
+        defaultState() { return { balance:100,energy:50,maxEnergy:50,lastEnergyTime:Date.now(),inventory:[],stats:{casesOpened:0,itemsCollected:0,goldItems:0,upgrades:0,tttWins:0},quests:{daily:[{id:'open3',desc:'Открыть 3 кейса',progress:0,goal:3,reward:30,completed:false},{id:'ttt2',desc:'Выиграть 2 раза в крестики-нолики',progress:0,goal:2,reward:20,completed:false},{id:'upgrade5',desc:'Улучшить предметы 5 раз',progress:0,goal:5,reward:25,completed:false}],lastDailyReset:new Date().toDateString()},achievements:[{id:'first_case',desc:'Открыть первый кейс',unlocked:false},{id:'gold_found',desc:'Найти золотой предмет',unlocked:false},{id:'collector_10',desc:'Собрать 10 предметов',unlocked:false},{id:'upgrade_master',desc:'Улучшить предмет до Gold',unlocked:false},{id:'ttt_master',desc:'Выиграть 10 партий в крестики-нолики',unlocked:false}],settings:{language:'ru'},lastDailyBonus:null,filterType:'all',filterRarity:'all',filterStatTrack:'all',filterWear:'all',filterPatternMin:'',filterPatternMax:'',consoleLog:[],marketListings:[]}; }
+        saveState() {
+            this.state.lastEnergyTime = Date.now();
+            const s = JSON.parse(JSON.stringify(this.state));
+            s.inventory.forEach(i => delete i.image);
+            if (s.consoleLog.length > 20) s.consoleLog = s.consoleLog.slice(0,20);
+            this.safeSet('arsenalzone_save', s);
         }
-
-        saveState() { this.state.lastEnergyTime=Date.now(); localStorage.setItem('arsenalzone_save',JSON.stringify(this.state)); }
 
         initData() {
             this.rarities = ['Usual','Frequent','Conveyor-type','Rare','Unique','Relic','Gold'];
             this.rarityColors = {'Usual':'#6b6b6b','Frequent':'#a0a0a0','Conveyor-type':'#8845ff','Rare':'#4b69ff','Unique':'#d32ce6','Relic':'#37d63c','Gold':'#ffd700'};
-            // ===== ТУТ ДОБАВЛЯТЬ НОВЫЕ КОЛЛЕКЦИИ / СКИНЫ =====
             this.collections = {
-                'Arms Deal': {
-                    weapons: [
-                        { name: 'MP9 | Солнечный Разлом', rarity: 'Usual' },
-                        { name: 'MAC-10 | Теневая Нить', rarity: 'Usual' },
-                        { name: 'P250 | Рубиновый Каскад', rarity: 'Frequent' },
-                        { name: 'Glock-18 | Кобальтовый Клык', rarity: 'Frequent' },
-                        { name: 'USP-S | Призрак Бездны', rarity: 'Conveyor-type' },
-                        { name: 'M4A1-S | Тлеющий Страж', rarity: 'Conveyor-type' },
-                        { name: 'Desert Eagle | Арктический Пульс', rarity: 'Rare' },
-                        { name: 'PP-17 | Обсидиановый Поток', rarity: 'Rare' },
-                        { name: 'AK-47 | Фантомный Хекс', rarity: 'Unique' },
-                        { name: 'M4A4 | Неоновый Осколок', rarity: 'Relic' }
-                    ],
-                    knife: [
-                        { name: 'M9 Bayonet | Просвет', rarity: 'Gold' },
-                        { name: 'M9 Bayonet | Золотой фрукт', rarity: 'Gold' },
-                        { name: 'M9 Bayonet | Слива', rarity: 'Gold' },
-                        { name: 'M9 Bayonet | Змеиный клык', rarity: 'Gold' },
-                        { name: 'M9 Bayonet | Сицилийский', rarity: 'Gold' }
-                    ]
-                },
-                'Chroma':{weapons:['M4A1-S','USP-S','Glock-18','P250'],knife:'Butterfly Knife'},
-                'Sticker Capsule':{stickers:['Banana','NaVi','G2','Spirit']},
-                'Agent Pack':{agents:['SASiska','Force','SWAG','GIGachad']}
+                'Arms Deal': { weapons: [ { name: 'MP9 | Солнечный Разлом', rarity: 'Usual' }, { name: 'MAC-10 | Теневая Нить', rarity: 'Usual' }, { name: 'P250 | Рубиновый Каскад', rarity: 'Frequent' }, { name: 'Glock-18 | Кобальтовый Клык', rarity: 'Frequent' }, { name: 'USP-S | Призрак Бездны', rarity: 'Conveyor-type' }, { name: 'M4A1-S | Тлеющий Страж', rarity: 'Conveyor-type' }, { name: 'Desert Eagle | Арктический Пульс', rarity: 'Rare' }, { name: 'PP-17 | Обсидиановый Поток', rarity: 'Rare' }, { name: 'AK-47 | Фантомный Хекс', rarity: 'Unique' }, { name: 'M4A4 | Неоновый Осколок', rarity: 'Relic' } ], knife: [ { name: 'M9 Bayonet | Просвет', rarity: 'Gold' }, { name: 'M9 Bayonet | Золотой фрукт', rarity: 'Gold' }, { name: 'M9 Bayonet | Слива', rarity: 'Gold' }, { name: 'M9 Bayonet | Змеиный клык', rarity: 'Gold' }, { name: 'M9 Bayonet | Сицилийский', rarity: 'Gold' } ], odds: [{ rarity: 'Usual', chance: 35.4 },{ rarity: 'Frequent', chance: 32.5 },{ rarity: 'Conveyor-type', chance: 19.4 },{ rarity: 'Rare', chance: 8.6 },{ rarity: 'Unique', chance: 3.2 },{ rarity: 'Relic', chance: 0.64 },{ rarity: 'Gold', chance: 0.26 }] },
+                'Chroma': { weapons: [ { name: 'M4A1-S | Хром', rarity: 'Usual' }, { name: 'USP-S | Спектр', rarity: 'Frequent' }, { name: 'Glock-18 | Радуга', rarity: 'Conveyor-type' }, { name: 'P250 | Призма', rarity: 'Rare' }, { name: 'AWP | Калибр', rarity: 'Unique' } ], knife: [{ name: 'Butterfly Knife | Радужный', rarity: 'Gold' }], odds: [{ rarity: 'Usual', chance: 40 },{ rarity: 'Frequent', chance: 30 },{ rarity: 'Conveyor-type', chance: 18 },{ rarity: 'Rare', chance: 8 },{ rarity: 'Unique', chance: 3 },{ rarity: 'Relic', chance: 0.7 },{ rarity: 'Gold', chance: 0.3 }] },
+                'Armor': { weapons: [ { name: 'M4A1-S | Броня', rarity: 'Conveyor-type' }, { name: 'USP-S | Кевлар', rarity: 'Rare' }, { name: 'AWP | Титановый щит', rarity: 'Unique' } ], knife: [{ name: 'Bayonet | Бронебой', rarity: 'Gold' }], odds: [{ rarity: 'Usual', chance: 10 },{ rarity: 'Frequent', chance: 15 },{ rarity: 'Conveyor-type', chance: 30 },{ rarity: 'Rare', chance: 25 },{ rarity: 'Unique', chance: 15 },{ rarity: 'Relic', chance: 4 },{ rarity: 'Gold', chance: 1 }] },
+                'Progmatic': { weapons: [ { name: 'AK-47 | Прогматик', rarity: 'Rare' }, { name: 'P90 | Цифра', rarity: 'Unique' } ], odds: [{ rarity: 'Usual', chance: 5 },{ rarity: 'Frequent', chance: 10 },{ rarity: 'Conveyor-type', chance: 20 },{ rarity: 'Rare', chance: 35 },{ rarity: 'Unique', chance: 20 },{ rarity: 'Relic', chance: 8 },{ rarity: 'Gold', chance: 2 }] },
+                'Sticker Capsule': { stickers: [ { name: 'Banana', rarity: 'Usual' }, { name: 'NaVi', rarity: 'Frequent' }, { name: 'G2', rarity: 'Conveyor-type' }, { name: 'Spirit', rarity: 'Rare' } ], odds: [{ rarity: 'Usual', chance: 80 },{ rarity: 'Frequent', chance: 15 },{ rarity: 'Conveyor-type', chance: 4 },{ rarity: 'Rare', chance: 0.9 },{ rarity: 'Unique', chance: 0.1 }] },
+                'Agent Pack': { agents: [ { name: 'SASiska', rarity: 'Usual' }, { name: 'Force', rarity: 'Frequent' }, { name: 'SWAG', rarity: 'Conveyor-type' }, { name: 'GIGachad', rarity: 'Rare' } ], odds: [{ rarity: 'Usual', chance: 60 },{ rarity: 'Frequent', chance: 25 },{ rarity: 'Conveyor-type', chance: 10 },{ rarity: 'Rare', chance: 4 },{ rarity: 'Unique', chance: 1 }] }
             };
+            this.stickerEmojis = {'Banana':'🍌','NaVi':'🌊','G2':'🐺','Spirit':'🐉','Furia':'🐆'};
             this.typeOrder = ['knife','gloves','weapon','case','capsule','sticker','charm','agent'];
-            this.rarityChances = [
-                { rarity: 'Usual', chance: 35.4 },
-                { rarity: 'Frequent', chance: 32.5 },
-                { rarity: 'Conveyor-type', chance: 19.4 },
-                { rarity: 'Rare', chance: 8.6 },
-                { rarity: 'Unique', chance: 3.2 },
-                { rarity: 'Relic', chance: 0.64 },
-                { rarity: 'Gold', chance: 0.26 }
-            ];
+            this.globalRarityChances = this.collections['Arms Deal'].odds;
+            this.wearLevels = ['Practically New','Lightly-Used','Worn','Heavily-Worn'];
+            this.tradeSelected = []; this.tradeRarity = null;
+            this.sellerNames = Array.from({length:250}, (_,i)=> `Seller_${Math.random().toString(36).substring(2,8)}`);
         }
 
-        // Модифицируем случайную редкость: если allowGold=false, исключаем Gold из таблицы
-        getRandomRarity(allowGold = true) {
-            const rand = Math.random() * 100;
-            let cumulative = 0;
-            for (const r of this.rarityChances) {
-                if (!allowGold && r.rarity === 'Gold') continue;
-                cumulative += r.chance;
-                if (rand < cumulative) return r.rarity;
-            }
-            // на случай, если сумма меньше 100% (без Gold), вернуть Relic
-            return allowGold ? 'Usual' : 'Relic';
-        }
-
-        generateItemImage(item) {
-            const canvas = document.createElement('canvas');
-            canvas.width = 200; canvas.height = 150;
-            const ctx = canvas.getContext('2d');
-            const rarityColor = this.rarityColors[item.rarity] || '#888';
-            const grad = ctx.createLinearGradient(0,0,200,150);
-            grad.addColorStop(0, rarityColor);
-            grad.addColorStop(1, '#111');
-            ctx.fillStyle = grad;
-            ctx.fillRect(0,0,200,150);
-            ctx.fillStyle = 'white';
-            ctx.font = 'bold 24px "Segoe UI"';
-            ctx.textAlign = 'center';
-            ctx.fillText(item.name,100,75);
-            ctx.font = '14px "Segoe UI"';
-            ctx.fillText(item.rarity,100,110);
-            return canvas.toDataURL();
-        }
-
-        pickRandom(data) {
-            if (!data) return null;
-            if (Array.isArray(data)) return data[Math.floor(Math.random() * data.length)];
-            return data;
-        }
-
-        // Добавлен параметр allowGold (по умолчанию true)
-        generateItem(collectionName, dropType, allowGold = true) {
-            const col = this.collections[collectionName];
-            if (!col) return null;
-            let itemType = dropType;
-            if (!itemType) {
-                if (col.weapons) itemType = 'weapon';
-                else if (col.stickers) itemType = 'sticker';
-                else if (col.agents) itemType = 'agent';
-                else if (col.knife) itemType = 'knife';
-                else if (col.gloves) itemType = 'gloves';
-                else if (col.charm) itemType = 'charm';
-            }
-
-            let data;
-            switch (itemType) {
-                case 'weapon': data = this.pickRandom(col.weapons); break;
-                case 'knife': data = this.pickRandom(col.knife); break;
-                case 'gloves': data = this.pickRandom(col.gloves); break;
-                case 'charm': data = this.pickRandom(col.charm); break;
-                case 'sticker': data = this.pickRandom(col.stickers); break;
-                case 'agent': data = this.pickRandom(col.agents); break;
-                default: return null;
-            }
-            if (!data) return null;
-
-            const name = typeof data === 'string' ? data : data.name;
-            let rarity;
-            if (itemType === 'knife' || itemType === 'gloves') {
-                rarity = 'Gold';
-            } else {
-                // Если allowGold=false, игнорируем даже фиксированную редкость Gold, заменяем на Relic
-                const fixedRarity = (typeof data === 'object' && data.rarity) ? data.rarity : null;
-                if (!allowGold && fixedRarity === 'Gold') {
-                    rarity = 'Relic';
-                } else if (fixedRarity) {
-                    rarity = fixedRarity;
-                } else {
-                    rarity = this.getRandomRarity(allowGold);
-                }
-            }
-            const image = (typeof data === 'object' && data.image) ? data.image : null;
-
-            let wear = 0, wearCat = '', pattern = 0;
-            if (itemType !== 'agent' && itemType !== 'sticker' && itemType !== 'charm') {
-                wear = Math.random() * 0.9999999998 + 0.0000000001;
-                if (wear < 0.1000000000) wearCat = 'Practically New';
-                else if (wear < 0.2500000000) wearCat = 'Lightly-Used';
-                else if (wear < 0.4000000000) wearCat = 'Worn';
-                else wearCat = 'Heavily-Worn';
-                pattern = Math.floor(Math.random() * 10000);
-            }
-
-            const item = {
-                id: Date.now() + Math.random().toString(36),
-                type: itemType,
-                collection: collectionName,
-                name: name,
-                rarity,
-                wear,
-                wearCategory: wearCat,
-                pattern,
-                stickers: [],
-                isFavorite: false
-            };
-            item.image = image || this.generateItemImage(item);
-            return item;
-        }
-
-        addItem(item) {
-            this.state.inventory.push(item);
-            this.state.stats.itemsCollected++;
-            if (item.rarity==='Gold') this.state.stats.goldItems++;
-            this.checkAchievements();
-            this.saveState();
-        }
-
-        openCase(caseItem) {
-            const index = this.state.inventory.findIndex(i=>i.id===caseItem.id);
-            if (index===-1) return;
-            this.state.inventory.splice(index,1);
-            this.state.stats.casesOpened++;
-            this.state.quests.daily.find(q=>q.id==='open3').progress++;
-            this.saveState();
-            this.animateCaseOpen(caseItem.collection, caseItem.dropType);
-            this.renderInventory();
-        }
-
-        animateCaseOpen(collectionName, dropType) {
-            const modal = document.getElementById('case-modal');
-            modal.classList.add('active');
-            const canvas = document.getElementById('case-canvas');
-            const ctx = canvas.getContext('2d');
-            const items = [];
-
-            // Генерируем ленту БЕЗ золотых предметов (allowGold = false)
-            for (let i=0;i<40;i++) {
-                const it = this.generateItem(collectionName, dropType, false);
-                it.imageObj = new Image();
-                it.imageObj.src = it.image;
-                items.push(it);
-            }
-
-            // Проверяем, выпал ли золотой предмет по глобальному шансу
-            const goldChance = this.rarityChances.find(r => r.rarity === 'Gold').chance;
-            const isGold = Math.random() * 100 < goldChance;
-            let stopIdx, wonItem;
-            if (isGold) {
-                // Генерируем нож или перчатки (золотой предмет)
-                const goldType = (dropType === 'weapon' || dropType === 'knife' || dropType === 'gloves') 
-                    ? (Math.random() < 0.5 ? 'knife' : 'gloves') 
-                    : dropType;
-                const goldItem = this.generateItem(collectionName, goldType, true);
-                goldItem.imageObj = new Image();
-                goldItem.imageObj.src = goldItem.image;
-                // Помещаем золотой предмет ТОЛЬКО в самый конец ленты (индексы 38-39)
-                stopIdx = 38 + Math.floor(Math.random() * 2);
-                items[stopIdx] = goldItem;
-                wonItem = goldItem;
-            } else {
-                stopIdx = 20 + Math.floor(Math.random() * 5);
-                wonItem = items[stopIdx];
-            }
-
-            const itemWidth = 80;
-            const totalWidth = items.length * itemWidth;
-            const centerX = canvas.width/2 - itemWidth/2;
-            const totalCycles = 3;
-            const targetDistance = totalCycles * totalWidth + (stopIdx * itemWidth - centerX);
-            const duration = 5000;
-            let startTime = performance.now();
-
-            const draw = (now) => {
-                const elapsed = now - startTime;
-                if (elapsed >= duration) {
-                    const finalOffset = targetDistance;
-                    const displayOffset = finalOffset % totalWidth;
-                    ctx.clearRect(0,0,canvas.width,canvas.height);
-                    this.drawItems(ctx, items, displayOffset, itemWidth);
-                    this.drawCenterLine(ctx, canvas);
-                    setTimeout(() => {
-                        modal.classList.remove('active');
-                        this.addItem(wonItem);
-                        this.sound.play('case_open');
-                        this.showItemDetail(wonItem);
-                        this.checkQuests();
-                        this.renderInventory();
-                    }, 500);
-                    return;
-                }
-                const progress = elapsed / duration;
-                const easeOutCubic = 1 - Math.pow(1 - progress, 3);
-                const currentOffset = targetDistance * easeOutCubic;
-                const displayOffset = currentOffset % totalWidth;
-                ctx.clearRect(0,0,canvas.width,canvas.height);
-                this.drawItems(ctx, items, displayOffset, itemWidth);
-                this.drawCenterLine(ctx, canvas);
-                requestAnimationFrame(draw);
-            };
-            requestAnimationFrame(draw);
-        }
-
-        drawItems(ctx, items, offset, itemWidth) {
-            const canvas = ctx.canvas;
-            const startX = -offset;
-            for (let i=0; i<items.length*2; i++) {
-                const idx = i % items.length;
-                const x = startX + i * itemWidth;
-                if (x > -itemWidth && x < canvas.width + itemWidth) {
-                    const it = items[idx];
-                    if (it.imageObj && it.imageObj.complete) {
-                        ctx.drawImage(it.imageObj, x+2, 12, itemWidth-4, 96);
-                    } else {
-                        ctx.fillStyle = this.rarityColors[it.rarity] || '#888';
-                        ctx.fillRect(x, 10, itemWidth-2, 100);
-                        ctx.fillStyle = '#fff';
-                        ctx.font = '10px sans-serif';
-                        ctx.fillText(it.name, x+4, 50);
-                    }
-                }
-            }
-        }
-
-        drawCenterLine(ctx, canvas) {
-            const centerX = canvas.width / 2;
-            ctx.strokeStyle = '#ffd700';
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.moveTo(centerX, 0);
-            ctx.lineTo(centerX, canvas.height);
-            ctx.stroke();
-        }
-
-        closeModal() { document.querySelectorAll('.modal').forEach(m=>m.classList.remove('active')); }
-
-        initSound() {
-            const AudioContext = window.AudioContext||window.webkitAudioContext;
-            const ctx = new AudioContext();
-            return { play: (type)=>{
-                if (type==='case_open') {
-                    const osc = ctx.createOscillator();
-                    const gain = ctx.createGain();
-                    osc.connect(gain); gain.connect(ctx.destination);
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(600, ctx.currentTime);
-                    osc.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.15);
-                    gain.gain.setValueAtTime(0.3, ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-                    osc.start(ctx.currentTime);
-                    osc.stop(ctx.currentTime + 0.3);
-                }
-            }};
-        }
-
-        initUI() {
-            document.querySelectorAll('nav button').forEach(btn=>{
-                btn.addEventListener('click',(e)=>{
-                    document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
-                    btn.classList.add('active');
-                    this.showView(btn.dataset.view);
-                });
-            });
-            document.getElementById('lang-select').addEventListener('change',(e)=>{
-                this.locale=e.target.value; this.state.settings.language=this.locale;
-                this.saveState(); this.updateUILanguage();
-            });
-            this.generateMainViews();
-            this.showView('inventory');
-            this.renderInventory();
-            this.updateEnergyDisplay();
-            this.updateBalanceDisplay();
-            this.updateUILanguage();
-            this.checkDailyReset();
-        }
-
-        generateMainViews() {
-            const main = document.getElementById('main-container');
-            main.innerHTML = `
-                <div id="view-inventory" class="view active"></div>
-                <div id="view-minigames" class="view"></div>
-                <div id="view-profile" class="view"></div>
-                <div id="view-quests" class="view"></div>
-                <div id="view-shop" class="view"></div>
-            `;
-            this.prepareMinigamesView();
-            this.prepareProfileView();
-            this.prepareQuestsView();
-            this.prepareShopView();
-        }
-
-        showView(name) {
-            document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-            const el = document.getElementById(`view-${name}`);
-            if (el) el.classList.add('active');
-            if (name==='inventory') this.renderInventory();
-            else if (name==='profile') this.renderProfile();
-            else if (name==='quests') this.renderQuests();
-            else if (name==='shop') this.renderShop();
-            else if (name==='minigames') this.renderMinigames();
-        }
-
-        sortInventory(items) {
-            return items.sort((a,b) => {
-                if (a.isFavorite !== b.isFavorite) return a.isFavorite ? -1 : 1;
-                const typeA = this.typeOrder.indexOf(a.type);
-                const typeB = this.typeOrder.indexOf(b.type);
-                if (typeA !== typeB) return typeA - typeB;
-                const rarityA = this.rarities.indexOf(a.rarity);
-                const rarityB = this.rarities.indexOf(b.rarity);
-                if (rarityA !== rarityB) return rarityB - rarityA;
-                if (a.name !== b.name) return a.name.localeCompare(b.name);
-                return (a.wear || 0) - (b.wear || 0);
-            });
-        }
-
-        renderInventory() {
-            const container = document.getElementById('view-inventory');
-            if (!container) return;
-            const t = (k)=>this.translations[this.locale][k]||k;
-            const currentType = this.state.filterType || 'all';
-            const currentRarity = this.state.filterRarity || 'all';
-
-            let html = `<div class="filter-bar">
-                <select id="filter-type">
-                    <option value="all" ${currentType==='all'?'selected':''}>${t('filter_all')}</option>
-                    <option value="weapon" ${currentType==='weapon'?'selected':''}>${t('filter_weapon')}</option>
-                    <option value="knife" ${currentType==='knife'?'selected':''}>${t('filter_knife')}</option>
-                    <option value="gloves" ${currentType==='gloves'?'selected':''}>${t('filter_gloves')}</option>
-                    <option value="charm" ${currentType==='charm'?'selected':''}>${t('filter_charm')}</option>
-                    <option value="sticker" ${currentType==='sticker'?'selected':''}>${t('filter_sticker')}</option>
-                    <option value="agent" ${currentType==='agent'?'selected':''}>${t('filter_agent')}</option>
-                    <option value="case" ${currentType==='case'?'selected':''}>${t('filter_case')}</option>
-                </select>
-                <select id="filter-rarity">
-                    <option value="all" ${currentRarity==='all'?'selected':''}>${t('filter_all')}</option>
-                    ${this.rarities.map(r=>`<option value="${r}" ${currentRarity===r?'selected':''}>${r}</option>`).join('')}
-                </select>
-            </div>`;
-            html += `<div class="inventory-grid" id="inv-grid"></div>`;
-            container.innerHTML = html;
-
-            document.getElementById('filter-type').addEventListener('change', (e)=>{
-                this.state.filterType = e.target.value;
-                this.saveState();
-                this.applyFilters();
-            });
-            document.getElementById('filter-rarity').addEventListener('change', (e)=>{
-                this.state.filterRarity = e.target.value;
-                this.saveState();
-                this.applyFilters();
-            });
-            this.applyFilters();
-        }
-
-        applyFilters() {
-            const grid = document.getElementById('inv-grid');
-            if (!grid) return;
-            const typeFilter = this.state.filterType || 'all';
-            const rarityFilter = this.state.filterRarity || 'all';
-            let items = [...this.state.inventory];
-            if (typeFilter !== 'all') {
-                items = items.filter(i=>{
-                    if (typeFilter==='case') return i.type==='case'||i.type==='capsule';
-                    return i.type===typeFilter;
-                });
-            }
-            if (rarityFilter !== 'all') items = items.filter(i=>i.rarity===rarityFilter);
-            items = this.sortInventory(items);
-            grid.innerHTML = '';
-            if (items.length===0) {
-                grid.innerHTML = `<p style="grid-column:1/-1;text-align:center">${this.t('no_items')}</p>`;
-                return;
-            }
-            items.forEach(item=>{
-                const card = document.createElement('div');
-                card.className='item-card';
-                card.dataset.rarity=item.rarity;
-                card.innerHTML = `
-                    ${item.isFavorite ? '<span class="favorite-badge">⭐</span>' : ''}
-                    <img src="${item.image}" class="item-img" alt="${item.name}">
-                    <span class="item-name">${item.name}</span>
-                    <span class="item-wear">${item.type==='case'||item.type==='capsule'?item.collection:item.wearCategory+' '+item.pattern}</span>
-                `;
-                card.addEventListener('click',()=>this.onItemClick(item));
-                grid.appendChild(card);
-            });
-        }
-
-        t(key) { return this.translations[this.locale][key]||key; }
-
-        onItemClick(item) {
-            if (item.type==='case' || item.type==='capsule') this.showCaseDetail(item);
-            else this.showItemDetail(item);
-        }
-
-        showCaseDetail(caseItem) {
-            const t = this.t.bind(this);
-            const modal = document.getElementById('item-detail-modal');
-            modal.classList.add('active');
-            const content = document.getElementById('item-detail-content');
-            const odds = this.getOdds();
-            content.innerHTML = `
-                <h3>${caseItem.name || caseItem.collection}</h3>
-                <p>${t('collection')}: ${caseItem.collection}</p>
-                <p>${t('type')}: ${caseItem.type}</p>
-                <h4>${t('odds')}:</h4>
-                <ul style="text-align:left">
-                    ${Object.entries(odds).map(([r,ch])=>`<li style="color:${this.rarityColors[r]}">${r}: ${ch.toFixed(2)}%</li>`).join('')}
-                </ul>
-                <button onclick="Game.openCaseById('${caseItem.id}')">${t('open')}</button>
-                <button onclick="Game.closeModal()">${t('close')}</button>
-            `;
-        }
-
-        getOdds() {
-            const odds = {};
-            this.rarityChances.forEach(r => odds[r.rarity] = r.chance);
-            return odds;
-        }
-
-        openCaseById(id) {
-            const item = this.state.inventory.find(i=>i.id===id);
-            if (!item) return;
-            this.closeModal();
-            this.openCase(item);
-        }
-
-        showItemDetail(item) {
-            const t = this.t.bind(this);
-            const modal = document.getElementById('item-detail-modal');
-            modal.classList.add('active');
-            const content = document.getElementById('item-detail-content');
-            const showWear = item.type!=='agent' && item.type!=='sticker' && item.type!=='charm';
-            const stickersHtml = item.stickers.length > 0 
-                ? item.stickers.map(s => `🏷️ ${s}`).join(', ')
-                : 'Нет';
-            content.innerHTML = `
-                <div style="text-align:center"><img src="${item.image}" style="width:200px;height:150px;object-fit:contain;border-radius:8px;margin-bottom:10px"></div>
-                <h3>${item.name} <span style="color:${this.rarityColors[item.rarity]}">${item.rarity}</span></h3>
-                <p>${t('type')}: ${item.type} | ${t('collection')}: ${item.collection}</p>
-                ${showWear ? `<p>${t('pattern')}: ${String(item.pattern).padStart(4,'0')}</p><p>${t('wear')}: ${item.wearCategory} (${item.wear.toFixed(9)})</p>` : ''}
-                <p>${t('stickers')}: ${stickersHtml}</p>
-                <button onclick="Game.sellItem('${item.id}')">${t('sell')} ($${this.getItemPrice(item).toFixed(2)})</button>
-                ${(item.type==='weapon'||item.type==='knife'||item.type==='gloves')?`<button onclick="Game.applyStickerModal('${item.id}')">${t('apply_sticker')}</button>`:''}
-                <button onclick="Game.toggleFavorite('${item.id}')">${item.isFavorite?'💔':'❤️'}</button>
-                <button onclick="Game.closeModal()">${t('close')}</button>
-            `;
-        }
-
-        getItemPrice(item) {
-            const base = {Usual:0.5,Frequent:2,'Conveyor-type':5,Rare:15,Unique:50,Relic:200,Gold:1000}[item.rarity]||0.5;
-            const wearFactor = 1 - (item.wear||0)*0.5;
-            return base * wearFactor;
-        }
-
-        sellItem(id) {
-            const item = this.state.inventory.find(i=>i.id===id);
-            if (!item) return;
-            this.state.balance += this.getItemPrice(item);
-            this.state.inventory = this.state.inventory.filter(i=>i.id!==id);
-            this.saveState();
-            this.updateBalanceDisplay();
-            this.renderInventory();
-            this.closeModal();
-        }
-
-        toggleFavorite(id) {
-            const item = this.state.inventory.find(i=>i.id===id);
-            if (item) item.isFavorite = !item.isFavorite;
-            this.saveState();
-            this.showItemDetail(item);
-        }
-
-        applyStickerModal(itemId) {
-            const item = this.state.inventory.find(i=>i.id===itemId);
-            if (!item || item.stickers.length>=5) return;
-            const stickers = this.state.inventory.filter(i=>i.type==='sticker');
-            const t = this.t.bind(this);
-            const modal = document.getElementById('item-detail-modal');
-            modal.classList.add('active');
-            const content = document.getElementById('item-detail-content');
-
-            if (stickers.length===0) {
-                content.innerHTML = `<p>${t('no_stickers')}</p>`;
-                const backBtn = document.createElement('button');
-                backBtn.textContent = t('back');
-                backBtn.onclick = ()=> this.closeModal();
-                content.appendChild(backBtn);
-                return;
-            }
-
-            content.innerHTML = '<h3>Выберите стикер</h3><div class="sticker-select-grid" id="sticker-grid"></div>';
-            const grid = document.getElementById('sticker-grid');
-            stickers.forEach(s=>{
-                const div = document.createElement('div');
-                div.className = 'sticker-select-item';
-                div.innerHTML = `<img src="${s.image}" alt="${s.name}"><br><small>${s.name}</small>`;
-                div.onclick = ()=>{
-                    item.stickers.push(s.name);
-                    this.state.inventory = this.state.inventory.filter(i=>i.id!==s.id);
-                    this.saveState();
-                    this.showItemDetail(item);
-                };
-                grid.appendChild(div);
-            });
-            const backBtn = document.createElement('button');
-            backBtn.textContent = t('back');
-            backBtn.onclick = ()=> this.closeModal();
-            content.appendChild(backBtn);
-        }
-
-        prepareMinigamesView() {
-            const view = document.getElementById('view-minigames');
-            const t = this.t.bind(this);
-            view.innerHTML = `
-                <h2>${t('minigames')}</h2>
-                <div style="display:flex;gap:10px;flex-direction:column;">
-                    <button onclick="Game.startUpgrader()">⬆️ Апгрейдер (10$)</button>
-                    <button onclick="Game.startTicTacToe()">❌⭕ Крестики-нолики (энергия 1)</button>
-                </div>
-                <div id="minigame-container"></div>
-            `;
-        }
-
-        startUpgrader() {
-            if (this.state.inventory.filter(i=>i.type!=='case'&&i.type!=='capsule').length===0) return alert('Нет предметов для апгрейда');
-            if (this.state.balance<10) return alert('Недостаточно $');
-            this.state.balance-=10;
-            const upgradable = this.state.inventory.filter(i=>i.type!=='case'&&i.type!=='capsule');
-            const item = upgradable[Math.floor(Math.random()*upgradable.length)];
-            const roll = Math.random();
-            if (roll<0.7) {
-                item.wear = Math.max(0.0000000001, item.wear-0.05);
-                alert('Износ улучшен!');
-            } else if (roll<0.95) {
-                alert('Ничего не изменилось.');
-            } else if (roll<0.99) {
-                const curIdx = this.rarities.indexOf(item.rarity);
-                if (curIdx<this.rarities.length-1) {
-                    item.rarity = this.rarities[curIdx+1];
-                    item.image = this.generateItemImage(item);
-                    alert('Редкость повышена!');
-                } else alert('Максимальная редкость.');
-            } else {
-                this.state.inventory = this.state.inventory.filter(i=>i.id!==item.id);
-                alert('Предмет сломан!');
-            }
-            this.state.stats.upgrades = (this.state.stats.upgrades||0)+1;
-            this.state.quests.daily.find(q=>q.id==='upgrade5').progress++;
-            this.saveState(); this.renderInventory(); this.updateBalanceDisplay();
-            this.checkQuests();
-        }
-
-        startTicTacToe() {
-            if (this.state.energy<1) return alert('Нет энергии');
-            this.state.energy--;
-            this.updateEnergyDisplay();
-            const container = document.getElementById('minigame-container');
-            container.innerHTML = '';
-            const board = Array(9).fill(null);
-            let gameOver = false;
-            const renderBoard = ()=>{
-                container.innerHTML = '';
-                for (let i=0;i<9;i++) {
-                    const cell = document.createElement('div');
-                    cell.style='width:60px;height:60px;border:1px solid #555;display:inline-flex;align-items:center;justify-content:center;font-size:2rem;cursor:pointer;';
-                    cell.textContent = board[i]||'';
-                    cell.onclick = ()=>{
-                        if (gameOver || board[i]) return;
-                        board[i]='X'; renderBoard();
-                        if (checkWin(board,'X')) { gameOver=true; this.handleTTTResult('win'); return; }
-                        if (board.every(c=>c)) { gameOver=true; this.handleTTTResult('draw'); return; }
-                        this.tttAI(board);
-                        renderBoard();
-                        if (checkWin(board,'O')) { gameOver=true; this.handleTTTResult('lose'); return; }
-                        if (board.every(c=>c)) { gameOver=true; this.handleTTTResult('draw'); }
-                    };
-                    container.appendChild(cell);
-                }
-            };
-            renderBoard();
-        }
-
-        tttAI(board) {
-            const empty = board.map((v,i)=>v===null?i:null).filter(v=>v!==null);
-            if (empty.length===0) return;
-            let best = -Infinity, move = empty[0];
-            for (let i of empty) {
-                board[i]='O';
-                const score = this.minimax(board,0,false);
-                board[i]=null;
-                if (score>best) { best=score; move=i; }
-            }
-            board[move]='O';
-        }
-
-        minimax(board,depth,isMax) {
-            if (checkWin(board,'O')) return 10-depth;
-            if (checkWin(board,'X')) return depth-10;
-            if (board.every(c=>c)) return 0;
-            const empty = board.map((v,i)=>v===null?i:null).filter(v=>v!==null);
-            if (isMax) {
-                let best = -Infinity;
-                for (let i of empty) {
-                    board[i]='O';
-                    best = Math.max(best, this.minimax(board,depth+1,false));
-                    board[i]=null;
-                }
-                return best;
-            } else {
-                let best = Infinity;
-                for (let i of empty) {
-                    board[i]='X';
-                    best = Math.min(best, this.minimax(board,depth+1,true));
-                    board[i]=null;
-                }
-                return best;
-            }
-        }
-
-        handleTTTResult(result) {
-            const q = this.state.quests.daily.find(q=>q.id==='ttt2');
-            if (result==='win') {
-                this.state.balance+=5;
-                this.state.stats.tttWins = (this.state.stats.tttWins||0)+1;
-                if (q) q.progress++;
-                alert('Победа! +5$');
-            } else if (result==='draw') {
-                this.state.balance+=1; alert('Ничья! +1$');
-            } else alert('Поражение.');
-            this.saveState(); this.updateBalanceDisplay();
-            this.checkQuests();
-            this.renderMinigames();
-        }
-
-        prepareProfileView() {
-            const view = document.getElementById('view-profile');
-            const t = this.t.bind(this);
-            view.innerHTML = `
-                <h2>${t('profile_title')}</h2>
-                <div class="profile-stat"><span>${t('cases_opened')}:</span><span id="stat-cases">${this.state.stats.casesOpened}</span></div>
-                <div class="profile-stat"><span>${t('items_collected')}:</span><span id="stat-items">${this.state.stats.itemsCollected}</span></div>
-                <div class="profile-stat"><span>${t('gold_items')}:</span><span id="stat-gold">${this.state.stats.goldItems}</span></div>
-                <div class="profile-stat"><span>Побед в крестиках-ноликах:</span><span>${this.state.stats.tttWins||0}</span></div>
-                <h3>Достижения</h3>
-                <div id="achievements-list"></div>
-                <button onclick="Game.exportSave()">${t('backup')}</button>
-                <button onclick="Game.importSavePrompt()">${t('import')}</button>
-                <button class="danger" onclick="Game.resetProgress()">${t('reset')}</button>
-            `;
-            this.renderAchievements();
-        }
-
-        renderAchievements() {
-            const list = document.getElementById('achievements-list');
-            if (!list) return;
-            list.innerHTML = this.state.achievements.map(a=>`
-                <div class="achievement">
-                    <span>${a.desc}</span><span>${a.unlocked?'✅':'🔒'}</span>
-                </div>
-            `).join('');
-        }
-
-        checkAchievements() {
-            const a = this.state.achievements;
-            if (this.state.stats.casesOpened>=1) a.find(x=>x.id==='first_case').unlocked=true;
-            if (this.state.stats.goldItems>=1) a.find(x=>x.id==='gold_found').unlocked=true;
-            if (this.state.stats.itemsCollected>=10) a.find(x=>x.id==='collector_10').unlocked=true;
-            if (this.state.inventory.some(i=>i.rarity==='Gold'&&i.type!=='knife'&&i.type!=='gloves')) a.find(x=>x.id==='upgrade_master').unlocked=true;
-            if ((this.state.stats.tttWins||0)>=10) a.find(x=>x.id==='ttt_master').unlocked=true;
-            this.saveState();
-        }
-
-        prepareQuestsView() {
-            const view = document.getElementById('view-quests');
-            const t = this.t.bind(this);
-            view.innerHTML = `<h2>${t('quest_daily')}</h2><div id="quests-list"></div>`;
-            this.renderQuests();
-        }
-
-        renderQuests() {
-            const list = document.getElementById('quests-list');
-            if (!list) return;
-            list.innerHTML = this.state.quests.daily.map(q=>`
-                <div class="quest-item">
-                    <span>${q.desc} (${q.progress}/${q.goal})</span>
-                    ${q.completed?`<span>✅ +${q.reward}$</span>`:''}
-                </div>
-            `).join('');
-        }
-
-        checkQuests() {
-            this.state.quests.daily.forEach(q=>{
-                if (!q.completed && q.progress>=q.goal) {
-                    q.completed=true;
-                    this.state.balance+=q.reward;
-                    alert(`Квест выполнен! +${q.reward}$`);
-                }
-            });
-            this.saveState();
-            this.updateBalanceDisplay();
-        }
-
-        prepareShopView() {
-            const view = document.getElementById('view-shop');
-            const t = this.t.bind(this);
-            view.innerHTML = `<h2>${t('shop_title')}</h2><div id="shop-items"></div>`;
-            this.renderShop();
-        }
-
-        renderShop() {
-            const container = document.getElementById('shop-items');
-            if (!container) return;
-            const t = this.t.bind(this);
-            const offers = [
-                { name:'Arms Deal Case', collection:'Arms Deal', type:'case', dropType:'weapon', price:20 },
-                { name:'Chroma Case', collection:'Chroma', type:'case', dropType:'weapon', price:20 },
-                { name:'Sticker Capsule', collection:'Sticker Capsule', type:'capsule', dropType:'sticker', price:10 },
-                { name:'Agent Pack', collection:'Agent Pack', type:'capsule', dropType:'agent', price:15 }
-            ];
-            container.innerHTML = offers.map(o=>`
-                <div style="margin:5px 0;background:var(--panel);padding:10px;border-radius:5px;display:flex;justify-content:space-between;">
-                    <span>${o.name} - ${t('price')}: $${o.price}</span>
-                    <button onclick="Game.buyCase('${o.collection}','${o.type}','${o.dropType}',${o.price})">${t('buy')}</button>
-                </div>
-            `).join('');
-            container.innerHTML += `<hr><button onclick="Game.tradeUp()">${t('trade_up')}</button>`;
-        }
-
-        buyCase(collection, type, dropType, price) {
-            if (this.state.balance<price) return alert('Недостаточно $');
-            this.state.balance-=price;
-            const newCase = {
-                id: Date.now()+Math.random().toString(36),
-                type: type, collection: collection, dropType: dropType,
-                name: `${collection} ${type==='case'?'Case':'Capsule'}`,
-                rarity: 'Usual', wear: 0, wearCategory: '', pattern: 0, stickers: [], isFavorite: false
-            };
-            newCase.image = this.generateItemImage(newCase);
-            this.state.inventory.push(newCase);
-            this.saveState();
-            this.updateBalanceDisplay();
-            this.renderInventory();
-        }
-
-        tradeUp() {
-            const rarityOrder = this.rarities;
-            const itemsByRarity = {};
-            this.state.inventory.forEach(i=>{
-                if (i.type==='case'||i.type==='capsule') return;
-                if (!itemsByRarity[i.rarity]) itemsByRarity[i.rarity]=[];
-                itemsByRarity[i.rarity].push(i);
-            });
-            let selectedRarity = null;
-            for (let r of rarityOrder) {
-                if (itemsByRarity[r] && itemsByRarity[r].length>=10) {
-                    selectedRarity = r; break;
-                }
-            }
-            if (!selectedRarity) return alert('Нет 10 предметов одной редкости');
-            const nextRarity = rarityOrder[rarityOrder.indexOf(selectedRarity)+1];
-            if (!nextRarity) return alert('Нельзя улучшить Gold');
-            const sacrifice = itemsByRarity[selectedRarity].slice(0,10);
-            sacrifice.forEach(i=> this.state.inventory = this.state.inventory.filter(x=>x.id!==i.id));
-            const newItem = this.generateItem('Arms Deal', 'weapon');
-            newItem.rarity = nextRarity;
-            this.addItem(newItem);
-            this.saveState();
-            this.renderInventory();
-            alert(`Получен предмет редкости ${nextRarity}!`);
-        }
-
-        regenerateEnergy() {
-            const now = Date.now();
-            const elapsed = now - this.state.lastEnergyTime;
-            const minutes = Math.floor(elapsed/60000);
-            if (minutes>0) {
-                this.state.energy = Math.min(this.state.maxEnergy, this.state.energy + minutes);
-                this.state.lastEnergyTime += minutes*60000;
-                this.saveState();
-            }
-            this.updateEnergyDisplay();
-        }
-
-        updateEnergyDisplay() {
-            document.getElementById('energy').textContent = `⚡ ${this.state.energy}/${this.state.maxEnergy}`;
-        }
-
-        updateBalanceDisplay() {
-            document.getElementById('balance').textContent = `$${this.state.balance.toFixed(2)}`;
-        }
-
-        dailyCheck() {
-            const today = new Date().toDateString();
-            if (this.state.lastDailyBonus !== today) {
-                const bonus = Math.floor(Math.random()*40)+10;
-                this.state.balance += bonus;
-                this.state.lastDailyBonus = today;
-                alert(`Ежедневный бонус: +${bonus}$`);
-                this.saveState();
-                this.updateBalanceDisplay();
-            }
-        }
-
-        checkDailyReset() {
-            const today = new Date().toDateString();
-            if (this.state.quests.lastDailyReset !== today) {
-                this.state.quests.daily.forEach(q=>{ q.progress=0; q.completed=false; });
-                this.state.quests.lastDailyReset = today;
-                this.saveState();
-            }
-        }
-
-        exportSave() {
-            const data = JSON.stringify(this.state);
-            const blob = new Blob([data],{type:'application/json'});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href=url; a.download='arsenalzone_backup.json'; a.click();
-        }
-
-        importSavePrompt() {
-            const input = document.createElement('input');
-            input.type='file'; input.accept='.json';
-            input.onchange=(e)=>{
-                const file = e.target.files[0];
-                const reader = new FileReader();
-                reader.onload=(ev)=>{
-                    try {
-                        const data = JSON.parse(ev.target.result);
-                        this.state = data;
-                        this.saveState();
-                        location.reload();
-                    } catch { alert('Неверный файл'); }
-                };
-                reader.readAsText(file);
-            };
-            input.click();
-        }
-
-        resetProgress() {
-            if (confirm('Удалить весь прогресс?')) {
-                localStorage.removeItem('arsenalzone_save');
-                location.reload();
-            }
-        }
-
-        updateUILanguage() {
-            const t = this.t.bind(this);
-            document.querySelectorAll('nav button').forEach(b=>{
-                const view = b.dataset.view;
-                b.textContent = t(view);
-            });
-            this.renderInventory();
-            this.renderProfile();
-            this.renderQuests();
-            this.renderShop();
-            this.renderMinigames();
-        }
-
-        renderMinigames() {
-            const view = document.getElementById('view-minigames');
-            if (view) this.prepareMinigamesView();
-        }
-
-        renderProfile() {
-            const view = document.getElementById('view-profile');
-            if (view) this.prepareProfileView();
-        }
+        t(key) { return (this.translations[this.locale]||{})[key] || key; }
+
+        generateItemImage(item) { if(!item||!item.name) return ''; const canvas=document.createElement('canvas');canvas.width=200;canvas.height=150; const ctx=canvas.getContext('2d'); const rc=this.rarityColors[item.rarity||'Usual']||'#888'; const grad=ctx.createLinearGradient(0,0,200,150);grad.addColorStop(0,rc);grad.addColorStop(1,'#111'); ctx.fillStyle=grad;ctx.fillRect(0,0,200,150); ctx.fillStyle='white';ctx.font='bold 24px "Segoe UI"';ctx.textAlign='center';ctx.fillText(item.name,100,75);ctx.font='14px "Segoe UI"';ctx.fillText(item.rarity,100,110); return canvas.toDataURL(); }
+        generateItem(collectionName, dropType, allowGold=true, chancesOverride=null) { const col=this.collections[collectionName]; if(!col) return null; const chances=chancesOverride||(col.odds||this.globalRarityChances); let itemType=dropType; if(!itemType){ if(col.weapons) itemType='weapon'; else if(col.stickers) itemType='sticker'; else if(col.agents) itemType='agent'; else if(col.knife) itemType='knife'; } let data; switch(itemType){ case'weapon':data=col.weapons[Math.floor(Math.random()*col.weapons.length)];break; case'knife':data=Array.isArray(col.knife)?col.knife[Math.floor(Math.random()*col.knife.length)]:col.knife;break; case'sticker':data=col.stickers[Math.floor(Math.random()*col.stickers.length)];break; case'agent':data=col.agents[Math.floor(Math.random()*col.agents.length)];break; default:return null; } if(!data) return null; const name=typeof data==='string'?data:data.name; let weaponType,skinName; if(name&&name.includes(' | ')){ const parts=name.split(' | '); weaponType=parts[0]; skinName=parts.slice(1).join(' | '); } else { weaponType=name; skinName=''; } let rarity; if(itemType==='knife') rarity='Gold'; else { const fixedRarity=(typeof data==='object'&&data.rarity)?data.rarity:null; if(!allowGold&&fixedRarity==='Gold') rarity='Relic'; else if(fixedRarity) rarity=fixedRarity; else { const rand=Math.random()*100; let cum=0; for(const r of chances){ cum+=r.chance; if(rand<cum){ rarity=r.rarity; break; } } if(!rarity) rarity='Usual'; } } let wear=0,wearCat='',pattern=0; if(itemType!=='agent'&&itemType!=='sticker'){ wear=Math.random()*0.9999999998+0.0000000001; if(wear<0.1) wearCat='Practically New'; else if(wear<0.25) wearCat='Lightly-Used'; else if(wear<0.4) wearCat='Worn'; else wearCat='Heavily-Worn'; pattern=Math.floor(Math.random()*10000); } const statTrack=(itemType==='weapon'||itemType==='knife')&&Math.random()<0.2; const item={ id:Date.now()+Math.random().toString(36), type:itemType, collection:collectionName, name, weaponType, skinName, rarity, wear, wearCategory:wearCat, pattern, stickers:[], isFavorite:false, statTrack }; item.image=this.generateItemImage(item); return item; }
+        addItem(item) { if(!item.image) item.image=this.generateItemImage(item); this.state.inventory.push(item); this.state.stats.itemsCollected++; if(item.rarity==='Gold') this.state.stats.goldItems++; this.checkAchievements(); this.saveState(); }
+        getItemPrice(item) { const base={Usual:0.5,Frequent:2,'Conveyor-type':5,Rare:15,Unique:50,Relic:200,Gold:1000}[item.rarity]||0.5; let price=base*(1-item.wear*0.5); if(item.statTrack) price*=(item.type==='knife'?1.3:3); item.stickers.forEach(()=>price+=0.15); return price; }
+
+        initSound() { const AC=window.AudioContext||window.webkitAudioContext; const ctx=new AC(); return { play:(type)=>{ if(type==='case_open'){ const osc=ctx.createOscillator(); const gain=ctx.createGain(); osc.connect(gain); gain.connect(ctx.destination); osc.type='sine'; osc.frequency.setValueAtTime(600,ctx.currentTime); osc.frequency.exponentialRampToValueAtTime(800,ctx.currentTime+0.15); gain.gain.setValueAtTime(0.3,ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01,ctx.currentTime+0.3); osc.start(ctx.currentTime); osc.stop(ctx.currentTime+0.3); } } }; }
+
+        initUI() { document.querySelectorAll('nav button').forEach(btn=>btn.addEventListener('click',(e)=>{ document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); this.showView(btn.dataset.view); })); document.getElementById('lang-select').addEventListener('change',(e)=>{ this.locale=e.target.value; this.state.settings.language=this.locale; this.saveState(); this.updateUILanguage(); }); document.getElementById('console-toggle').addEventListener('click',()=>{ document.getElementById('console-modal').classList.toggle('active'); }); this.generateMainViews(); this.showView('inventory'); this.renderInventory(); this.updateEnergyDisplay(); this.updateBalanceDisplay(); this.updateConsole(); this.updateUILanguage(); this.checkDailyReset(); }
+        generateMainViews() { document.getElementById('main-container').innerHTML=`<div id="view-inventory" class="view active"></div><div id="view-market" class="view"></div><div id="view-minigames" class="view"></div><div id="view-profile" class="view"></div><div id="view-shop" class="view"></div>`; this.prepareMinigamesView(); this.prepareProfileView(); this.prepareShopView(); }
+        showView(name) { document.querySelectorAll('.view').forEach(v=>v.classList.remove('active')); const el=document.getElementById(`view-${name}`); if(el) el.classList.add('active'); if(name==='inventory') this.renderInventory(); else if(name==='profile') this.renderProfile(); else if(name==='shop') this.renderShop(); else if(name==='minigames') this.renderMinigames(); else if(name==='market') this.renderMarket(); }
+
+        // ---------- Инвентарь ----------
+        sortInventory(items) { return items.sort((a,b)=>{ if(a.isFavorite!==b.isFavorite) return a.isFavorite?-1:1; const ta=this.typeOrder.indexOf(a.type),tb=this.typeOrder.indexOf(b.type); if(ta!==tb) return ta-tb; const ra=this.rarities.indexOf(a.rarity),rb=this.rarities.indexOf(b.rarity); if(ra!==rb) return rb-ra; if(a.statTrack!==b.statTrack) return a.statTrack?-1:1; if(a.name!==b.name) return a.name.localeCompare(b.name); return (a.wear||0)-(b.wear||0); }); }
+        renderInventory() { const c=document.getElementById('view-inventory'); if(!c) return; const t=this.t.bind(this); const ft=this.state.filterType||'all',fr=this.state.filterRarity||'all',fs=this.state.filterStatTrack||'all',fw=this.state.filterWear||'all',pmin=this.state.filterPatternMin||'',pmax=this.state.filterPatternMax||''; c.innerHTML=`<div class="filter-bar"><select id="filter-type"><option value="all">${t('filter_all')}</option><option value="weapon">${t('filter_weapon')}</option><option value="knife">${t('filter_knife')}</option><option value="gloves">${t('filter_gloves')}</option><option value="charm">${t('filter_charm')}</option><option value="sticker">${t('filter_sticker')}</option><option value="agent">${t('filter_agent')}</option><option value="case">${t('filter_case')}</option></select><select id="filter-rarity"><option value="all">${t('filter_all')}</option>${this.rarities.map(r=>`<option value="${r}">${r}</option>`).join('')}</select><select id="filter-stattrack"><option value="all">${t('stattrack_filter')}: ${t('filter_all')}</option><option value="yes">StatTrack™</option><option value="no">Обычный</option></select><select id="filter-wear"><option value="all">${t('wear_filter')}: ${t('filter_all')}</option>${this.wearLevels.map(w=>`<option value="${w}">${w}</option>`).join('')}</select><input type="number" placeholder="Паттерн от" value="${pmin}" id="filter-patmin" style="width:80px"><input type="number" placeholder="до" value="${pmax}" id="filter-patmax" style="width:80px"></div><div class="inventory-grid" id="inv-grid"></div>`; document.getElementById('filter-type').addEventListener('change',(e)=>{this.state.filterType=e.target.value;this.saveState();this.applyFilters();}); document.getElementById('filter-rarity').addEventListener('change',(e)=>{this.state.filterRarity=e.target.value;this.saveState();this.applyFilters();}); document.getElementById('filter-stattrack').addEventListener('change',(e)=>{this.state.filterStatTrack=e.target.value;this.saveState();this.applyFilters();}); document.getElementById('filter-wear').addEventListener('change',(e)=>{this.state.filterWear=e.target.value;this.saveState();this.applyFilters();}); document.getElementById('filter-patmin').addEventListener('input',(e)=>{this.state.filterPatternMin=e.target.value;this.saveState();this.applyFilters();}); document.getElementById('filter-patmax').addEventListener('input',(e)=>{this.state.filterPatternMax=e.target.value;this.saveState();this.applyFilters();}); this.applyFilters(); }
+        applyFilters() { const grid=document.getElementById('inv-grid'); if(!grid) return; const tf=this.state.filterType||'all',rf=this.state.filterRarity||'all',sf=this.state.filterStatTrack||'all',wf=this.state.filterWear||'all',pmin=parseInt(this.state.filterPatternMin),pmax=parseInt(this.state.filterPatternMax); let items=[...this.state.inventory]; if(tf!=='all') items=items.filter(i=>{if(tf==='case') return i.type==='case'||i.type==='capsule';return i.type===tf;}); if(rf!=='all') items=items.filter(i=>i.rarity===rf); if(sf==='yes') items=items.filter(i=>i.statTrack); else if(sf==='no') items=items.filter(i=>!i.statTrack); if(wf!=='all') items=items.filter(i=>i.wearCategory===wf); if(!isNaN(pmin)) items=items.filter(i=>i.pattern>=pmin); if(!isNaN(pmax)) items=items.filter(i=>i.pattern<=pmax); items=this.sortInventory(items); grid.innerHTML=''; if(items.length===0){grid.innerHTML=`<p style="grid-column:1/-1;text-align:center">${this.t('no_items')}</p>`;return;} items.forEach(item=>{ if(!item.image) item.image=this.generateItemImage(item); const card=document.createElement('div');card.className='item-card';card.dataset.rarity=item.rarity; const stickersHtml=item.stickers.map(s=>{const emoji=this.stickerEmojis[s]||'🏷️';return`<span title="${s}">${emoji}</span>`;}).join(''); card.innerHTML=`${item.isFavorite?'<span class="favorite-badge">⭐</span>':''}${item.statTrack?'<span class="stattrack-label">StatTrack™</span>':''}<img src="${item.image}" class="item-img"><span class="item-name">${item.type==='case'||item.type==='capsule'?item.collection:item.weaponType}</span><span class="item-wear">${item.type==='case'||item.type==='capsule'?item.collection:item.skinName||''}</span><div class="item-stickers">${stickersHtml}</div>`; card.addEventListener('click',()=>this.onItemClick(item));grid.appendChild(card); }); }
+        onItemClick(item){ if(item.type==='case'||item.type==='capsule') this.showCaseDetail(item); else this.showItemDetail(item); }
+        showCaseDetail(caseItem){ const t=this.t.bind(this); const modal=document.getElementById('item-detail-modal');modal.classList.add('active'); const content=document.getElementById('item-detail-content'); const odds=this.getOdds(caseItem.collection); content.innerHTML=`<div style="text-align:center"><img src="${caseItem.image}" style="width:150px;height:100px;object-fit:contain;border-radius:8px;margin-bottom:10px"></div><h3>${caseItem.name||caseItem.collection}</h3><p>${t('collection')}: ${caseItem.collection}</p><p>${t('type')}: ${caseItem.type}</p><h4>${t('odds')}:</h4><ul style="text-align:left">${Object.entries(odds).map(([r,ch])=>`<li style="color:${this.rarityColors[r]}">${r}: ${ch.toFixed(2)}%</li>`).join('')}</ul><button onclick="Game.openCaseById('${caseItem.id}')">${t('open')}</button><button onclick="Game.openCaseFastById('${caseItem.id}')">${t('open_fast')}</button><button onclick="Game.closeModal()">${t('close')}</button>`; }
+        getOdds(col){ const chances=this.collections[col]?.odds||this.globalRarityChances; const odds={}; chances.forEach(r=>odds[r.rarity]=r.chance); return odds; }
+        openCaseById(id){ const item=this.state.inventory.find(i=>i.id===id); if(!item) return; this.closeModal(); this.openCase(item); }
+        openCaseFastById(id){ const item=this.state.inventory.find(i=>i.id===id); if(!item) return; this.closeModal(); this.openCaseFast(item); }
+        showItemDetail(item){ const t=this.t.bind(this); const modal=document.getElementById('item-detail-modal');modal.classList.add('active'); const content=document.getElementById('item-detail-content'); const showWear=item.type!=='agent'&&item.type!=='sticker'; const stickersText=item.stickers.length>0?item.stickers.join(', '):'Нет'; content.innerHTML=`<div style="text-align:center"><img src="${item.image}" style="width:200px;height:150px;object-fit:contain;border-radius:8px;margin-bottom:10px"></div><h3>${item.name} <span style="color:${this.rarityColors[item.rarity]}">${item.rarity}</span></h3>${item.statTrack?'<p style="color:#ff8c00">★ StatTrack™</p>':''}<p>${t('type')}: ${item.weaponType} | ${t('collection')}: ${item.collection}</p>${showWear?`<p>${t('pattern')}: ${String(item.pattern).padStart(4,'0')}</p><p>${t('wear')}: ${item.wearCategory} (${item.wear.toFixed(9)})</p>`:''}<p>${t('stickers')}: ${stickersText}</p><button onclick="Game.sellItem('${item.id}')">${t('sell')} ($${this.getItemPrice(item).toFixed(2)})</button>${(item.type==='weapon'||item.type==='knife'||item.type==='gloves')?`<button onclick="Game.applyStickerModal('${item.id}')">${t('apply_sticker')}</button>`:''}<button onclick="Game.toggleFavorite('${item.id}')">${item.isFavorite?'💔':'❤️'}</button><button onclick="Game.closeModal()">${t('close')}</button>`; }
+        sellItem(id){ const item=this.state.inventory.find(i=>i.id===id); if(!item) return; this.state.balance+=this.getItemPrice(item)*0.8; this.state.inventory=this.state.inventory.filter(i=>i.id!==id); this.saveState(); this.updateBalanceDisplay(); this.renderInventory(); this.closeModal(); }
+        toggleFavorite(id){ const item=this.state.inventory.find(i=>i.id===id); if(!item) return; item.isFavorite=!item.isFavorite; this.saveState(); this.renderInventory(); }
+        applyStickerModal(itemId){ const item=this.state.inventory.find(i=>i.id===itemId); if(!item||item.stickers.length>=5) return; const stickers=this.state.inventory.filter(i=>i.type==='sticker'); const t=this.t.bind(this); const modal=document.getElementById('item-detail-modal');modal.classList.add('active'); const content=document.getElementById('item-detail-content'); if(stickers.length===0){ content.innerHTML=`<p>${t('no_stickers')}</p>`; const btn=document.createElement('button');btn.textContent=t('back');btn.onclick=()=>this.closeModal();content.appendChild(btn);return; } content.innerHTML='<h3>Выберите стикер</h3><div class="sticker-select-grid" id="sticker-grid"></div>'; const grid=document.getElementById('sticker-grid'); stickers.forEach(s=>{ const div=document.createElement('div');div.className='sticker-select-item';div.innerHTML=`<img src="${s.image}"><br><small>${s.name}</small>`;div.onclick=()=>{ item.stickers.push(s.name); this.state.inventory=this.state.inventory.filter(i=>i.id!==s.id); this.saveState(); this.showItemDetail(item); this.renderInventory(); };grid.appendChild(div); }); const backBtn=document.createElement('button');backBtn.textContent=t('back');backBtn.onclick=()=>this.closeModal();content.appendChild(backBtn); }
+
+        // ========== Кейсы ==========
+        openCase(caseItem){ const idx=this.state.inventory.findIndex(i=>i.id===caseItem.id); if(idx===-1) return; this.state.inventory.splice(idx,1); this.state.stats.casesOpened++; this.state.quests.daily.find(q=>q.id==='open3').progress++; this.saveState(); this.animateCaseOpen(caseItem.collection, caseItem.dropType); this.renderInventory(); }
+        openCaseFast(caseItem){ const idx=this.state.inventory.findIndex(i=>i.id===caseItem.id); if(idx===-1) return; this.state.inventory.splice(idx,1); this.state.stats.casesOpened++; this.state.quests.daily.find(q=>q.id==='open3').progress++; this.saveState(); const chances=this.collections[caseItem.collection]?.odds||this.globalRarityChances; const goldChance=chances.find(r=>r.rarity==='Gold')?.chance||0; const isGold=Math.random()*100<goldChance; let wonItem; if(isGold){ const goldType=(caseItem.dropType==='weapon'||caseItem.dropType==='knife')?(Math.random()<0.5?'knife':'gloves'):caseItem.dropType; wonItem=this.generateItem(caseItem.collection,goldType,true,chances); if(!wonItem) wonItem=this.generateItem(caseItem.collection,caseItem.dropType,false,chances); }else wonItem=this.generateItem(caseItem.collection,caseItem.dropType,false,chances); if(!wonItem) return; this.addItem(wonItem); this.sound.play('case_open'); this.showItemDetail(wonItem); this.checkQuests(); this.renderInventory(); }
+        animateCaseOpen(collectionName, dropType) { const modal=document.getElementById('case-modal');modal.classList.add('active'); const canvas=document.getElementById('case-canvas');const ctx=canvas.getContext('2d'); const chances=this.collections[collectionName]?.odds||this.globalRarityChances; const items=[]; for(let i=0;i<40;i++){ const it=this.generateItem(collectionName,dropType,false,chances); if(!it) continue; it.imageObj=new Image();it.imageObj.src=it.image; items.push(it); } if(items.length===0){modal.classList.remove('active');return;} const goldChance=chances.find(r=>r.rarity==='Gold')?.chance||0; const isGold=Math.random()*100<goldChance; let stopIdx,wonItem; if(isGold){ const goldType=(dropType==='weapon'||dropType==='knife')?(Math.random()<0.5?'knife':'gloves'):dropType; const goldItem=this.generateItem(collectionName,goldType,true,chances); if(goldItem){ goldItem.imageObj=new Image();goldItem.imageObj.src=goldItem.image; stopIdx=Math.min(38+Math.floor(Math.random()*2),items.length-1); items[stopIdx]=goldItem; wonItem=goldItem; }else{ stopIdx=Math.floor(Math.random()*items.length); wonItem=items[stopIdx]; } }else{ stopIdx=Math.floor(Math.random()*items.length); wonItem=items[stopIdx]; } const itemWidth=80;const totalWidth=items.length*itemWidth;const centerX=canvas.width/2-itemWidth/2; const targetDistance=3*totalWidth+(stopIdx*itemWidth-centerX);const duration=5000;let startTime=performance.now(); const draw=(now)=>{ const elapsed=now-startTime; if(elapsed>=duration){ const finalOffset=targetDistance;const displayOffset=finalOffset%totalWidth; ctx.clearRect(0,0,canvas.width,canvas.height);this.drawItems(ctx,items,displayOffset,itemWidth);this.drawCenterLine(ctx,canvas); setTimeout(()=>{modal.classList.remove('active');this.addItem(wonItem);this.sound.play('case_open');this.showItemDetail(wonItem);this.checkQuests();this.renderInventory();},500); return; } const progress=elapsed/duration;const easeOutCubic=1-Math.pow(1-progress,3); const currentOffset=targetDistance*easeOutCubic;const displayOffset=currentOffset%totalWidth; ctx.clearRect(0,0,canvas.width,canvas.height);this.drawItems(ctx,items,displayOffset,itemWidth);this.drawCenterLine(ctx,canvas); requestAnimationFrame(draw); }; requestAnimationFrame(draw); }
+        drawItems(ctx,items,offset,itemWidth){ const canvas=ctx.canvas;const startX=-offset; for(let i=0;i<items.length*2;i++){ const idx=i%items.length;const x=startX+i*itemWidth; if(x>-itemWidth&&x<canvas.width+itemWidth){ const it=items[idx]; if(it.imageObj&&it.imageObj.complete) ctx.drawImage(it.imageObj,x+2,12,itemWidth-4,96); else{ ctx.fillStyle=this.rarityColors[it.rarity]||'#888';ctx.fillRect(x,10,itemWidth-2,100); ctx.fillStyle='#fff';ctx.font='10px sans-serif';ctx.fillText(it.weaponType,x+4,25); ctx.font='9px sans-serif';ctx.fillText(it.skinName||'',x+4,45); } } } }
+        drawCenterLine(ctx,canvas){ const cx=canvas.width/2;ctx.strokeStyle='#ffd700';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(cx,0);ctx.lineTo(cx,canvas.height);ctx.stroke(); }
+        closeModal(){ document.querySelectorAll('.modal').forEach(m=>m.classList.remove('active')); }
+
+        // ========== Рынок ==========
+        initMarket(){ if(!this.state.marketListings||this.state.marketListings.length===0) this.generateMarketListings(); }
+        generateMarketListings(){ const listings=[]; const allCols=Object.keys(this.collections); for(let i=0;i<5000;i++){ const colName=allCols[Math.floor(Math.random()*allCols.length)]; const item=this.generateItem(colName); if(item){ item.seller=this.sellerNames[Math.floor(Math.random()*this.sellerNames.length)]; item.sellerMarkup=0.9+Math.random()*0.3; listings.push(item); } } this.state.marketListings=listings; this.saveState(); }
+        renderMarket(){ const c=document.getElementById('view-market');if(!c) return; const t=this.t.bind(this); const collections=Object.keys(this.collections); c.innerHTML=`<h2>${t('market_title')}</h2><div class="filter-bar"><select id="market-filter-type"><option value="all">${t('filter_all')}</option><option value="weapon">${t('filter_weapon')}</option><option value="knife">${t('filter_knife')}</option><option value="sticker">${t('filter_sticker')}</option><option value="agent">${t('filter_agent')}</option></select><select id="market-filter-collection"><option value="all">${t('collection')}: ${t('filter_all')}</option>${collections.map(c=>`<option value="${c}">${c}</option>`).join('')}</select><select id="market-filter-rarity"><option value="all">${t('rarity')}: ${t('filter_all')}</option>${this.rarities.map(r=>`<option value="${r}">${r}</option>`).join('')}</select></div><div class="inventory-grid" id="market-grid"></div>`; ['change','input'].forEach(ev=>{ ['market-filter-type','market-filter-collection','market-filter-rarity'].forEach(id=>{ const el=document.getElementById(id); if(el) el.addEventListener(ev, ()=>this.applyMarketFilters()); }); }); this.applyMarketFilters(); }
+        applyMarketFilters(){ const grid=document.getElementById('market-grid');if(!grid) return; const type=document.getElementById('market-filter-type')?.value||'all'; const collection=document.getElementById('market-filter-collection')?.value||'all'; const rarity=document.getElementById('market-filter-rarity')?.value||'all'; let items=[...this.state.marketListings]; if(type!=='all') items=items.filter(i=>i.type===type); if(collection!=='all') items=items.filter(i=>i.collection===collection); if(rarity!=='all') items=items.filter(i=>i.rarity===rarity); const grouped=new Map(); items.forEach(item=>{ const price=this.getItemPrice(item)*(item.sellerMarkup||1); if(!grouped.has(item.name)||price<grouped.get(item.name).minPrice){ grouped.set(item.name, {item, minPrice:price}); } }); const sorted=Array.from(grouped.values()).sort((a,b)=>b.minPrice-a.minPrice); grid.innerHTML=''; if(sorted.length===0){grid.innerHTML=`<p style="grid-column:1/-1">${this.t('market_no_items')}</p>`;return;} sorted.forEach(entry=>{ const item=entry.item; const card=document.createElement('div');card.className='item-card';card.dataset.rarity=item.rarity; card.innerHTML=`<img src="${item.image}" class="item-img"><span class="item-name">${item.weaponType} ${item.skinName}</span><span>от $${entry.minPrice.toFixed(2)}</span>`; card.addEventListener('click',()=>this.showMarketItemDetail(item.name));grid.appendChild(card); }); }
+        showMarketItemDetail(skinName){ const modal=document.getElementById('market-item-modal');modal.classList.add('active'); const content=document.getElementById('market-item-content'); const t=this.t.bind(this); const items=this.state.marketListings.filter(i=>i.name===skinName); if(items.length===0){content.innerHTML=`<p>${t('market_no_items')}</p><button onclick="Game.closeModal()">${t('close')}</button>`;return;} const template=items[0]; content.innerHTML=`<h3>${template.weaponType} | ${template.skinName}</h3><div class="filter-bar"><select id="market-item-wear"><option value="all">${t('wear')}: ${t('filter_all')}</option>${this.wearLevels.map(w=>`<option value="${w}">${w}</option>`).join('')}</select><select id="market-item-stattrack"><option value="all">StatTrack: все</option><option value="yes">StatTrack™</option><option value="no">Обычный</option></select><button onclick="Game.applyMarketItemFilters('${skinName}')">Применить</button></div><div id="market-item-list" class="inventory-grid"></div><button onclick="Game.closeModal()">${t('close')}</button>`; this.applyMarketItemFilters(skinName); }
+        applyMarketItemFilters(skinName){ const listDiv=document.getElementById('market-item-list');if(!listDiv) return; const wear=document.getElementById('market-item-wear')?.value||'all'; const statTrack=document.getElementById('market-item-stattrack')?.value||'all'; let items=this.state.marketListings.filter(i=>i.name===skinName); if(wear!=='all') items=items.filter(i=>i.wearCategory===wear); if(statTrack==='yes') items=items.filter(i=>i.statTrack); else if(statTrack==='no') items=items.filter(i=>!i.statTrack); items.sort((a,b)=> (this.getItemPrice(b)*(b.sellerMarkup||1)) - (this.getItemPrice(a)*(a.sellerMarkup||1)) ); const displayed=items.slice(0,10); listDiv.innerHTML=''; if(displayed.length===0){listDiv.innerHTML=`<p style="grid-column:1/-1">${this.t('market_no_items')}</p>`;return;} displayed.forEach(item=>{ const finalPrice=this.getItemPrice(item)*(item.sellerMarkup||1); const card=document.createElement('div');card.className='item-card';card.dataset.rarity=item.rarity; card.innerHTML=`<img src="${item.image}" class="item-img"><span class="item-name">${item.weaponType}</span><span class="item-wear">${item.wearCategory} | Паттерн:${item.pattern}</span>${item.statTrack?'<span class="stattrack-label">StatTrack™</span>':''}<span>$${finalPrice.toFixed(2)}</span><span class="seller-name">${item.seller}</span>`; card.addEventListener('click',()=>{ if(confirm(`Купить у ${item.seller} за $${finalPrice.toFixed(2)}?`)) this.buyMarketItem(item); }); listDiv.appendChild(card); }); }
+        buyMarketItem(item){ const price=this.getItemPrice(item)*(item.sellerMarkup||1); if(this.state.balance<price) return alert('Недостаточно $'); this.state.balance-=price; this.state.marketListings=this.state.marketListings.filter(i=>i.id!==item.id); delete item.seller; delete item.sellerMarkup; this.state.inventory.push(item); this.saveState(); this.updateBalanceDisplay(); this.renderMarket(); this.renderInventory(); if(document.getElementById('market-item-modal').classList.contains('active')){ this.showMarketItemDetail(item.name); } }
+
+        // ========== Мини-игры ==========
+        prepareMinigamesView(){ const v=document.getElementById('view-minigames'); if(v) v.innerHTML=`<h2>${this.t('minigames')}</h2><button onclick="Game.startUpgrader()">⬆️ Апгрейдер (10$)</button><button onclick="Game.startTicTacToe()">❌⭕ Крестики-нолики (энергия 1)</button><div id="minigame-container"></div>`; }
+        startUpgrader(){ const items=this.state.inventory.filter(i=>i.type!=='case'&&i.type!=='capsule'); if(items.length===0) return alert('Нет предметов'); if(this.state.balance<10) return alert('Недостаточно $'); this.state.balance-=10; this.saveState(); this.updateBalanceDisplay(); const item=items[Math.floor(Math.random()*items.length)]; const r=Math.random(); if(r<0.7){ item.wear=Math.max(0.0000000001,item.wear-0.05); alert('Износ улучшен!'); } else if(r<0.95){ alert('Ничего не изменилось.'); } else if(r<0.99){ const idx=this.rarities.indexOf(item.rarity); if(idx<this.rarities.length-1){ item.rarity=this.rarities[idx+1]; item.image=this.generateItemImage(item); alert('Редкость повышена!'); } else alert('Максимальная редкость.'); } else { this.state.inventory=this.state.inventory.filter(i=>i.id!==item.id); alert('Предмет сломан!'); } this.saveState(); this.renderInventory(); }
+        startTicTacToe(){ if(this.state.energy<1) return alert('Нет энергии'); this.state.energy--; this.updateEnergyDisplay(); const container=document.getElementById('minigame-container'); if(!container) return; container.innerHTML=''; const board=Array(9).fill(null); let gameOver=false; const renderBoard=()=>{ container.innerHTML=''; for(let i=0;i<9;i++){ const cell=document.createElement('div'); cell.style='width:60px;height:60px;border:1px solid #555;display:inline-flex;align-items:center;justify-content:center;font-size:2rem;cursor:pointer;'; cell.textContent=board[i]||''; cell.onclick=()=>{ if(gameOver||board[i]) return; board[i]='X'; renderBoard(); if(checkWin(board,'X')){ gameOver=true; this.handleTTTResult('win'); return; } if(board.every(c=>c)){ gameOver=true; this.handleTTTResult('draw'); return; } this.tttAI(board); renderBoard(); if(checkWin(board,'O')){ gameOver=true; this.handleTTTResult('lose'); return; } if(board.every(c=>c)){ gameOver=true; this.handleTTTResult('draw'); } }; container.appendChild(cell); } }; renderBoard(); }
+        tttAI(board){ const empty=board.map((v,i)=>v===null?i:null).filter(v=>v!==null); if(empty.length===0) return; let best=-Infinity,move=empty[0]; for(let i of empty){ board[i]='O'; const score=this.minimax(board,0,false); board[i]=null; if(score>best){ best=score; move=i; } } board[move]='O'; }
+        minimax(board,depth,isMax){ if(checkWin(board,'O')) return 10-depth; if(checkWin(board,'X')) return depth-10; if(board.every(c=>c)) return 0; const empty=board.map((v,i)=>v===null?i:null).filter(v=>v!==null); if(isMax){ let best=-Infinity; for(let i of empty){ board[i]='O'; best=Math.max(best,this.minimax(board,depth+1,false)); board[i]=null; } return best; } else { let best=Infinity; for(let i of empty){ board[i]='X'; best=Math.min(best,this.minimax(board,depth+1,true)); board[i]=null; } return best; } }
+        handleTTTResult(result){ if(result==='win'){ this.state.balance+=5; this.state.stats.tttWins=(this.state.stats.tttWins||0)+1; alert('Победа! +5$'); } else if(result==='draw'){ this.state.balance+=1; alert('Ничья! +1$'); } else alert('Поражение.'); this.saveState(); this.updateBalanceDisplay(); this.renderMinigames(); }
+
+        // ========== Профиль ==========
+        prepareProfileView(){ const v=document.getElementById('view-profile'); if(!v) return; const t=this.t.bind(this); v.innerHTML=`<h2>${t('profile_title')}</h2><div class="profile-stat"><span>${t('cases_opened')}:</span><span>${this.state.stats.casesOpened}</span></div><div class="profile-stat"><span>${t('items_collected')}:</span><span>${this.state.stats.itemsCollected}</span></div><div class="profile-stat"><span>${t('gold_items')}:</span><span>${this.state.stats.goldItems}</span></div><h3>Достижения</h3><div id="achievements-list"></div><button onclick="Game.exportSave()">${t('backup')}</button><button onclick="Game.importSavePrompt()">${t('import')}</button><button class="danger" onclick="Game.resetProgress()">${t('reset')}</button>`; this.renderAchievements(); }
+        renderAchievements(){ const list=document.getElementById('achievements-list'); if(!list) return; list.innerHTML=this.state.achievements.map(a=>`<div class="achievement"><span>${a.desc}</span><span>${a.unlocked?'✅':'🔒'}</span></div>`).join(''); }
+        checkAchievements(){ const a=this.state.achievements; if(this.state.stats.casesOpened>=1) a.find(x=>x.id==='first_case').unlocked=true; if(this.state.stats.goldItems>=1) a.find(x=>x.id==='gold_found').unlocked=true; if(this.state.stats.itemsCollected>=10) a.find(x=>x.id==='collector_10').unlocked=true; if(this.state.inventory.some(i=>i.rarity==='Gold'&&i.type!=='knife')) a.find(x=>x.id==='upgrade_master').unlocked=true; if((this.state.stats.tttWins||0)>=10) a.find(x=>x.id==='ttt_master').unlocked=true; this.saveState(); }
+
+        // ========== Квесты ==========
+        prepareQuestsView(){ const v=document.getElementById('view-quests'); if(!v) return; v.innerHTML=`<h2>${this.t('quest_daily')}</h2><div id="quests-list"></div>`; this.renderQuests(); }
+        renderQuests(){ const list=document.getElementById('quests-list'); if(!list) return; list.innerHTML=this.state.quests.daily.map(q=>`<div class="quest-item"><span>${q.desc} (${q.progress}/${q.goal})</span>${q.completed?`<span>✅ +${q.reward}$</span>`:''}</div>`).join(''); }
+        checkQuests(){ this.state.quests.daily.forEach(q=>{ if(!q.completed&&q.progress>=q.goal){ q.completed=true; this.state.balance+=q.reward; alert(`Квест выполнен! +${q.reward}$`); } }); this.saveState(); this.updateBalanceDisplay(); }
+
+        // ========== Магазин ==========
+        prepareShopView(){ const v=document.getElementById('view-shop'); if(!v) return; v.innerHTML=`<h2>${this.t('shop_title')}</h2><div id="shop-items"></div>`; this.renderShopContent(); }
+        renderShop(){ this.renderShopContent(); }
+        renderShopContent(){ const c=document.getElementById('shop-items'); if(!c) return; const t=this.t.bind(this); const offers=[ {name:'Arms Deal Case',collection:'Arms Deal',type:'case',dropType:'weapon',price:20}, {name:'Chroma Case',collection:'Chroma',type:'case',dropType:'weapon',price:20}, {name:'Armor Case',collection:'Armor',type:'case',dropType:'weapon',price:30}, {name:'Progmatic Case',collection:'Progmatic',type:'case',dropType:'weapon',price:40}, {name:'Sticker Capsule',collection:'Sticker Capsule',type:'capsule',dropType:'sticker',price:10}, {name:'Agent Pack',collection:'Agent Pack',type:'capsule',dropType:'agent',price:15} ]; c.innerHTML=offers.map(o=>`<div style="margin:5px 0;background:var(--panel);padding:10px;border-radius:5px;display:flex;justify-content:space-between"><span>${o.name} - ${t('price')}: $${o.price}</span><button onclick="Game.buyCase('${o.collection}','${o.type}','${o.dropType}',${o.price})">${t('buy')}</button></div>`).join('')+`<hr><button onclick="Game.openTrade()">${t('trade_up')}</button>`; }
+        buyCase(collection,type,dropType,price){ if(this.state.balance<price) return alert('Недостаточно $'); this.state.balance-=price; const newCase={ id:Date.now()+Math.random().toString(36), type, collection, dropType, name:`${collection} ${type==='case'?'Case':'Capsule'}`, rarity:'Usual', wear:0, wearCategory:'', pattern:0, stickers:[], isFavorite:false }; newCase.image=this.generateItemImage(newCase); this.state.inventory.push(newCase); this.saveState(); this.updateBalanceDisplay(); this.renderInventory(); }
+
+        // ========== Trade Up ==========
+        openTrade(){ this.tradeSelected=[]; this.tradeRarity=null; this.renderTradeRaritySelect(); }
+        renderTradeRaritySelect(){ const modal=document.getElementById('trade-modal');modal.classList.add('active'); const content=document.getElementById('trade-content'); const rarities=this.rarities.filter(r=>r!=='Gold'); content.innerHTML=`<h3>${this.t('trade_up')}</h3><p>${this.t('select_rarity')}</p>${rarities.map(r=>`<button onclick="Game.selectTradeRarity('${r}')">${r}</button><br>`).join('')}<button onclick="Game.closeModal()">${this.t('close')}</button>`; }
+        selectTradeRarity(rarity){ this.tradeRarity=rarity; this.tradeSelected=[]; this.renderTradeItems(); }
+        renderTradeItems(){ const modal=document.getElementById('trade-modal');modal.classList.add('active'); const content=document.getElementById('trade-content'); const items=this.state.inventory.filter(i=>i.rarity===this.tradeRarity&&i.type!=='case'&&i.type!=='capsule'); if(items.length===0){ content.innerHTML=`<p>Нет предметов редкости ${this.tradeRarity}</p><button onclick="Game.openTrade()">Назад</button>`; return; } let html=`<h3>${this.t('select_items')} (${this.tradeRarity})</h3><p>Выбрано: ${this.tradeSelected.length}/10</p><div class="inventory-grid">`; items.forEach(item=>{ const isSelected=this.tradeSelected.includes(item.id); html+=`<div class="item-card trade-item ${isSelected?'selected':''}" onclick="Game.toggleTradeItem('${item.id}')"><img src="${item.image}" class="item-img"><span class="item-name">${item.weaponType}</span><span class="item-wear">${item.skinName||''}</span></div>`; }); html+=`</div>`; if(this.tradeSelected.length<10) html+=`<p>${this.t('need_more')}: ${10-this.tradeSelected.length}</p>`; else html+=`<button onclick="Game.submitTrade()">${this.t('submit_trade')}</button>`; html+=`<button onclick="Game.openTrade()">${this.t('back')}</button>`; content.innerHTML=html; }
+        toggleTradeItem(id){ const idx=this.tradeSelected.indexOf(id); if(idx===-1&&this.tradeSelected.length<10) this.tradeSelected.push(id); else if(idx!==-1) this.tradeSelected.splice(idx,1); this.renderTradeItems(); }
+        submitTrade(){ if(this.tradeSelected.length!==10) return; const sacrifice=this.tradeSelected.map(id=>this.state.inventory.find(i=>i.id===id)).filter(Boolean); sacrifice.forEach(i=>this.state.inventory=this.state.inventory.filter(x=>x.id!==i.id)); const nextRarity=this.rarities[this.rarities.indexOf(this.tradeRarity)+1]; const newItem=this.generateItem('Arms Deal','weapon'); newItem.rarity=nextRarity; newItem.image=this.generateItemImage(newItem); this.addItem(newItem); this.saveState(); this.renderInventory(); this.closeModal(); this.showItemDetail(newItem); }
+
+        // ========== Энергия, баланс, дейлики ==========
+        regenerateEnergy(){ const now=Date.now(); const mins=Math.floor((now-this.state.lastEnergyTime)/60000); if(mins>0){ this.state.energy=Math.min(this.state.maxEnergy,this.state.energy+mins); this.state.lastEnergyTime+=mins*60000; this.saveState(); } this.updateEnergyDisplay(); }
+        updateEnergyDisplay(){ document.getElementById('energy').textContent=`⚡ ${this.state.energy}/${this.state.maxEnergy}`; }
+        updateBalanceDisplay(){ document.getElementById('balance').textContent=`$${this.state.balance.toFixed(2)}`; }
+        dailyCheck(){ const today=new Date().toDateString(); if(this.state.lastDailyBonus!==today){ this.state.balance+=Math.floor(Math.random()*40)+10; this.state.lastDailyBonus=today; alert('Ежедневный бонус!'); this.saveState(); this.updateBalanceDisplay(); } }
+        checkDailyReset(){ const today=new Date().toDateString(); if(this.state.quests.lastDailyReset!==today){ this.state.quests.daily.forEach(q=>{ q.progress=0; q.completed=false; }); this.state.quests.lastDailyReset=today; this.saveState(); } }
+
+        // ========== Консоль ==========
+        addConsoleLog(msg){ if(!Array.isArray(this.state.consoleLog)) this.state.consoleLog=[]; this.state.consoleLog.unshift(`${new Date().toLocaleTimeString()} | ${msg}`); if(this.state.consoleLog.length>20) this.state.consoleLog.pop(); this.updateConsole(); }
+        updateConsole(){ const log=document.getElementById('console-log'); if(log) log.textContent = (this.state.consoleLog||[]).join('\n'); }
+        initConsoleDrag(){ const modal=document.getElementById('console-modal'); const content=document.getElementById('console-modal-content'); const handle=document.getElementById('console-drag-handle'); let isDragging=false,startX,startY,initialLeft,initialTop; handle.addEventListener('mousedown',(e)=>{ isDragging=true; startX=e.clientX; startY=e.clientY; const rect=content.getBoundingClientRect(); initialLeft=rect.left; initialTop=rect.top; content.style.position='fixed'; content.style.left=initialLeft+'px'; content.style.top=initialTop+'px'; modal.style.alignItems='flex-start'; modal.style.justifyContent='flex-start'; content.style.margin='0'; e.preventDefault(); }); document.addEventListener('mousemove',(e)=>{ if(!isDragging) return; content.style.left=(initialLeft+e.clientX-startX)+'px'; content.style.top=(initialTop+e.clientY-startY)+'px'; }); document.addEventListener('mouseup',()=>{ isDragging=false; }); }
+        initConsoleResize(){ const content=document.getElementById('console-modal-content'); const handles=content.querySelectorAll('.resize-handle'); handles.forEach(handle=>{ handle.addEventListener('mousedown',(e)=>{ e.preventDefault(); const dir=handle.dataset.resize; const startX=e.clientX,startY=e.clientY; const rect=content.getBoundingClientRect(); const startWidth=rect.width,startHeight=rect.height,startLeft=rect.left,startTop=rect.top; content.style.position='fixed'; content.style.left=startLeft+'px'; content.style.top=startTop+'px'; function onMouseMove(e){ const dx=e.clientX-startX,dy=e.clientY-startY; if(dir.includes('e')) content.style.width=Math.max(200,startWidth+dx)+'px'; if(dir.includes('w')){ content.style.width=Math.max(200,startWidth-dx)+'px'; content.style.left=(startLeft+dx)+'px'; } if(dir.includes('s')) content.style.height=Math.max(100,startHeight+dy)+'px'; if(dir.includes('n')){ content.style.height=Math.max(100,startHeight-dy)+'px'; content.style.top=(startTop+dy)+'px'; } } function onMouseUp(){ document.removeEventListener('mousemove',onMouseMove); document.removeEventListener('mouseup',onMouseUp); } document.addEventListener('mousemove',onMouseMove); document.addEventListener('mouseup',onMouseUp); }); }); }
+
+        // ========== Экспорт/импорт ==========
+        exportSave(){ const data=JSON.parse(JSON.stringify(this.state)); data.inventory.forEach(i=>{ if(!i.image) i.image=this.generateItemImage(i); }); const blob=new Blob([JSON.stringify(data)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='arsenalzone_backup.json'; a.click(); }
+        importSavePrompt(){ const input=document.createElement('input'); input.type='file'; input.accept='.json'; input.onchange=(e)=>{ const file=e.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=(ev)=>{ try{ const data=JSON.parse(ev.target.result); data.consoleLog=Array.isArray(data.consoleLog)?data.consoleLog:[]; data.marketListings=data.marketListings||[]; data.inventory.forEach(item=>{ if(!item.image) item.image=this.generateItemImage(item); }); this.state=data; this.saveState(); location.reload(); }catch{ alert('Неверный файл'); } }; reader.readAsText(file); }; input.click(); }
+        resetProgress(){ if(confirm('Удалить весь прогресс?')){ try { localStorage.removeItem('arsenalzone_save'); } catch(e) {} this._memory = {}; location.reload(); } }
+        updateUILanguage(){ document.querySelectorAll('nav button').forEach(b=>{ b.textContent = this.t(b.dataset.view); }); this.renderInventory(); this.renderProfile(); this.renderMinigames(); this.renderShop(); }
+        renderMinigames(){ this.prepareMinigamesView(); }
+        renderProfile(){ this.prepareProfileView(); }
     }
-
-    function checkWin(board, player) {
-        const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-        return wins.some(w=>w.every(i=>board[i]===player));
-    }
-
+    function checkWin(board,player){ const wins=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]; return wins.some(w=>w.every(i=>board[i]===player)); }
     window.addEventListener('load', ()=>{ window.Game = new ArsenalZone(); });
     </script>
 </body>
