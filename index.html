@@ -7,9 +7,10 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         :root {
-            --bg: #1b1b1b; --panel: #2a2a2a; --text: #ccc; --accent: #ffd700; --usual: #6b6b6b;
-            --frequent: #a0a0a0; --conveyor: #4b69ff; --rare: #8845ff; --unique: #d32ce6;
-            --relic: #e74c3c; --gold: #ffd700; --button: #3a3a3a; --button-hover: #4d4d4d;
+            --bg: #1b1b1b; --panel: #2a2a2a; --text: #ccc; --accent: #ffd700;
+            --usual: #a0a0a0; --frequent: #7a9eb1; --conveyor: #4b69ff;
+            --rare: #8845ff; --unique: #d32ce6; --relic: #e74c3c; --gold: #ffd700;
+            --button: #3a3a3a; --button-hover: #4d4d4d;
             --danger: #e74c3c; --success: #2ecc71; --battlepass: #ff6a00;
         }
         body {
@@ -242,6 +243,7 @@
 <main id="main-container"></main>
 <nav>
     <button data-view="inventory" class="active">🎒 Инвентарь</button>
+    <button data-view="battlepass">🎖️ Бой. пасс</button>
     <button data-view="market">🏪 Рынок</button>
     <button data-view="minigames">🎮 Мини-игры</button>
     <button data-view="profile">👤 Профиль</button>
@@ -422,7 +424,7 @@ class ArsenalZone {
     initData() {
         this.rarities = ['Usual','Frequent','Conveyor-type','Rare','Unique','Relic','Gold'];
         this.rarityColors = {
-            'Usual':'#6b6b6b','Frequent':'#a0a0a0','Conveyor-type':'#4b69ff',
+            'Usual':'#a0a0a0','Frequent':'#7a9eb1','Conveyor-type':'#4b69ff',
             'Rare':'#8845ff','Unique':'#d32ce6','Relic':'#e74c3c','Gold':'#ffd700'
         };
         const newOdds = [
@@ -660,25 +662,82 @@ class ArsenalZone {
             },
             // Коллекции Бойцовского пасса
             'Momentum': {
+                imageUrl: 'https://i.ibb.co/fVPGr8xw/Momentum-Case.png',
+                isCaseOnMarket: true,
+                caseMinPrice: 345.61,
                 weaponsByRarity: {
                     'Conveyor-type': [
-                        { name:'P250 | Пропуск', rarity:'Conveyor-type', emoji:'🔫', imageUrl:'', minPrice:1.5 }
+                        { name:'Sawed-off | Опасность', rarity:'Conveyor-type', emoji:'🔫', imageUrl:'https://i.ibb.co/6czy7TVx/Sawed-off.png', minPrice:1.40 },
+                        { name:'Dual Berettas | "Проход воспрещен!"', rarity:'Conveyor-type', emoji:'🔫', imageUrl:'https://i.ibb.co/7JmQ1kXz/Dual-Berettas.png', minPrice:2.37 },
+                        { name:'SCAR-20 | Кости и черепа', rarity:'Conveyor-type', emoji:'🔫', imageUrl:'https://i.ibb.co/FqfZnxhK/SCAR-20.png', minPrice:1.52 },
+                        { name:'Nova | Зебра', rarity:'Conveyor-type', emoji:'🔫', imageUrl:'https://i.ibb.co/XrbppjNf/Nova.png', minPrice:3.34 },
+                        { name:'AWP | Черный градиент', rarity:'Conveyor-type', emoji:'🔫', imageUrl:'https://i.ibb.co/Dfbw103m/AWP.png', minPrice:4.11 },
+                        { name:'UMP-45 | Ржавый камуфляж', rarity:'Conveyor-type', emoji:'🔫', imageUrl:'https://i.ibb.co/5gncht7h/UMP-45.png', minPrice:1.31 },
+                        { name:'XM1014 | Механика', rarity:'Conveyor-type', emoji:'🔫', imageUrl:'https://i.ibb.co/kg903PHB/XM1014.png', minPrice:1.98 }
+                    ],
+                    'Rare': [
+                        { name:'MAC-10 | Вихрь', rarity:'Rare', emoji:'🔫', imageUrl:'https://i.ibb.co/YF5bQ0RQ/MAC-10.png', minPrice:34.87 },
+                        { name:'USP-S | Нефтяное пятно', rarity:'Rare', emoji:'🔫', imageUrl:'https://i.ibb.co/yngV6kZq/USP-S.png', minPrice:36.45 },
+                        { name:'Glock-18 | Умопомрачительный', rarity:'Rare', emoji:'🔫', imageUrl:'https://i.ibb.co/XfrFT6cq/Glock-18.png', minPrice:45.09 },
+                        { name:'FAMAS | Снежная буря', rarity:'Rare', emoji:'🔫', imageUrl:'https://i.ibb.co/208fpVQH/FAMAS.png', minPrice:43.00 },
+                        { name:'P250 | Звездопад', rarity:'Rare', emoji:'🔫', imageUrl:'https://i.ibb.co/9H8h8Jjh/P250.png', minPrice:39.42 }
+                    ],
+                    'Unique': [
+                        { name:'M4A4 | Предатор', rarity:'Unique', emoji:'🔫', imageUrl:'https://i.ibb.co/vCHRvhGh/M4-A4.png', minPrice:450.10 },
+                        { name:'Negev | Будни Джокера', rarity:'Unique', emoji:'🔫', imageUrl:'https://i.ibb.co/CpJpvtpt/Negev.png', minPrice:278.15 },
+                        { name:'M4A1-S | Синяя полоса', rarity:'Unique', emoji:'🔫', imageUrl:'https://i.ibb.co/VW5cD3QK/M4-A1-S.png', minPrice:517.63 }
+                    ],
+                    'Relic': [
+                        { name:'Desert Eagle | Неоновая вспышка', rarity:'Relic', emoji:'🔫', imageUrl:'https://i.ibb.co/gZJ6bYs6/Desert-Eagle.png', minPrice:4345.34 },
+                        { name:'AK-47 | Предводитель леопардов', rarity:'Relic', emoji:'🔫', imageUrl:'https://i.ibb.co/wZPFDWhS/AK-47.png', minPrice:8927.41 }
                     ]
                 },
-                odds: [
-                    { rarity:'Conveyor-type', chance:79.92 },{ rarity:'Rare', chance:15.98 },
-                    { rarity:'Unique', chance:3.2 },{ rarity:'Relic', chance:0.64 },{ rarity:'Gold', chance:0.26 }
-                ]
+                knife: [
+                    { name:'★ Охотничий нож | Виолет', rarity:'Gold', emoji:'🔪', imageUrl:'https://i.ibb.co/1xm56bf/image.png', minPrice:3223.70 },
+                    { name:'★ Охотничий нож | Градиент', rarity:'Gold', emoji:'🔪', imageUrl:'https://i.ibb.co/5xSmSbfj/image.png', minPrice:10567.09 },
+                    { name:'★ Охотничий нож | Древние сказания', rarity:'Gold', emoji:'🔪', imageUrl:'https://i.ibb.co/Z6Tbktp1/image.png', minPrice:2425.16 },
+                    { name:'★ Охотничий нож | Желтый блеск', rarity:'Gold', emoji:'🔪', imageUrl:'https://i.ibb.co/gMKL3yZ2/image.png', minPrice:8635.14 },
+                    { name:'★ Охотничий нож | Зеленый блеск', rarity:'Gold', emoji:'🔪', imageUrl:'https://i.ibb.co/Q3PvWZG4/image.png', minPrice:9034.81 },
+                    { name:'★ Охотничий нож | Красный блеск', rarity:'Gold', emoji:'🔪', imageUrl:'https://i.ibb.co/1tB7RqHW/image.png', minPrice:13542.78 },
+                    { name:'★ Охотничий нож | Ледяное пламя', rarity:'Gold', emoji:'🔪', imageUrl:'https://i.ibb.co/353cfXZp/image.png', minPrice:1600.19 },
+                    { name:'★ Охотничий нож | Пиксельная маскировка', rarity:'Gold', emoji:'🔪', imageUrl:'https://i.ibb.co/rSPnvsF/image.png', minPrice:1520.05 },
+                    { name:'★ Охотничий нож | Ржавчина', rarity:'Gold', emoji:'🔪', imageUrl:'https://i.ibb.co/mrR72G2V/image.png', minPrice:1370.91 },
+                    { name:'★ Охотничий нож | Синий блеск', rarity:'Gold', emoji:'🔪', imageUrl:'https://i.ibb.co/PZz69ft2/image.png', minPrice:12831.04 },
+                    { name:'★ Охотничий нож | Улыбка акулы', rarity:'Gold', emoji:'🔪', imageUrl:'https://i.ibb.co/ZprCzfNJ/image.png', minPrice:1561.39 },
+                    { name:'★ Охотничий нож | Цветной мрамор', rarity:'Gold', emoji:'🔪', imageUrl:'https://i.ibb.co/sJP3BM6r/image.png', minPrice:3134.05 },
+                    { name:'★ Охотничий нож', rarity:'Gold', emoji:'🔪', imageUrl:'https://i.ibb.co/600N6gZS/image.png', minPrice:5547.27 }
+                ],
+                odds: newOdds
             },
             'Sunrise': {
                 weaponsByRarity: {
+                    'Frequent': [
+                        { name:'P2000 | Кабуки', rarity:'Frequent', emoji:'🎯', imageUrl:'https://i.ibb.co/GQdrxmDV/P2000.png', minPrice:0.34 },
+                        { name:'SSG 08 | Лунный мост', rarity:'Frequent', emoji:'🎯', imageUrl:'https://i.ibb.co/twkFNLwY/SSG-08.png', minPrice:0.27 },
+                        { name:'M249 | Бамбуковая роща', rarity:'Frequent', emoji:'🎯', imageUrl:'https://i.ibb.co/XZcM49p3/M249.png', minPrice:0.23 },
+                        { name:'Galil AR | Божественный ветер', rarity:'Frequent', emoji:'🎯', imageUrl:'https://i.ibb.co/F41Y4172/Galil-AR.png', minPrice:0.95 }
+                    ],
+                    'Conveyor-type': [
+                        { name:'M4A1-S | Тайна ниндзя', rarity:'Conveyor-type', emoji:'🎯', imageUrl:'https://i.ibb.co/TxsvxQqP/M4-A1-S.png', minPrice:3.45 },
+                        { name:'XM1014 | Оригами', rarity:'Conveyor-type', emoji:'🎯', imageUrl:'https://i.ibb.co/bRRbY553/XM1014.png', minPrice:2.21 },
+                        { name:'FAMAS | Сёгун', rarity:'Conveyor-type', emoji:'🎯', imageUrl:'https://i.ibb.co/mVk7115k/FAMAS.png', minPrice:2.98 }
+                    ],
                     'Rare': [
-                        { name:'AK-47 | Боевой Пропуск', rarity:'Rare', emoji:'🎯', imageUrl:'', minPrice:50 }
+                        { name:'AUG | Гейша', rarity:'Rare', emoji:'🎯', imageUrl:'https://i.ibb.co/Gvryh18j/AUG.png', minPrice:35.67 },
+                        { name:'Five-Seven | Восходящее солнце', rarity:'Rare', emoji:'🎯', imageUrl:'https://i.ibb.co/hJPxfypJ/Five-Seven.png', minPrice:41.98 },
+                        { name:'Nova | Кои', rarity:'Rare', emoji:'🎯', imageUrl:'https://i.ibb.co/Pqm2kw5/Nova.png', minPrice:37.34 }
+                    ],
+                    'Unique': [
+                        { name:'P90 | Цветок лотоса', rarity:'Unique', emoji:'🎯', imageUrl:'https://i.ibb.co/1Gy4sbxJ/P90.png', minPrice:678.29 },
+                        { name:'P250 | Самурай', rarity:'Unique', emoji:'🎯', imageUrl:'https://i.ibb.co/KxZ6Dj5J/P250.png', minPrice:455.20 }
+                    ],
+                    'Relic': [
+                        { name:'AWP | Цветение сакуры', rarity:'Relic', emoji:'🎯', imageUrl:'https://i.ibb.co/vCbFjfnN/AWP.png', minPrice:7541.93 }
                     ]
                 },
                 odds: [
-                    { rarity:'Conveyor-type', chance:80 },{ rarity:'Rare', chance:14 },
-                    { rarity:'Unique', chance:5.4 },{ rarity:'Relic', chance:0.6 }
+                    { rarity:'Frequent', chance:40 },{ rarity:'Conveyor-type', chance:25 },{ rarity:'Rare', chance:20 },
+                    { rarity:'Unique', chance:10 },{ rarity:'Relic', chance:5 }
                 ]
             },
             'Claw': {
@@ -778,9 +837,50 @@ class ArsenalZone {
                 { min:8000, max:9999, name:'Фаза 4', multiplier:1.45 },
                 { min:6100, max:6199, name:'Изумруд', multiplier:1.98 }
             ],
-            'M4A1-S | Пасс-Элит': [
-                { min:0, max:999, name:'Фаза 1', multiplier:1.2 },
-                { min:1000, max:1999, name:'Фаза 2', multiplier:1.5, imageUrl:'' }
+            '★ Охотничий нож | Зеленый блеск': [
+                { min:0, max:4499, name:'Фаза 1', multiplier:1.13 },
+                { min:4500, max:6099, name:'Фаза 2', multiplier:1.21 },
+                { min:6200, max:7999, name:'Фаза 3', multiplier:1.27 },
+                { min:8000, max:9999, name:'Фаза 4', multiplier:1.45 },
+                { min:6100, max:6199, name:'Изумруд', multiplier:1.98 }
+            ],
+            '★ Охотничий нож | Желтый блеск': [
+                { min:0, max:4499, name:'Фаза 1', multiplier:1.13 },
+                { min:4500, max:6099, name:'Фаза 2', multiplier:1.21 },
+                { min:6200, max:7999, name:'Фаза 3', multiplier:1.27 },
+                { min:8000, max:9999, name:'Фаза 4', multiplier:1.45 },
+                { min:6100, max:6199, name:'Янтарь', multiplier:1.98 }
+            ],
+            '★ Охотничий нож | Синий блеск': [
+                { min:0, max:4499, name:'Фаза 1', multiplier:1.13 },
+                { min:4500, max:6099, name:'Фаза 2', multiplier:1.21 },
+                { min:6200, max:7999, name:'Фаза 3', multiplier:1.27 },
+                { min:8000, max:9999, name:'Фаза 4', multiplier:1.45 },
+                { min:6100, max:6199, name:'Сапфир', multiplier:1.98 }
+            ],
+            '★ Охотничий нож | Красный блеск': [
+                { min:0, max:4499, name:'Фаза 1', multiplier:1.13 },
+                { min:4500, max:6099, name:'Фаза 2', multiplier:1.21 },
+                { min:6200, max:7999, name:'Фаза 3', multiplier:1.27 },
+                { min:8000, max:9999, name:'Фаза 4', multiplier:1.45 },
+                { min:6100, max:6199, name:'Рубин', multiplier:1.98 }
+            ],
+            'Револьвер R8 | Цветок сакуры': [
+                { min:0, max:1075, name:'Цвет крови', multiplier:1.028, imageUrl:'https://i.ibb.co/Qw0F0W2/07fa8122ac745f9c0cefbd374ee6a97d-f42afb7d-a524-4c05-b83d-49aa1f70d8e1-Photoroom.png' },
+                { min:1076, max:2132, name:'Подарок гейши', multiplier:1.054, imageUrl:'https://i.ibb.co/LzLXKLcd/e097aec3b79b35a43e63664ec4c11996-8f18bd21-6473-4bce-bd9d-28e052d523e2-Photoroom.png' },
+                { min:2133, max:2999, name:'Японская роскошь', multiplier:1.413, imageUrl:'https://i.ibb.co/Cs7b6vJG/14e2e92b35e372391b02e9af58680cdb-d9cc0f91-31ee-4907-943c-6f763a410ed8-Photoroom.png' },
+                { min:3000, max:3560, name:'Винные цветы', multiplier:1.692, imageUrl:'https://i.ibb.co/Z69c1BbW/6c1665a35e071d1abbdc44d53f4ed10b-3ef69270-0637-4c11-b918-086b12d7bbd9-Photoroom.png' },
+                { min:3561, max:3889, name:'Цветок самурая', multiplier:3.9, imageUrl:'https://i.ibb.co/nsmJVd98/24b78397fd64502a747d28aad7105769-6fb580ff-325b-482d-8697-6ce701c9cd28-Photoroom.png' },
+                { min:3890, max:4238, name:'Виолетта', multiplier:2.46, imageUrl:'https://i.ibb.co/5hp1bvmn/dc38ddc77c21016f3640348091ba4181-ade93d0a-ba88-4a0e-b6ee-b8752b41eb11-Photoroom.png' },
+                { min:4239, max:5010, name:'Вишневая долина', multiplier:1.34, imageUrl:'https://i.ibb.co/pH1mfkN/f3ec6731c2ad0baa836fd739f8cfdb24-5ffdabe2-6a02-44c7-add9-4cebcc65e761-Photoroom.png' },
+                { min:5011, max:5988, name:'Молоко на стали', multiplier:2.342, imageUrl:'https://i.ibb.co/7dS7svPF/583dd290872bbf48af4cd0a17fc41609-f5cbeacc-203c-46b1-8c5f-279b2a8bbd60-Photoroom.png' },
+                { min:5989, max:6238, name:'Императорское цветение', multiplier:11.65, imageUrl:'https://i.ibb.co/k2yL92Ct/ba10afd3368f64feaaa9d5c418447968-fc081168-3f7e-42d1-b98a-f49cc6201289-Photoroom.png' },
+                { min:6239, max:7544, name:'Страх и радость', multiplier:1.19, imageUrl:'https://i.ibb.co/9324fx03/f467c2c137cb62db26cec83787c4c401-90779704-5006-428e-95ff-ce9c89295b8e-Photoroom.png' },
+                { min:7545, max:7999, name:'Нуар', multiplier:1.67, imageUrl:'https://i.ibb.co/8480NBTX/cda154865285e60b3de5e1f3a5ede453-19190997-093c-479c-bbe7-3947703dbc03-Photoroom.png' },
+                { min:8000, max:8319, name:'Вишневое наслаждение', multiplier:1.004, imageUrl:'https://i.ibb.co/spLxwsv9/a034893f299e73ea998d670623713d2f-9fc0d4ab-723e-4e5c-8fa7-31839686a744-Photoroom.png' },
+                { min:8320, max:8320, name:'Цельное золото', multiplier:39.815, imageUrl:'https://i.ibb.co/C3p1KrMY/c2779b4ed40c79975f90928a4268acef-4fb493a8-9046-41b0-9052-c2c9c169ef01-Photoroom.png' },
+                { min:8321, max:9352, name:'Темная виолетта', multiplier:1.024, imageUrl:'https://i.ibb.co/Ndc4sqbv/bb485726ab2ccf7211c0b1f39c22a161-56909a58-ccc2-4253-9a14-7db8ced5c26b-Photoroom.png' },
+                { min:9353, max:9999, name:'Кровь и молоко', multiplier:4.327, imageUrl:'https://i.ibb.co/6pX9pWN/f27a78ec3b083130cb1ff2b034760946-9442b9e9-a3a2-494a-a043-2a0063057a75-Photoroom.png' }
             ]
         };
         this.stickerEmojis = { 'Banana':'🍌','NaVi':'🌊','G2':'🐺','Spirit':'🐉' };
@@ -809,7 +909,18 @@ class ArsenalZone {
             stickerCollection: 'Claw',
             charmCollection: 'Suspective',
             agentCollection: 'Reload',
-            limitedSkin: { name:'M4A1-S | ', rarity:'Relic', emoji:'🎯', imageUrl:'', minPrice:1 }
+            limitedSkin: { name:'Револьвер R8 | Цветок сакуры', rarity:'Relic', emoji:'🎯', imageUrl:'https://i.ibb.co/ksn7y7rj/862fd8379a04d0cd277d1ae6d67d5923-accedaf4-7f69-4821-bbf5-c8db1b6d9d15-Photoroom.png', minPrice:13989.07 },
+            limitedMarketSkins: [
+                {
+                    name: 'Револьвер R8 | Цветок сакуры',
+                    rarity: 'Relic',
+                    type: 'weapon',
+                    collection: 'Sunrise',
+                    imageUrl: 'https://i.ibb.co/ksn7y7rj/862fd8379a04d0cd277d1ae6d67d5923-accedaf4-7f69-4821-bbf5-c8db1b6d9d15-Photoroom.png',
+                    minPrice: 13989.07
+                }
+            ],
+            noStatTrackCollections: ['Sunrise']
         };
     }
 
@@ -905,7 +1016,7 @@ class ArsenalZone {
             else wc = 'Heavily-Worn';
             pat = Math.floor(Math.random() * 10000);
         }
-        const st = (itT === 'weapon' || itT === 'knife') && Math.random() < 0.1;
+        const st = (itT === 'weapon' || itT === 'knife') && Math.random() < 0.1 && !['Sunrise'].includes(colN);
         let specialPattern = null;
         if (this.specialPatterns[name]) {
             for (const sp of this.specialPatterns[name]) {
@@ -929,7 +1040,7 @@ class ArsenalZone {
             emoji: data?.emoji || '',
             imageUrl: data?.imageUrl || '',
             minPrice: data?.minPrice || 0.1,
-            sellable: itT !== 'case' && itT !== 'capsule',
+            sellable: true,
             acquiredDate: new Date().toISOString().slice(0,16).replace('T',' '),
             specialPattern: specialPattern,
             isNew: true
@@ -1495,6 +1606,8 @@ class ArsenalZone {
             inner += `<button onclick="Game.closeMiniDetail(); Game.showCaseDetail(Game.state.inventory.find(i=>i.id==='${item.id}'))">${t('open')}</button>`;
         } else {
             inner += `<button onclick="Game.closeMiniDetail(); Game.showItemDetail(Game.state.inventory.find(i=>i.id==='${item.id}'))">${t('info')}</button>`;
+        }
+        if (item.sellable !== false) {
             inner += `<button onclick="Game.closeMiniDetail(); Game.sellItem('${item.id}')">${t('sell')} (${this.formatPrice(this.getSellPrice(item))})</button>`;
         }
         el.innerHTML = inner;
@@ -1566,7 +1679,7 @@ class ArsenalZone {
         skinsHTML += '</div></div>';
         content.innerHTML = `<button class="close-fullskin" onclick="Game.closeItemDetail()">✕</button>
             <div class="skin-header"><h2>${displayName}</h2><div class="collection-name">${cItem.collection}</div><div class="rarity-line" style="background:#6b6b6b;"></div></div>
-            <div class="skin-image-area" style="flex:1 1 auto; display:flex; justify-content:center; align-items:center; padding:10px;"><img src="${cItem.image}" style="max-width:90%; max-height:50vh; object-fit:contain;"></div>
+            <div class="skin-image-area" style="flex:1 1 auto; display:flex; justify-content:center; align-items:center; padding:10px;"><img src="${cItem.image}" style="max-width: ${cItem.collection === 'Momentum' ? '60%' : '90%'}; max-height: ${cItem.collection === 'Momentum' ? '30vh' : '50vh'}; object-fit:contain;"></div>
             ${skinsHTML}
             <div class="skin-actions">${buttons}</div>`;
     }
@@ -1591,7 +1704,7 @@ class ArsenalZone {
         const collectionName = this.collectionDisplayNames[item.collection] || item.collection;
         const releaseDate = this.collectionReleaseDates[item.collection] || 'неизвестно';
         const sellPrice = this.getSellPrice(item);
-        const hideStickers = ['sticker','charm','agent','knife','gloves'].includes(item.type);
+        const hideStickers = ['sticker','charm','agent','knife','gloves','case','capsule'].includes(item.type);
         let infoHTML = '';
         if (sw) {
             infoHTML += `<p><strong>${t('wear')}:</strong> ${item.wear.toFixed(10)} (${item.wearCategory})</p>`;
@@ -1643,7 +1756,7 @@ class ArsenalZone {
         } else if (storageId) {
             rightGroup = `<button onclick="Game.moveFromStorageToInventory('${storageId}','${item.id}')">${t('storage_move_to_inv')}</button>`;
         } else {
-            rightGroup = `<button onclick="Game.sellItem('${item.id}')">${t('sell')} (₽${this.formatPrice(sellPrice)})</button>
+            rightGroup = `${item.sellable !== false ? `<button onclick="Game.sellItem('${item.id}')">${t('sell')} (₽${this.formatPrice(sellPrice)})</button>` : ''}
                           ${item.type === 'weapon' ? `<button onclick="Game.applyStickerModal('${item.id}')">${t('apply_sticker')}</button>` : ''}
                           ${item.type === 'weapon' && (item.stickers || []).length > 0 ? `<button onclick="Game.removeStickerModal('${item.id}')">${t('remove_sticker')}</button>` : ''}
                           <button onclick="Game.toggleFavorite('${item.id}')">${item.isFavorite ? '💔' : '❤️'}</button>
@@ -2096,7 +2209,7 @@ class ArsenalZone {
         const typeOptions = [
             { value:'weapon', label:t('filter_weapon') }, { value:'knife', label:t('filter_knife') },
             { value:'gloves', label:t('filter_gloves') }, { value:'sticker', label:t('filter_sticker') },
-            { value:'agent', label:t('filter_agent') }
+            { value:'agent', label:t('filter_agent') }, { value:'case', label:t('filter_case') }
         ];
         const rarityOptions = this.rarities.map(r => ({ value:r, label:r }));
         const collectionOptions = Object.keys(this.collections).map(c => ({ value:c, label:this.collectionDisplayNames[c] || c }));
@@ -2116,14 +2229,29 @@ class ArsenalZone {
         const grid = document.getElementById('market-grid');
         if (!grid) return;
         const skins = new Map();
+
         for (const [cn, col] of Object.entries(this.collections)) {
             if (mf.collection.length > 0 && !mf.collection.includes(cn)) continue;
+
             const allItems = [];
-            if (col.weaponsByRarity) for (const pool of Object.values(col.weaponsByRarity)) allItems.push(...pool.map(w => ({...w, type:'weapon', collection:cn})));
+            if (col.weaponsByRarity) {
+                for (const pool of Object.values(col.weaponsByRarity)) {
+                    allItems.push(...pool.map(w => ({...w, type:'weapon', collection:cn})));
+                }
+            }
             if (col.knife) allItems.push(...col.knife.map(k => ({...k, type:'knife', collection:cn})));
             if (col.gloves) allItems.push(...col.gloves.map(g => ({...g, type:'gloves', collection:cn})));
-            if (col.stickersByRarity) for (const pool of Object.values(col.stickersByRarity)) allItems.push(...pool.map(s => ({...s, type:'sticker', collection:cn})));
-            if (col.agentsByRarity) for (const pool of Object.values(col.agentsByRarity)) allItems.push(...pool.map(a => ({...a, type:'agent', collection:cn})));
+            if (col.stickersByRarity) {
+                for (const pool of Object.values(col.stickersByRarity)) {
+                    allItems.push(...pool.map(s => ({...s, type:'sticker', collection:cn})));
+                }
+            }
+            if (col.agentsByRarity) {
+                for (const pool of Object.values(col.agentsByRarity)) {
+                    allItems.push(...pool.map(a => ({...a, type:'agent', collection:cn})));
+                }
+            }
+
             for (const d of allItems) {
                 if (mf.type.length > 0 && !mf.type.includes(d.type)) continue;
                 if (mf.rarity.length > 0 && !mf.rarity.includes(d.rarity)) continue;
@@ -2131,35 +2259,331 @@ class ArsenalZone {
                 if (mf.name && !name.toLowerCase().includes(mf.name.toLowerCase())) continue;
                 if (!skins.has(name)) skins.set(name, d);
             }
+
+            if (col.isCaseOnMarket) {
+                const caseName = this.collectionDisplayNames[cn] || `${cn} Case`;
+                if (mf.type.length > 0 && !mf.type.includes('case')) continue;
+                if (mf.rarity.length > 0 && !mf.rarity.includes('Usual')) continue;
+                if (mf.name && !caseName.toLowerCase().includes(mf.name.toLowerCase())) continue;
+                if (!skins.has(caseName)) {
+                    skins.set(caseName, {
+                        name: caseName,
+                        rarity: 'Usual',
+                        type: 'case',
+                        collection: cn,
+                        minPrice: col.caseMinPrice || 1,
+                        imageUrl: col.caseImageUrl || col.imageUrl || '',
+                        isCaseOnMarket: true
+                    });
+                }
+            }
         }
+
+        if (this.battlePassConfig.limitedMarketSkins) {
+            for (const limited of this.battlePassConfig.limitedMarketSkins) {
+                if (mf.collection.length > 0 && !mf.collection.includes(limited.collection)) continue;
+                if (mf.type.length > 0 && !mf.type.includes(limited.type)) continue;
+                if (mf.rarity.length > 0 && !mf.rarity.includes(limited.rarity)) continue;
+                const name = limited.name;
+                if (mf.name && !name.toLowerCase().includes(mf.name.toLowerCase())) continue;
+                if (!skins.has(name)) {
+                    skins.set(name, { ...limited });
+                }
+            }
+        }
+
         grid.innerHTML = '';
         if (skins.size === 0) {
             grid.innerHTML = `<p style="grid-column:1/-1">${this.t('market_no_items')}</p>`;
             return;
         }
+
         const sorted = Array.from(skins.values()).sort((a,b) => {
             const ra = this.rarities.indexOf(a.rarity), rb = this.rarities.indexOf(b.rarity);
             if (ra !== rb) return rb - ra;
             return (a.name || '').localeCompare(b.name || '');
         });
+
         sorted.forEach(d => {
-            const name = typeof d === 'string' ? d : d.name;
+            const name = d.name;
             const minPrice = d.minPrice != null ? d.minPrice : 0.1;
             const displayMin = (minPrice * 0.7);
             const item = {
-                name, rarity: d.rarity, weaponType: name.split(' | ')[0],
+                name,
+                rarity: d.rarity,
+                weaponType: name.split(' | ')[0],
                 skinName: name.split(' | ').slice(1).join(' | '),
-                type: d.type, collection: d.collection, emoji: d.emoji || '',
-                imageUrl: d.imageUrl || '', minPrice: minPrice
+                type: d.type,
+                collection: d.collection,
+                emoji: d.emoji || '',
+                imageUrl: d.imageUrl || '',
+                minPrice: minPrice,
+                isCaseOnMarket: d.isCaseOnMarket || false
             };
             item.image = item.imageUrl || this.generateItemImage(item);
             const card = document.createElement('div');
             card.className = 'item-card';
             card.dataset.rarity = item.rarity;
-            card.innerHTML = `<img src="${item.image}" class="item-img"><span class="item-name">${item.weaponType} ${item.skinName}</span><span style="color:var(--gold);">от ₽${this.formatPrice(displayMin)}</span>`;
-            card.addEventListener('click', () => this.showMarketItemDetail(item));
+            card.innerHTML = `<img src="${item.image}" class="item-img">
+                              <span class="item-name">${item.weaponType} ${item.skinName}</span>
+                              <span style="color:var(--gold);">от ₽${this.formatPrice(displayMin)}</span>`;
+            if (item.type === 'case' && item.isCaseOnMarket) {
+                card.addEventListener('click', () => this.showMarketCaseDetail(item));
+            } else {
+                card.addEventListener('click', () => this.showMarketItemDetail(item));
+            }
             grid.appendChild(card);
         });
+    }
+
+    showMarketCaseFullDetail(offer) {
+        const modal = document.getElementById('item-detail-modal');
+        modal.classList.add('active');
+        const content = document.getElementById('item-detail-content');
+        const col = this.collections[offer.collection];
+        const odds = this.getOdds(offer.collection);
+        const displayName = this.collectionDisplayNames[offer.collection] || offer.collection;
+
+        let skinItems = [];
+        if (col.weaponsByRarity) {
+            const rarityOrder = odds ? Object.keys(odds) : Object.keys(col.weaponsByRarity);
+            rarityOrder.forEach(rarity => {
+                if (col.weaponsByRarity[rarity]) {
+                    col.weaponsByRarity[rarity].forEach(w => skinItems.push({ ...w, type: 'weapon', rarity }));
+                }
+            });
+        } else if (col.stickersByRarity) {
+            const rarityOrder = odds ? Object.keys(odds) : Object.keys(col.stickersByRarity);
+            rarityOrder.forEach(rarity => {
+                if (col.stickersByRarity[rarity]) {
+                    col.stickersByRarity[rarity].forEach(s => skinItems.push({ ...s, type: 'sticker', rarity }));
+                }
+            });
+        } else if (col.agentsByRarity) {
+            const rarityOrder = odds ? Object.keys(odds) : Object.keys(col.agentsByRarity);
+            rarityOrder.forEach(rarity => {
+                if (col.agentsByRarity[rarity]) {
+                    col.agentsByRarity[rarity].forEach(a => skinItems.push({ ...a, type: 'agent', rarity }));
+                }
+            });
+        }
+        if ((col.knife && col.knife.length > 0) || (col.gloves && col.gloves.length > 0)) {
+            skinItems.push({ type: 'gold', rarity: 'Gold', name: '', imageUrl: this.goldPlaceholder.src });
+        }
+
+        let skinsHTML = '<div class="case-skins-scroll"><div class="case-skin-items">';
+        skinItems.forEach(skin => {
+            const rarityColor = this.rarityColors[skin.rarity] || '#888';
+            let imgSrc = skin.imageUrl || this.generateItemImage(skin);
+            let nameDisplay = skin.name || '';
+            if (skin.type === 'gold') { imgSrc = this.goldPlaceholder.src; nameDisplay = ''; }
+            skinsHTML += `<div class="case-skin-card"><img src="${imgSrc}" alt="${nameDisplay}"><div class="skin-name">${nameDisplay}</div><div class="rarity-line" style="background:${rarityColor};"></div></div>`;
+        });
+        skinsHTML += '</div></div>';
+
+        const t = this.t.bind(this);
+        const price = offer._marketPrice;
+        const seller = offer.seller;
+        const purchased = offer._purchased || false;
+
+        content.innerHTML = `
+            <button class="close-fullskin" onclick="Game.closeItemDetail()">✕</button>
+            <div class="skin-header">
+                <h2>${displayName}</h2>
+                <div class="collection-name">${offer.collection}</div>
+                <div class="rarity-line" style="background:#6b6b6b;"></div>
+            </div>
+            <div class="skin-image-area" style="flex:1 1 auto; display:flex; justify-content:center; align-items:center; padding:10px;">
+                <img src="${offer.image}" style="max-width: ${offer.collection === 'Momentum' ? '60%' : '90%'}; max-height: ${offer.collection === 'Momentum' ? '30vh' : '50vh'}; object-fit:contain;">
+            </div>
+            ${skinsHTML}
+            <div class="skin-actions" style="display:flex; justify-content:center; gap:10px; padding:10px; background:rgba(0,0,0,0.7);">
+                <span style="color:var(--text);">Продавец: ${seller}</span>
+                <button class="${purchased ? 'purchased-btn' : ''}" onclick="${purchased ? '' : `Game.buyMarketCaseOfferFromDetail('${offer.id}')`}">${purchased ? t('purchased') : t('buy')} (₽${this.formatPrice(price)})</button>
+            </div>
+        `;
+    }
+
+    showMarketCaseDetail(caseTpl) {
+        const modal = document.getElementById('market-item-modal');
+        modal.classList.add('active');
+        const content = document.getElementById('market-item-content');
+        const t = this.t.bind(this);
+        const remainingRefreshes = this.getRemainingMarketRefreshes();
+
+        let html = `<button class="modal-close-btn" onclick="Game.closeModal()">✕</button>
+            <h3>${caseTpl.weaponType} ${caseTpl.skinName}</h3>
+            <div class="filter-bar" style="justify-content:center; gap:10px;">
+                <button id="refresh-case-offer-btn" onclick="Game.refreshMarketCaseOffers('${caseTpl.collection}','${caseTpl.name}',${caseTpl.minPrice},'${caseTpl.imageUrl}')" ${remainingRefreshes <= 0 ? 'disabled' : ''}>${t('refresh')} (${remainingRefreshes})</button>
+                <button id="reset-case-offers-btn">${t('reset_btn')}</button>
+            </div>
+            <div class="inventory-grid" id="market-case-list"></div>`;
+        content.innerHTML = html;
+
+        document.getElementById('reset-case-offers-btn').addEventListener('click', () => {
+            document.getElementById('market-case-list').innerHTML = '';
+        });
+
+        this.generateMarketCaseOffers(caseTpl);
+    }
+
+    generateMarketCaseOffers(caseTpl) {
+        const listDiv = document.getElementById('market-case-list');
+        if (!listDiv) return;
+        const offers = [];
+        const basePrice = caseTpl.minPrice || 1;
+        for (let i = 0; i < 10; i++) {
+            const seller = this.sellerNames[Math.floor(Math.random() * this.sellerNames.length)];
+            const randomFactor = 0.9 + Math.random() * 0.4;
+            const price = basePrice * randomFactor;
+            offers.push({
+                id: Date.now() + i.toString(36) + Math.random().toString(36),
+                ...caseTpl,
+                seller,
+                _marketPrice: price,
+                _purchased: false,
+                image: caseTpl.imageUrl || this.generateItemImage(caseTpl),
+            });
+        }
+        this._currentMarketCaseOffers = offers;
+        this.renderMarketCaseOffers(offers);
+    }
+
+    renderMarketCaseOffers(offers) {
+        const listDiv = document.getElementById('market-case-list');
+        if (!listDiv) return;
+        listDiv.innerHTML = '';
+        const t = this.t.bind(this);
+        offers.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'item-card';
+            card.dataset.rarity = item.rarity;
+            card.innerHTML = `
+                <img src="${item.image}" class="item-img">
+                <span class="item-name">${item.weaponType} ${item.skinName}</span>
+                <span style="color:var(--gold);">₽${this.formatPrice(item._marketPrice)}</span>
+                <span class="item-wear">${item.seller}</span>
+            `;
+            card.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') return;
+                this.showMarketCaseOfferDetail(item);
+            });
+            const wrapper = document.createElement('div');
+            wrapper.className = 'market-item-wrapper';
+            wrapper.appendChild(card);
+            const buyBtn = document.createElement('button');
+            buyBtn.textContent = item._purchased ? t('purchased') : t('buy');
+            buyBtn.className = item._purchased ? 'purchased-btn' : '';
+            buyBtn.style.margin = '2px 0';
+            buyBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (item._purchased) return;
+                if (confirm(`Купить у ${item.seller} за ₽${this.formatPrice(item._marketPrice)}?`)) {
+                    this.buyMarketCaseOffer(item, buyBtn);
+                }
+            });
+            wrapper.appendChild(buyBtn);
+            listDiv.appendChild(wrapper);
+        });
+    }
+
+    refreshMarketCaseOffers(collection, name, minPrice, imageUrl) {
+        if (this.getRemainingMarketRefreshes() <= 0) {
+            alert(this.t('refresh_limit'));
+            return;
+        }
+        const caseTpl = {
+            collection,
+            name,
+            weaponType: name.split(' | ')[0],
+            skinName: name.split(' | ').slice(1).join(' | '),
+            rarity: 'Usual',
+            minPrice,
+            imageUrl,
+            type: 'case'
+        };
+        this.generateMarketCaseOffers(caseTpl);
+        this._marketRefreshTimestamps.push(Date.now());
+        this.state._marketRefreshTimestamps = this._marketRefreshTimestamps;
+        this.saveState();
+        this.updateRefreshButton();
+    }
+
+    showMarketCaseOfferDetail(offer) {
+        this.showMarketCaseFullDetail(offer);
+    }
+
+    buyMarketCaseOffer(offer, buyButton = null) {
+        if (this.state.balance < offer._marketPrice) return alert('Недостаточно ₽');
+        this.state.balance -= offer._marketPrice;
+
+        const cItem = {
+            id: Date.now().toString(36) + Math.random().toString(36),
+            type: 'case',
+            collection: offer.collection,
+            dropType: 'weapon',
+            name: offer.name,
+            rarity: 'Usual',
+            wear: 0,
+            wearCategory: '',
+            pattern: 0,
+            stickers: [],
+            isFavorite: false,
+            emoji: '📦',
+            imageUrl: offer.imageUrl,
+            sellable: true,
+            minPrice: offer._marketPrice,
+            purchasePrice: offer._marketPrice,
+            acquiredDate: new Date().toISOString().slice(0,16).replace('T',' '),
+            image: offer.image
+        };
+        this.addItem(cItem);
+
+        const historyEntry = {
+            weaponType: offer.name.split(' | ')[0],
+            skinName: offer.name.split(' | ').slice(1).join(' | '),
+            seller: offer.seller,
+            purchaseDate: new Date().toISOString(),
+            purchasePrice: offer._marketPrice
+        };
+        this.state.marketPurchaseHistory.unshift(historyEntry);
+        if (this.state.marketPurchaseHistory.length > 50) this.state.marketPurchaseHistory.length = 50;
+
+        offer._purchased = true;
+        if (this._currentMarketCaseOffers) {
+            this._currentMarketCaseOffers.forEach(o => {
+                if (o.id === offer.id) o._purchased = true;
+            });
+        }
+
+        if (buyButton) {
+            buyButton.textContent = this.t('purchased');
+            buyButton.className = 'purchased-btn';
+            buyButton.disabled = true;
+        }
+
+        const listDiv = document.getElementById('market-case-list');
+        if (listDiv && this._currentMarketCaseOffers) {
+            this.renderMarketCaseOffers(this._currentMarketCaseOffers);
+        }
+
+        const detailModal = document.getElementById('item-detail-modal');
+        if (detailModal && detailModal.classList.contains('active')) {
+            detailModal.classList.remove('active');
+        }
+
+        this.saveState();
+        this.updateBalanceDisplay();
+        this.renderInventory();
+    }
+
+    buyMarketCaseOfferFromDetail(offerId) {
+        const offer = this._currentMarketCaseOffers.find(o => o.id === offerId);
+        if (offer && !offer._purchased) {
+            if (confirm(`Купить этот кейс за ₽${this.formatPrice(offer._marketPrice)}?`)) {
+                this.buyMarketCaseOffer(offer, null);
+            }
+        }
     }
 
     showMarketItemDetail(tpl) {
@@ -2168,16 +2592,12 @@ class ArsenalZone {
         const content = document.getElementById('market-item-content');
         const t = this.t.bind(this);
         const showWear = tpl.type === 'weapon' || tpl.type === 'knife' || tpl.type === 'gloves';
-        const showStatTrack = tpl.type === 'weapon' || tpl.type === 'knife';
+        const showStatTrack = (tpl.type === 'weapon' || tpl.type === 'knife') && !(this.battlePassConfig.noStatTrackCollections || []).includes(tpl.collection);
         const showStickers = tpl.type === 'weapon';
         this._offerWears = [];
         let wearHtml = '';
         if (showWear) {
-            wearHtml = `<div id="multi-wear-offer"></div>
-                <input type="text" id="offer-wear-min" placeholder="Wear от" style="width:90px">
-                <input type="text" id="offer-wear-max" placeholder="Wear до" style="width:90px">
-                <input type="number" id="offer-pat-min" placeholder="Паттерн от" style="width:80px" min="0" max="9999">
-                <input type="number" id="offer-pat-max" placeholder="до" style="width:80px" min="0" max="9999">`;
+            wearHtml = `<div id="multi-wear-offer"></div>`;
         }
         let stattrackHtml = showStatTrack ? `<label style="display:flex;align-items:center;gap:5px;color:var(--text);">StatTrack <input type="checkbox" id="offer-stattrack"></label>` : '';
         let stickersHtml = showStickers ? `<label style="display:flex;align-items:center;gap:5px;color:var(--text);">${t('with_stickers')} <input type="checkbox" id="offer-with-stickers"></label>` : '';
@@ -2198,13 +2618,9 @@ class ArsenalZone {
         document.getElementById('reset-offers-btn').addEventListener('click', () => {
             if (showWear) {
                 this._offerWears.length = 0;
-                document.getElementById('offer-wear-min').value = '';
-                document.getElementById('offer-wear-max').value = '';
-                document.getElementById('offer-pat-min').value = '';
-                document.getElementById('offer-pat-max').value = '';
-                if (document.getElementById('offer-stattrack')) document.getElementById('offer-stattrack').checked = false;
                 this.createMultiSelect('multi-wear-offer', this.wearLevels.map(w => ({ value:w, label:w })), this._offerWears, null, t('filter_wear'));
             }
+            if (document.getElementById('offer-stattrack')) document.getElementById('offer-stattrack').checked = false;
             if (document.getElementById('offer-with-stickers')) document.getElementById('offer-with-stickers').checked = false;
             document.getElementById('market-item-list').innerHTML = '';
         });
@@ -2218,12 +2634,15 @@ class ArsenalZone {
     }
 
     updateRefreshButton() {
-        const btn = document.getElementById('refresh-offer-btn');
-        if (btn) {
-            const rem = this.getRemainingMarketRefreshes();
-            btn.textContent = `${this.t('refresh')} (${rem})`;
-            btn.disabled = rem <= 0;
-        }
+        const rem = this.getRemainingMarketRefreshes();
+        const buttons = ['refresh-offer-btn', 'refresh-case-offer-btn'];
+        buttons.forEach(id => {
+            const btn = document.getElementById(id);
+            if (btn) {
+                btn.textContent = `${this.t('refresh')} (${rem})`;
+                btn.disabled = rem <= 0;
+            }
+        });
     }
 
     refreshMarketOffers(skinName, collection, type, rarity, minPrice, imageUrl) {
@@ -2252,36 +2671,24 @@ class ArsenalZone {
         const t = this.t.bind(this);
         const listDiv = document.getElementById('market-item-list');
         if (!listDiv) return false;
-        const wearMinStr = document.getElementById('offer-wear-min')?.value;
-        const wearMaxStr = document.getElementById('offer-wear-max')?.value;
-        let wearMin = this.parseWearInput(wearMinStr);
-        let wearMax = this.parseWearInput(wearMaxStr);
-        const pmin = parseInt(document.getElementById('offer-pat-min')?.value);
-        const pmax = parseInt(document.getElementById('offer-pat-max')?.value);
+
+        let wearMin = this.MIN_WEAR;
+        let wearMax = this.MAX_WEAR;
+
+        if (this._offerWears && this._offerWears.length > 0) {
+            let minWear = this.MAX_WEAR, maxWear = this.MIN_WEAR;
+            for (const w of this._offerWears) {
+                const [cmin, cmax] = this.wearCategoryRanges[w];
+                if (cmin < minWear) minWear = cmin;
+                if (cmax > maxWear) maxWear = cmax;
+            }
+            wearMin = minWear;
+            wearMax = maxWear;
+        }
+
         const st = document.getElementById('offer-stattrack')?.checked || false;
         const withStickers = document.getElementById('offer-with-stickers')?.checked || false;
-        if ((!isNaN(pmin) && (pmin < 0 || pmin > 9999)) || (!isNaN(pmax) && (pmax < 0 || pmax > 9999))) {
-            listDiv.innerHTML = `<p style="color:red">${t('pattern_out_of_range')}</p>`;
-            return false;
-        }
-        if ((wearMinStr && isNaN(wearMin)) || (wearMaxStr && isNaN(wearMax)) || wearMin > wearMax) {
-            listDiv.innerHTML = `<p style="color:red">${t('offer_error')}</p>`;
-            return false;
-        }
-        if (isNaN(wearMin)) wearMin = this.MIN_WEAR;
-        if (isNaN(wearMax)) wearMax = this.MAX_WEAR;
-        if (wearMin > wearMax) {
-            listDiv.innerHTML = `<p style="color:red">${t('offer_error')}</p>`;
-            return false;
-        }
-        if (this._offerWears && this._offerWears.length > 0) {
-            const selectedRanges = this._offerWears.map(w => this.wearCategoryRanges[w]);
-            const hasOverlap = selectedRanges.some(([cmin, cmax]) => wearMin <= cmax && wearMax >= cmin);
-            if (!hasOverlap) {
-                listDiv.innerHTML = `<p style="color:red">${t('wear_conflict_error')}</p>`;
-                return false;
-            }
-        }
+
         const offers = [];
         let attempts = 0;
         const maxAttempts = 1000;
@@ -2297,6 +2704,7 @@ class ArsenalZone {
             item.rarity = rarity;
             item.minPrice = minPrice;
             item.imageUrl = imageUrl;
+
             if (type === 'weapon' || type === 'knife' || type === 'gloves') {
                 item.wear = wearMin + Math.random() * (wearMax - wearMin);
                 if (item.wear < 0.05) item.wearCategory = 'Freshly Made';
@@ -2304,22 +2712,23 @@ class ArsenalZone {
                 else if (item.wear < 0.50) item.wearCategory = 'Lightly-Used';
                 else if (item.wear < 0.70) item.wearCategory = 'Worn';
                 else item.wearCategory = 'Heavily-Worn';
-                if (this._offerWears && this._offerWears.length > 0 && !this._offerWears.includes(item.wearCategory)) continue;
-                if (!isNaN(pmin) && !isNaN(pmax)) item.pattern = pmin + Math.floor(Math.random() * (pmax - pmin + 1));
-                else if (!isNaN(pmin)) item.pattern = pmin;
-                else if (!isNaN(pmax)) item.pattern = pmax;
-                if (item.pattern < 0) item.pattern = 0;
-                if (item.pattern > 9999) item.pattern = 9999;
+
+                item.pattern = Math.floor(Math.random() * 10000);
                 item.statTrack = st && (type === 'weapon' || type === 'knife');
             }
+
             if (this.specialPatterns[skinName]) {
                 for (const sp of this.specialPatterns[skinName]) {
                     if (item.pattern >= sp.min && item.pattern <= sp.max) {
                         item.specialPattern = sp;
+                        if (sp.imageUrl) {
+                            item.imageUrl = sp.imageUrl;
+                        }
                         break;
                     }
                 }
             }
+
             if (type === 'weapon') {
                 if (withStickers) {
                     const stickerChance = Math.random();
@@ -2331,6 +2740,7 @@ class ArsenalZone {
                 } else item.stickers = [];
             }
             if (withStickers && (!item.stickers || item.stickers.length === 0)) continue;
+
             item.seller = this.sellerNames[Math.floor(Math.random() * this.sellerNames.length)];
             const basePrice = this.getItemPrice(item);
             const minAllowed = minPrice * 0.7;
@@ -2343,7 +2753,10 @@ class ArsenalZone {
             offers.push(item);
         }
         this._currentMarketOffers = offers;
-        offers.sort((a,b) => a._marketPrice - b._marketPrice);
+        for (let i = offers.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [offers[i], offers[j]] = [offers[j], offers[i]];
+        }
         listDiv.innerHTML = '';
         if (offers.length === 0) {
             listDiv.innerHTML = `<p>${t('offer_no_items')}</p>`;
@@ -2643,131 +3056,141 @@ class ArsenalZone {
         this.renderBattlePass();
     }
 
-  showBattlePassReward(item) {
-    // Создаем модальное окно с золотым свечением
-    const modal = document.createElement('div');
-    modal.className = 'modal active';
-    modal.id = 'bp-reward-modal';
-    modal.style.zIndex = '2000';
-    modal.innerHTML = `
-        <div class="modal-content" style="
-            background: transparent;
-            box-shadow: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            height: 100%;
-            max-width: none;
-            max-height: none;
-        ">
-            <div id="bp-flash" style="
-                width: 200px;
-                height: 200px;
-                border-radius: 50%;
-                background: radial-gradient(circle, rgba(255,215,0,0.9) 0%, rgba(255,215,0,0) 70%);
-                animation: bpPulse 0.6s ease-out forwards;
-            "></div>
-        </div>
-    `;
-    document.body.appendChild(modal);
-
-    if (!document.getElementById('bp-anim-style')) {
-        const style = document.createElement('style');
-        style.id = 'bp-anim-style';
-        style.textContent = `
-            @keyframes bpPulse {
-                0% { transform: scale(0.3); opacity: 0; }
-                50% { transform: scale(1.1); opacity: 0.8; }
-                100% { transform: scale(1.0); opacity: 1; }
-            }
+    showBattlePassReward(item) {
+        const modal = document.createElement('div');
+        modal.className = 'modal active';
+        modal.id = 'bp-reward-modal';
+        modal.style.zIndex = '2000';
+        modal.innerHTML = `
+            <div class="modal-content" style="
+                background: transparent;
+                box-shadow: none;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 100%;
+                height: 100%;
+                max-width: none;
+                max-height: none;
+            ">
+                <div id="bp-flash" style="
+                    width: 200px;
+                    height: 200px;
+                    border-radius: 50%;
+                    background: radial-gradient(circle, rgba(255,215,0,0.9) 0%, rgba(255,215,0,0) 70%);
+                    animation: bpPulse 0.6s ease-out forwards;
+                "></div>
+            </div>
         `;
-        document.head.appendChild(style);
-    }
+        document.body.appendChild(modal);
 
-    setTimeout(() => {
-        if (modal.parentNode) modal.remove();
-        if (!this.state.inventory.includes(item)) {
-            this.addItem(item);
+        if (!document.getElementById('bp-anim-style')) {
+            const style = document.createElement('style');
+            style.id = 'bp-anim-style';
+            style.textContent = `
+                @keyframes bpPulse {
+                    0% { transform: scale(0.3); opacity: 0; }
+                    50% { transform: scale(1.1); opacity: 0.8; }
+                    100% { transform: scale(1.0); opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
         }
-        this.showItemDetail(item);
-        this.sound.play('case_open');
-    }, 1500);
-}
 
-purchaseBattlePassItem(type) {
-    const cfg = this.battlePassConfig;
-    let cost, col, dropType;
-    switch(type) {
-        case 'case': cost = cfg.caseCost; col = cfg.caseCollection; dropType = 'case'; break;
-        case 'skin': cost = cfg.skinCost; col = cfg.skinCollection; dropType = 'weapon'; break;
-        case 'sticker': cost = cfg.stickerCost; col = cfg.stickerCollection; dropType = 'sticker'; break;
-        case 'charm': cost = cfg.charmCost; col = cfg.charmCollection; dropType = 'charm'; break;
-        case 'agent': cost = cfg.agentCost; col = cfg.agentCollection; dropType = 'agent'; break;
-        case 'limited': cost = cfg.limitedCost; col = cfg.skinCollection; dropType = 'limited'; break;
-        default: return;
+        setTimeout(() => {
+            if (modal.parentNode) modal.remove();
+            if (!this.state.inventory.includes(item)) {
+                this.addItem(item);
+            }
+            this.showItemDetail(item);
+            this.sound.play('case_open');
+        }, 1500);
     }
-    if (this.state.battleStars < cost) return alert('Недостаточно звёзд');
-    this.state.battleStars -= cost;
-    this.saveState();
-    this.updateBalanceDisplay();
-    this.renderBattlePass();
 
-    if (type === 'case') {
-        const cItem = {
-            id: Date.now().toString(36),
-            type: 'case',
-            collection: col,
-            dropType: 'weapon',
-            name: col + ' Case',
-            rarity: 'Usual',
-            wear: 0,
-            wearCategory: '',
-            pattern: 0,
-            stickers: [],
-            isFavorite: false,
-            emoji: '📦',
-            imageUrl: '',
-            sellable: false,
-            acquiredDate: new Date().toISOString().slice(0,16).replace('T',' ')
-        };
-        cItem.image = cItem.imageUrl || this.generateItemImage(cItem);
-        this.addItem(cItem);
-        this.showCaseDetail(cItem);
-    } else if (type === 'limited') {
-        const limitedSkin = {
-            ...cfg.limitedSkin,
-            type: 'weapon',
-            collection: col,
-            wear: this.MIN_WEAR + Math.random() * (this.MAX_WEAR - this.MIN_WEAR),
-            pattern: Math.floor(Math.random() * 10000),
-            statTrack: false,
-            stickers: [],
-            acquiredDate: new Date().toISOString().slice(0,16).replace('T',' ')
-        };
-        if (this.specialPatterns[limitedSkin.name]) {
-            for (const sp of this.specialPatterns[limitedSkin.name]) {
-                if (limitedSkin.pattern >= sp.min && limitedSkin.pattern <= sp.max) {
-                    limitedSkin.specialPattern = sp;
-                    if (sp.imageUrl) limitedSkin.imageUrl = sp.imageUrl;
-                    break;
+    purchaseBattlePassItem(type) {
+        const cfg = this.battlePassConfig;
+        let cost, col, dropType;
+        switch(type) {
+            case 'case': cost = cfg.caseCost; col = cfg.caseCollection; dropType = 'case'; break;
+            case 'skin': cost = cfg.skinCost; col = cfg.skinCollection; dropType = 'weapon'; break;
+            case 'sticker': cost = cfg.stickerCost; col = cfg.stickerCollection; dropType = 'sticker'; break;
+            case 'charm': cost = cfg.charmCost; col = cfg.charmCollection; dropType = 'charm'; break;
+            case 'agent': cost = cfg.agentCost; col = cfg.agentCollection; dropType = 'agent'; break;
+            case 'limited': cost = cfg.limitedCost; col = cfg.skinCollection; dropType = 'limited'; break;
+            default: return;
+        }
+        if (this.state.battleStars < cost) return alert('Недостаточно звёзд');
+        this.state.battleStars -= cost;
+        this.saveState();
+        this.updateBalanceDisplay();
+        this.renderBattlePass();
+
+        if (type === 'case') {
+            const cItem = {
+                id: Date.now().toString(36),
+                type: 'case',
+                collection: col,
+                dropType: 'weapon',
+                name: col + ' Case',
+                rarity: 'Usual',
+                wear: 0,
+                wearCategory: '',
+                pattern: 0,
+                stickers: [],
+                isFavorite: false,
+                emoji: '📦',
+                imageUrl: 'https://i.ibb.co/fVPGr8xw/Momentum-Case.png',
+                sellable: false,
+                acquiredDate: new Date().toISOString().slice(0,16).replace('T',' ')
+            };
+            cItem.image = cItem.imageUrl || this.generateItemImage(cItem);
+            this.addItem(cItem);
+            this.showCaseDetail(cItem);
+        } else if (type === 'limited') {
+            const name = cfg.limitedSkin.name;
+            const parts = name.split(' | ');
+            const limitedSkin = {
+                ...cfg.limitedSkin,
+                id: Date.now().toString(36) + Math.random().toString(36),
+                type: 'weapon',
+                weaponType: parts[0],
+                skinName: parts.slice(1).join(' | '),
+                collection: col,
+                wear: this.MIN_WEAR + Math.random() * (this.MAX_WEAR - this.MIN_WEAR),
+                pattern: Math.floor(Math.random() * 10000),
+                statTrack: false,
+                stickers: [],
+                acquiredDate: new Date().toISOString().slice(0,16).replace('T',' ')
+            };
+            if (limitedSkin.wear < 0.05) limitedSkin.wearCategory = 'Freshly Made';
+            else if (limitedSkin.wear < 0.20) limitedSkin.wearCategory = 'Practically New';
+            else if (limitedSkin.wear < 0.50) limitedSkin.wearCategory = 'Lightly-Used';
+            else if (limitedSkin.wear < 0.70) limitedSkin.wearCategory = 'Worn';
+            else limitedSkin.wearCategory = 'Heavily-Worn';
+
+            if (this.specialPatterns[name]) {
+                for (const sp of this.specialPatterns[name]) {
+                    if (limitedSkin.pattern >= sp.min && limitedSkin.pattern <= sp.max) {
+                        limitedSkin.specialPattern = sp;
+                        if (sp.imageUrl) limitedSkin.imageUrl = sp.imageUrl;
+                        break;
+                    }
                 }
             }
-        }
-        limitedSkin.image = limitedSkin.imageUrl || this.generateItemImage(limitedSkin);
-        this.showBattlePassReward(limitedSkin);
-    } else {
-        const item = this.generateItem(col, dropType);
-        if (item) {
-            this.showBattlePassReward(item);
+            limitedSkin.image = limitedSkin.imageUrl || this.generateItemImage(limitedSkin);
+            this.showBattlePassReward(limitedSkin);
         } else {
-            this.state.battleStars += cost;
-            this.saveState();
-            this.renderBattlePass();
-            alert('Не удалось создать предмет');
+            const item = this.generateItem(col, dropType);
+            if (item) {
+                this.showBattlePassReward(item);
+            } else {
+                this.state.battleStars += cost;
+                this.saveState();
+                this.renderBattlePass();
+                alert('Не удалось создать предмет');
+            }
         }
     }
-}
 
     renderBattlePass() {
         const c = document.getElementById('view-battlepass');
@@ -2794,7 +3217,6 @@ purchaseBattlePassItem(type) {
         c.innerHTML = html;
     }
 
-    // Остальные методы из второй части (уже реализованы выше или не требуют изменений)
     prepareProfileView() {
         const v = document.getElementById('view-profile');
         if (!v) return;
