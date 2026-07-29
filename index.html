@@ -1828,7 +1828,7 @@ class ArsenalZone {
         skinsHTML += '</div></div>';
         content.innerHTML = `<button class="close-fullskin" onclick="Game.closeItemDetail()">✕</button>
             <div class="skin-header"><h2>${displayName}</h2><div class="collection-name">${cItem.collection}</div><div class="rarity-line" style="background:#6b6b6b;"></div></div>
-            <div class="skin-image-area" style="flex:1 1 auto; display:flex; justify-content:center; align-items:center; padding:10px;"><img src="${cItem.image}" style="max-width: ${cItem.collection === 'Momentum' ? '60%' : '90%'}; max-height: ${cItem.collection === 'Momentum' ? '30vh' : '50vh'}; object-fit:contain;"></div>
+            <div class="skin-image-area" style="flex:1 1 auto; display:flex; justify-content:center; align-items:center; padding:10px;"><img src="${cItem.image}" style="max-width: ${cItem.collection === 'Momentum' && cItem.collection === 'Global' && cItem.collection === 'Octagon'? '60%' : '90%'}; max-height: ${cItem.collection === 'Momentum' ? '30vh' : '50vh'}; object-fit:contain;"></div>
             ${skinsHTML}
             <div class="skin-actions">${buttons}</div>`;
     }
